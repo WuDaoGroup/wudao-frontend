@@ -3,7 +3,7 @@
       <div class="flex-col flex  self-center p-10 sm:max-w-5xl xl:max-w-2xl  z-10">
         <div class="self-start hidden lg:flex flex-col  text-white">
           <img src="" class="mb-3">
-          <h1 class="mb-3 font-bold text-5xl">Hi 👋 Welcome Back</h1>
+          <h1 class="mb-3 font-bold text-5xl">Hello~ 👋 Welcome</h1>
           <p class="pr-3">一起向未来 | Together for a Shared Future</p>
         </div>
       </div>
@@ -45,8 +45,8 @@
             </div>
             <div class="pt-5 text-center text-gray-400 text-xs">
               <span>
-                Copyright Wudao © 2022
-                <a href="https://codepen.io/uidesignhub" rel="" target="_blank" title="Ajimon" class="text-green hover:text-green-500 ">AJI</a></span>
+                Copyright © 2022 Wudao
+              </span>
             </div>
         </div>
       </div>
