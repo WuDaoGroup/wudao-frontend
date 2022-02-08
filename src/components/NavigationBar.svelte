@@ -1,3 +1,8 @@
+<script>
+    import { base } from '$app/paths';
+  </script>
+  
+
 <div class="flex justify-center">
 <div class="navbar w-11/12 shadow-lg bg-neutral text-neutral-content rounded-box">
     <div class="flex-none px-2 mx-2">
@@ -7,7 +12,7 @@
     </div> 
     <div class="flex-1 px-2 mx-2">
       <div class="items-stretch hidden lg:flex">
-        <a class="btn btn-ghost btn-sm rounded-btn">
+        <a class="btn btn-ghost btn-sm rounded-btn" href="{base}/">
                 Home
               </a> 
         <a class="btn btn-ghost btn-sm rounded-btn">
@@ -26,13 +31,13 @@
             <div tabindex="0" class="m-1 btn">Username</div> 
             <ul tabindex="0" class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-52">
               <li>
-                <a>Sign In</a>
+                <a href="{base}/login">Sign In</a>
               </li> 
               <li>
                 <a>Sign Out</a>
               </li> 
               <li>
-                <a>Register</a>
+                <a href="{base}/register">Register</a>
               </li>
             </ul>
           </div>
