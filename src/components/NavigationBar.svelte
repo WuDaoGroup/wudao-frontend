@@ -1,6 +1,6 @@
 <script>
     import { base } from '$app/paths';
-  </script>
+</script>
   
 
 <div class="flex justify-center">
