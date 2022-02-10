@@ -1,18 +1,22 @@
 <script>
     import NavigationBar from "../components/NavigationBar.svelte"
     import { onMount } from 'svelte'
-    import axios from 'axios'
+    import {loginApi} from '../api/userApi'
 
-    let userInfo = {};
+    let userInfo = {}
+    let username = '3a'
+    let password = '1243'
     
-    onMount(async()=>{
-        try {
-            const response = await axios.get('http://localhost:8123/users');
-            console.log(response.data)
-        } catch(err) {
-            console.log(err)
+    function handleLogin(){
+      loginApi(username, password)
+      .then(response => {
+        if (response.status == 200) {
+          console.log('成功登录')
+        } else {
+          console.log(response.data.detail)
         }
-    })
+      })
+    }
 
 </script>
 
@@ -47,21 +51,8 @@
               </label>
               <input class="w-full content-center text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400" type="" placeholder="Enter your password">
             </div>
-              <!-- <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 bg-blue-500 focus:ring-blue-400 border-gray-300 rounded">
-                <label for="remember_me" class="ml-2 block text-sm text-gray-800">
-                  Remember me
-                </label>
-              </div>
-              <div class="text-sm">
-                <a href="#" class="text-green-400 hover:text-green-500">
-                  Forgot your password?
-                </a>
-              </div>
-            </div> -->
             <div>
-              <button type="submit" class="w-full flex justify-center bg-green-400  hover:bg-green-500 text-gray-100 p-3  rounded-full tracking-wide font-semibold  shadow-lg cursor-pointer transition ease-in duration-500">
+              <button type="submit" on:click={handleLogin} class="w-full flex justify-center bg-green-400  hover:bg-green-500 text-gray-100 p-3  rounded-full tracking-wide font-semibold  shadow-lg cursor-pointer transition ease-in duration-500">
                 Sign in
               </button>
             </div>
