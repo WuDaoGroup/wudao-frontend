@@ -11,3 +11,15 @@ export const loginApi = async (username, password) => {
 		console.error(err);
 	}
 };
+export const registerApi = async (username, password1, password2) => {
+	try {
+        let form = new FormData()
+        form.append('username', username)
+        form.append('password1', password1)
+		form.append('password2', password2)
+        const response = await api.post(`users/register`, form);
+		return response;
+	} catch (err) {
+		console.error(err);
+	}
+};

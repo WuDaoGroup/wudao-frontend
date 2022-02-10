@@ -1,5 +1,19 @@
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
+    import { registerApi } from '../api/userApi';
+	let username = '';
+	let password1 = '';
+	let password2 = '';
+    
+	function handleRegister() {
+		registerApi(username, password1, password2).then((response) => {
+			if (response.status == 200) {
+				console.log('Succeesfully Registered');
+			} else {
+				console.log(response.data.detail);
+			}
+		});
+	}
 </script>
 
 <div class="min-h-screen">
@@ -25,6 +39,7 @@
 					<div class="space-y-2">
 						<label class="text-sm font-medium text-gray-700 tracking-wide">Email</label>
 						<input
+							bind:value={username}
 							class=" w-full text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
 							type="email"
 							placeholder="mail@gmail.com"
@@ -33,6 +48,7 @@
 					<div class="space-y-2">
 						<label class="mb-5 text-sm font-medium text-gray-700 tracking-wide"> Password </label>
 						<input
+							bind:value={password1}
 							class="w-full content-center text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
 							type="password"
 							placeholder="Enter your password"
@@ -44,6 +60,7 @@
 							Password Confirm
 						</label>
 						<input
+							bind:value={password2}
 							class="w-full content-center text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
 							type="password"
 							placeholder="Check your password"
@@ -52,6 +69,7 @@
 
 					<div>
 						<button
+							on:click={handleRegister}
 							type="submit"
 							class="w-full flex justify-center bg-green-400  hover:bg-green-500 text-gray-100 p-3  rounded-full tracking-wide font-semibold  shadow-lg cursor-pointer transition ease-in duration-500"
 						>
