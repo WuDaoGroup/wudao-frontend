@@ -10,7 +10,7 @@
 		loginApi(username, password).then((response) => {
 			if (response.status == 200) {
 				console.log('成功登录');
-        user.set({'username':response.data.username, 'password':response.data.password, 'usertype':response.data.usertype})
+        user.subscribe({'username':response.data.username, 'password':response.data.password, 'usertype':response.data.usertype})
 			} else {
 				console.log(response.data.detail);
 			}
