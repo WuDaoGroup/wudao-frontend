@@ -1,11 +1,9 @@
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
-	import { onMount } from 'svelte';
 	import { loginApi } from '../api/userApi';
 
-	let userInfo = {};
-	let username = '3a';
-	let password = '1243';
+	let username = '';
+	let password = '';
 
 	function handleLogin() {
 		loginApi(username, password).then((response) => {
@@ -40,7 +38,8 @@
 				<div class="space-y-5">
 					<div class="space-y-2">
 						<label class="text-sm font-medium text-gray-700 tracking-wide">Email</label>
-						<input
+						<input 
+							bind:value={username}
 							class=" w-full text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
 							type="email"
 							placeholder="mail@gmail.com"
@@ -49,6 +48,7 @@
 					<div class="space-y-2">
 						<label class="mb-5 text-sm font-medium text-gray-700 tracking-wide"> Password </label>
 						<input
+							bind:value={password}
 							class="w-full content-center text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
 							type="password"
 							placeholder="Enter your password"
