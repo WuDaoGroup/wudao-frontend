@@ -31,14 +31,14 @@
       </div>
     </div> 
     <div class="flex-none">
-        <div class="dropdown dropdown-hover">
+        <div class="dropdown dropdown-end dropdown-hover">
             <div tabindex="0" class="m-1 btn">{username}</div> 
-            <ul tabindex="0" class="p-1 shadow menu dropdown-content bg-base-100 rounded-box w-35">
+            <ul tabindex="0" class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-40">
               <li>
-                <a href="{base}/login">登录</a>
+                <a href="{base}/login"><center>登录</center></a>
               </li> 
               <li>
-                <a>登出</a>
+                <a href="{base}/login">登出</a>
               </li> 
               <li>
                 <a href="{base}/register">注册</a>
