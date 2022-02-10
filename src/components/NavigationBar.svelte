@@ -1,5 +1,9 @@
 <script>
     import { base } from '$app/paths';
+    import { user } from '../stores/userStore';
+    let username;
+    user.subscribe(value => {username = value.username})
+
 </script>
   
 
@@ -28,7 +32,7 @@
     </div> 
     <div class="flex-none">
         <div class="dropdown dropdown-hover">
-            <div tabindex="0" class="m-1 btn">Username</div> 
+            <div tabindex="0" class="m-1 btn">{username}</div> 
             <ul tabindex="0" class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-52">
               <li>
                 <a href="{base}/login">Sign In</a>

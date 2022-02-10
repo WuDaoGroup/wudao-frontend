@@ -1,16 +1,16 @@
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
-	import { onMount } from 'svelte';
 	import { loginApi } from '../api/userApi';
+  import { user } from '../stores/userStore';
 
-	let userInfo = {};
-	let username = '3a';
-	let password = '1243';
+	let username = '';
+	let password = '';
 
 	function handleLogin() {
 		loginApi(username, password).then((response) => {
 			if (response.status == 200) {
 				console.log('成功登录');
+        user.set({'username':response.data.username, 'password':response.data.password, 'usertype':response.data.usertype})
 			} else {
 				console.log(response.data.detail);
 			}
