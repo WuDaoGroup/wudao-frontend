@@ -11,7 +11,7 @@
 <div class="navbar w-11/12 shadow-lg bg-neutral text-neutral-content rounded-box">
     <div class="flex-none px-2 mx-2">
       <span class="text-lg font-bold">
-              daisyUI
+              WUDAO
             </span>
     </div> 
     <div class="flex-1 px-2 mx-2">
@@ -33,15 +33,15 @@
     <div class="flex-none">
         <div class="dropdown dropdown-hover">
             <div tabindex="0" class="m-1 btn">{username}</div> 
-            <ul tabindex="0" class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-52">
+            <ul tabindex="0" class="p-1 shadow menu dropdown-content bg-base-100 rounded-box w-35">
               <li>
-                <a href="{base}/login">Sign In</a>
+                <a href="{base}/login">登录</a>
               </li> 
               <li>
-                <a>Sign Out</a>
+                <a>登出</a>
               </li> 
               <li>
-                <a href="{base}/register">Register</a>
+                <a href="{base}/register">注册</a>
               </li>
             </ul>
           </div>
