@@ -23,3 +23,14 @@ export const registerApi = async (username, password1, password2) => {
 		console.error(err);
 	}
 };
+
+export const uploadDataApi = async (file) => {
+	try {
+		let form = new FormData()
+        form.append('file', file)
+        const response = await api.post(`data`, form);
+		return response;
+	} catch (err) {
+		console.error(err);
+	}
+};
