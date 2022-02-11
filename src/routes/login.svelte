@@ -1,8 +1,9 @@
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
 	import { loginApi } from '../api/userApi';
-  import { user } from '../stores/userStore';
-  import { browser } from "$app/env";
+	import { user } from '../stores/userStore';
+	import { browser } from "$app/env";
+	import {goto} from '$app/navigation';
 
 	let username = '';
 	let password = '';
@@ -11,11 +12,13 @@
 		loginApi(username, password).then((response) => {
 			if (response.status == 200) {
 				console.log('成功登录');
-        const newUser = {'username':response.data.username, 'password':response.data.password, 'usertype':response.data.usertype}
-        user.set(newUser)
-        if (browser){
-          localStorage.setItem("user", JSON.stringify(newUser))
-        }
+				const newUser = {'username':response.data.username, 'password':response.data.password, 'usertype':response.data.usertype}
+				user.set(newUser)
+				if (browser){
+					localStorage.setItem("user", JSON.stringify(newUser))
+				}
+				goto(`/`)
+				
 			} else {
 				console.log(response.data.detail);
 			}
