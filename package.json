@@ -26,6 +26,7 @@
   "type": "module",
   "dependencies": {
     "axios": "^0.25.0",
-    "daisyui": "^1.25.4"
+    "daisyui": "^1.25.4",
+    "echarts": "^5.3.0"
   }
 }
