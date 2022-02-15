@@ -48,12 +48,5 @@
             </ul>
           </div>
     </div> 
-    <div class="flex-none">
-        <div class="avatar">
-          <div class="rounded-full w-10 h-10 m-1">
-            <img src="https://i.pravatar.cc/500?img=32">
-          </div>
-        </div>
-      </div>
   </div>
 </div>
