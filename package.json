@@ -27,6 +27,7 @@
   "dependencies": {
     "axios": "^0.25.0",
     "daisyui": "^1.25.4",
-    "filepond": "^4.30.3"
+    "filepond": "^4.30.3",
+    "svelte-filepond": "^0.2.0"
   }
 }

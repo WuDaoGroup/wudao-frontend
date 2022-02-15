@@ -1,19 +1,36 @@
+<style>
+    @import 'filepond/dist/filepond.css';
+</style>
+
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
-	import { uploadDataApi } from '../api/fileApi';
+	import {  } from '../api/fileApi';
 	import axios from 'axios';
 	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
+
+
+	// 上传文件组件所需要导入的包、要定义的变量和方法
+	import { FileUploader } from "carbon-components-svelte";
+	let fileVar;
+    import FilePond, { registerPlugin, supported } from 'svelte-filepond';
+    let pond;
+    // the name to use for the internal file input
+    let name = 'upload_file'; // 这个值就对应了form-data的key
+
+    // handle filepond events
+    function handleInit() {
+        console.log('FilePond has initialised');
+    }
+
+    function handleAddFile(err, fileItem) {
+        console.log('A file has been added', fileItem);
+    }
+
+
 	let xy = 0;
 	let show = { showtable: false };
 	let shift = { shiftbutton: false };
-	let display = {displayfinal: false};
-	/*
-    function uploadData() {
-		uploadDataApi(file).then((response) => {
-		    console.log(file)
-		});
-	}
-*/
+	let display = { displayfinal: false };
 
 	let pagination = {
 		pageSize: 5,
@@ -28,29 +45,27 @@
 		]
 	};
 
-	let datachoice={
-		header:[
-			{key:'y',value:'First',choice:-1}
-		]
-	}
-	for(let i=1;i<dataheader.header.length;i++){
-		let b ={
-			key:dataheader.header[i]['key'],
-			value:dataheader.header[i]['value'],
-			choice:0
-		}
+	let datachoice = {
+		header: [{ key: 'y', value: 'First', choice: -1 }]
+	};
+	for (let i = 1; i < dataheader.header.length; i++) {
+		let b = {
+			key: dataheader.header[i]['key'],
+			value: dataheader.header[i]['value'],
+			choice: 0
+		};
 		datachoice.header.push(b);
 	}
 
-	let chosenheader={
-		header:[]
-	}
-	let yheader={
-		header:[]
-	}
-	let xheader={
-		header:[]
-	}
+	let chosenheader = {
+		header: []
+	};
+	let yheader = {
+		header: []
+	};
+	let xheader = {
+		header: []
+	};
 	let file = {
 		data: [
 			{
@@ -128,52 +143,44 @@
 	}
 
 	function showChosenTable() {
-		for(let i=0;i<datachoice.header.length;i++){
-			if(datachoice.header[i]['choice']==1){
+		for (let i = 0; i < datachoice.header.length; i++) {
+			if (datachoice.header[i]['choice'] == 1) {
 				yheader.header.push(dataheader.header[i]);
-			}
-			else if(datachoice.header[i]['choice']==-1){
+			} else if (datachoice.header[i]['choice'] == -1) {
 				xheader.header.push(dataheader.header[i]);
 			}
 		}
 		console.log(yheader);
 		console.log(xheader);
 		console.log(dataheader.header[1]['choice']);
-		for(let i=0;i<yheader.header.length;i++){
+		for (let i = 0; i < yheader.header.length; i++) {
 			chosenheader.header.push(yheader.header[i]);
 		}
-		for(let i=0;i<xheader.header.length;i++){
+		for (let i = 0; i < xheader.header.length; i++) {
 			chosenheader.header.push(xheader.header[i]);
 		}
-		display.displayfinal= true;
-
-	}
-	
-
-	function uploadData() {
-		//event.preventDefault();
-		let form = new FormData();
-		form.append('file', file);
-		fetch('http://127.0.0.1:8123/upload', {
-			method: 'POST',
-			headers: [['Content-Type', 'multipart/form-data']],
-			body: form
-		})
-			.then((response) => {
-				//const response = await axios.post('http://api.yhzhu.top/v1/web/files/upload', form);
-				console.log(response);
-				console.log(file);
-			})
-			.catch((error) => {
-				console.log(err);
-				console.log(file);
-			});
+		display.displayfinal = true;
 	}
 </script>
 
 <NavigationBar />
 
+	<FilePond
+		bind:this={pond}
+		{name}
+		server="http://api.yhzhu.top/v1/web/files/upload"
+		allowMultiple={true}
+		oninit={handleInit}
+		onaddfile={handleAddFile}
+	/>
+
+
 <div class="container mx-auto">
+
+	<button on:click={showTableFirst} class="mx-auto btn btn-success "
+		>Upload</button
+	>
+
 	{#if show.showtable == true}
 		<div class="container w-3/4 mx-auto">
 			<DataTable
@@ -197,46 +204,32 @@
 	<div
 		class="container mx-auto  rounded-xl p-8 w-1/5 border-4 border-indigo-600 border-light-blue-500 border-opacity-100"
 	>
-		<div class=" form-control">
-			<input
-				bind:files={file}
-				type="file"
-				name="uploadfile"
-				id="uploadfile"
-				accept=".csv,.xls,.xlsx"
-				class="mx-auto  form-control"
-			/>
-		</div>
-		<br />
-		<button on:click={uploadData} on:click={showTableFirst} class="mx-auto btn btn-success "
-			>Upload</button
-		>
+
 		{#if shift.shiftbutton == true}
 			{#if show.showtable == true}
 				<button on:click={showTable} class="btn btn-info">Hide</button>
 			{:else}
 				<button on:click={showTable} class="btn btn-info">Show</button>
 			{/if}
-			<br/>
+			<br />
 			{#each datachoice.header as header}
-			<!--
+				<!--
 			<RadioButtonGroup labelPosition="left" legendText={header.value}>
 				<RadioButton  labelText="因变量" bind:selected={header.choice} value= {1} />
 				<RadioButton  labelText="自变量" bind:selected={header.choice} value= {-1} />
 				<RadioButton labelText="无影响" value="None" />
 			</RadioButtonGroup>
-		--> 
-			<label align="left">{header.value}</label> 
-			<div align="right">
-		    <label ><input type=radio bind:group={header.choice} value={1}>预测目标</label>
-			<label ><input type=radio bind:group={header.choice} value={-1}>特征</label>
-			<label ><input type=radio bind:group={header.choice} value={0}>无用变量</label>
-			</div>
-			<br/>
+		-->
+				<label align="left">{header.value}</label>
+				<div align="right">
+					<label><input type="radio" bind:group={header.choice} value={1} />预测目标</label>
+					<label><input type="radio" bind:group={header.choice} value={-1} />特征</label>
+					<label><input type="radio" bind:group={header.choice} value={0} />无用变量</label>
+				</div>
+				<br />
 			{/each}
-			<br/>
-			<button on:click = {showChosenTable} class="mx-auto btn btn-success "
-			>Confirm</button>
+			<br />
+			<button on:click={showChosenTable} class="mx-auto btn btn-success ">Confirm</button>
 		{/if}
 		<!--
     <form on:submit={uploadData}>
@@ -247,16 +240,6 @@
         <input type="submit" />
       </form>
     -->
-	
-
-
-
-
-
-
-
-
-
 
 		<head><meta name="referrer" content="no-referrer" /></head>
 	</div>
