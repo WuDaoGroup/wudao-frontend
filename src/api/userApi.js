@@ -1,3 +1,5 @@
+// 用户相关的API
+
 import api from '../services/api.js';
 
 export const loginApi = async (username, password) => {
@@ -18,17 +20,6 @@ export const registerApi = async (username, password1, password2) => {
         form.append('password1', password1)
 		form.append('password2', password2)
         const response = await api.post(`users/register`, form);
-		return response;
-	} catch (err) {
-		console.error(err);
-	}
-};
-
-export const uploadDataApi = async (file) => {
-	try {
-		let form = new FormData()
-        form.append('upload_file', file)
-        const response = await api.post(`upload`, form);
 		return response;
 	} catch (err) {
 		console.error(err);

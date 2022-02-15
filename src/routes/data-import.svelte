@@ -1,6 +1,6 @@
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
-	import { uploadDataApi } from '../api/userApi';
+	import { uploadDataApi } from '../api/fileApi';
 	import axios from 'axios';
 	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
 	let xy = 0;
