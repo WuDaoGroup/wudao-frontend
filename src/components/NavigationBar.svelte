@@ -9,24 +9,26 @@
 
 <div class="flex justify-center">
 <div class="navbar w-11/12 shadow-lg bg-neutral text-neutral-content rounded-box">
-    <div class="flex-none px-2 mx-2">
-      <span class="text-lg font-bold">
-              WUDAO
-            </span>
-    </div> 
+
     <div class="flex-1 px-2 mx-2">
       <div class="items-stretch hidden lg:flex">
         <a class="btn btn-ghost btn-sm rounded-btn" href="{base}/">
-                Home
+                悟道-Home
               </a> 
-        <a class="btn btn-ghost btn-sm rounded-btn">
-                Portfolio
+        <a class="btn btn-ghost btn-sm rounded-btn" href="{base}/data-import">
+                数据导入
+              </a>
+        <a class="btn btn-ghost btn-sm rounded-btn"  href="{base}/data-observation">
+                数据观察
+              </a>
+        <a class="btn btn-ghost btn-sm rounded-btn"  href="{base}/data-preprocessing">
+                数据预处理
               </a> 
-        <a class="btn btn-ghost btn-sm rounded-btn">
-                About
-              </a> 
-        <a class="btn btn-ghost btn-sm rounded-btn">
-                Contact
+        <a class="btn btn-ghost btn-sm rounded-btn"  href="{base}/model-development">
+                模型构建
+              </a>
+        <a class="btn btn-ghost btn-sm rounded-btn"  href="{base}/model-interpretable">
+                可解释性
               </a>
       </div>
     </div> 
