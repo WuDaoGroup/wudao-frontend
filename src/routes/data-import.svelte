@@ -22,19 +22,15 @@
         console.log('FilePond has initialised');
     }
 
-    function handleAddFile(err, fileItem){
-		
-        console.log('A file has been added', fileItem)
-		console.log('------22---', fileItem.fileExtension.toLowerCase())
-		if((fileItem.fileExtension.toLowerCase() in ['xlsx', 'xls', 'csv'])){
+    function handleAddFile(err, fileItem) {
+        console.log('A file has been added', fileItem);
+		console.log('filename_ext:', fileItem.fileExtension)
+		if (!(fileItem.fileExtension.toLowerCase() in ['xlsx', 'xls', 'csv'] )) {
 			fileItem.abortLoad()
 			fileItem.abortProcessing()
-			console.log("type error")
+			console.log('文件需为Excel或CSV格式')
 		}
-		filename = fileItem.filename
-	}
-
-
+    }
 
 	let xy = 0;
 	let show = { showtable: false };
