@@ -4,7 +4,7 @@
 
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
-	import {  } from '../api/fileApi';
+	import { analyzeUploadFileContentApi } from '../api/fileApi';
 	import axios from 'axios';
 	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
 
@@ -16,15 +16,24 @@
     let pond;
     // the name to use for the internal file input
     let name = 'upload_file'; // 这个值就对应了form-data的key
-
+	let filename;
     // handle filepond events
     function handleInit() {
         console.log('FilePond has initialised');
     }
 
-    function handleAddFile(err, fileItem) {
-        console.log('A file has been added', fileItem);
-    }
+    function handleAddFile(err, fileItem){
+		
+        console.log('A file has been added', fileItem)
+		console.log('------22---', fileItem.fileExtension.toLowerCase())
+		if((fileItem.fileExtension.toLowerCase() in ['xlsx', 'xls', 'csv'])){
+			fileItem.abortLoad()
+			fileItem.abortProcessing()
+			console.log("type error")
+		}
+		filename = fileItem.filename
+	}
+
 
 
 	let xy = 0;
@@ -46,9 +55,9 @@
 	};
 
 	let datachoice = {
-		header: [{ key: 'y', value: 'First', choice: -1 }]
+		header: []
 	};
-	for (let i = 1; i < dataheader.header.length; i++) {
+	for (let i = 0; i < dataheader.header.length; i++) {
 		let b = {
 			key: dataheader.header[i]['key'],
 			value: dataheader.header[i]['value'],
@@ -142,6 +151,17 @@
 		}
 	}
 
+	function receiveData(){
+		analyzeUploadFileContentApi(filename).then((response) => {
+			if (response.status == 200) {
+				console.log('1234----',response.data);
+			} else {
+				console.log('error!');
+			}
+		});
+		
+	}
+
 	function showChosenTable() {
 		for (let i = 0; i < datachoice.header.length; i++) {
 			if (datachoice.header[i]['choice'] == 1) {
@@ -168,7 +188,7 @@
 	<FilePond
 		bind:this={pond}
 		{name}
-		server="http://api.yhzhu.top/v1/web/files/upload"
+		server="http://localhost:8123/api/v1/files/upload"
 		allowMultiple={true}
 		oninit={handleInit}
 		onaddfile={handleAddFile}
@@ -177,8 +197,8 @@
 
 <div class="container mx-auto">
 
-	<button on:click={showTableFirst} class="mx-auto btn btn-success "
-		>Upload</button
+	<button on:click={showTableFirst} on:click={receiveData} class="mx-auto btn btn-success "
+		>开始分析</button
 	>
 
 	{#if show.showtable == true}
