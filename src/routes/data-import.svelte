@@ -24,12 +24,12 @@
 
     function handleAddFile(err, fileItem) {
         console.log('A file has been added', fileItem);
-		if (!['xlsx', 'xls', 'csv'].include(fileItem.fileExtension.toLowerCase())) {
+		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
 			fileItem.abortLoad()
 			fileItem.abortProcessing()
 			console.log('文件需为Excel或CSV格式')
 		}
-		let filename = fileItem.filename
+		filename = fileItem.filename
     }
 
 	let xy = 0;
