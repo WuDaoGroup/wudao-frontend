@@ -24,8 +24,13 @@
 
     function handleAddFile(err, fileItem) {
         console.log('A file has been added', fileItem);
+		console.log('filename_ext:', fileItem.fileExtension)
+		if (!(fileItem.fileExtension.toLowerCase() in ['xlsx', 'xls', 'csv'] )) {
+			fileItem.abortLoad()
+			fileItem.abortProcessing()
+			console.log('文件需为Excel或CSV格式')
+		}
     }
-
 
 	let xy = 0;
 	let show = { showtable: false };
