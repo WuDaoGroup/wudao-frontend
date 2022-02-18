@@ -1,7 +1,12 @@
+<style>
+	@import 'filepond/dist/filepond.css';
+</style>
+
 <script>
 	import { analyzeUploadFileContentApi } from '../api/fileApi';
-	import { DataTable, Pagination } from 'carbon-components-svelte';
+	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
+	import { Button } from 'carbon-components-svelte';
 
 	import FilePond from 'svelte-filepond';
 	let pond;
@@ -16,14 +21,13 @@
 	function handleAddFile(err, fileItem) {
 		console.log('A file has been added', fileItem);
 		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
-			
-			toast.push("文件类型错误", {
+			toast.push('文件类型错误', {
 				theme: {
 					'--toastBackground': '#F56565',
 					'--toastBarBackground': '#C53030'
 				}
 			});
-			console.log()
+			console.log();
 			fileItem.abortLoad();
 			fileItem.abortProcessing();
 		} else {
@@ -35,6 +39,7 @@
 	let show = { showtable: false };
 	let shift = { shiftbutton: false };
 	let display = { displayfinal: false };
+	let analysis = { showbutton: false };
 
 	let pagination = {
 		pageSize: 5,
@@ -64,6 +69,7 @@
 					datachoice.header.push(b);
 					console.log(dataheader.header.length);
 				}
+				analysis.showbutton = true
 			} else {
 				console.log('error!');
 			}
@@ -116,25 +122,33 @@
 		display.displayfinal = true;
 	}
 </script>
-
-<FilePond
-	bind:this={pond}
-	labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
-	{name}
-	server="http://localhost:8123/api/v1/files/upload"
-	allowMultiple={true}
-	oninit={handleInit}
-	onaddfile={handleAddFile}
-	instantUpload={false}
-/>
-
-<div class="container mx-auto">
-	<button on:click={receiveData} class="mx-auto btn btn-success ">获取数据</button>
-	<button on:click={showTableFirst} class="mx-auto btn btn-success ">开始分析</button>
+<div class="grid grid-rows-2 grid-cols-5 gap-4">
+	<div class="row-span-2 col-span-4">
+		<FilePond
+			bind:this={pond}
+			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
+			{name}
+			server="http://localhost:8123/api/v1/files/upload"
+			allowMultiple={true}
+			oninit={handleInit}
+			onaddfile={handleAddFile}
+			instantUpload={false}
+		/>
+	</div>
+	<div class="col-span-1  m-auto">
+		<Button on:click={receiveData} kind="tertiary" >获取数据</Button>
+	</div>
+	<div class="col-span-1 m-auto">
+		{#if analysis.showbutton == true}
+			<Button on:click={showTableFirst} kind="tertiary" >开始分析</Button>
+		{/if}
+	</div>
+</div>
 
 	{#if show.showtable == true}
-		<div class="container w-3/4 mx-auto">
+		<div class="container mx-auto">
 			<DataTable
+				size="compact"
 				sortable
 				title="原始表格"
 				description="数据种类：{dataheader.header.length}"
@@ -162,6 +176,11 @@
 				<button on:click={showTable} class="btn btn-info">Show</button>
 			{/if}
 			<br />
+			<RadioButtonGroup selected="standard">
+				<RadioButton labelText="Free (1 GB)" value="free" />
+				<RadioButton labelText="Standard (10 GB)" value="standard" />
+				<RadioButton labelText="Pro (128 GB)" value="pro" />
+			</RadioButtonGroup>
 			{#each datachoice.header as header}
 				<!--
 			<RadioButtonGroup labelPosition="left" legendText={header.value}>
@@ -196,6 +215,7 @@
 	{#if display.displayfinal == true}
 		<div class="container w-3/4 mx-auto">
 			<DataTable
+				size="compact"
 				sortable
 				title="处理后数据"
 				description="已选预测目标：{yheader.header.length}个，已选特征：{xheader.header.length}个"
@@ -212,8 +232,4 @@
 			/>
 		</div>
 	{/if}
-</div>
 
-<style>
-	@import 'filepond/dist/filepond.css';
-</style>
