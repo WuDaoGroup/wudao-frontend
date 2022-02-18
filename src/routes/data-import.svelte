@@ -1,38 +1,27 @@
-<style>
-    @import 'filepond/dist/filepond.css';
-</style>
-
 <script>
-	import NavigationBar from '../components/NavigationBar.svelte';
 	import { analyzeUploadFileContentApi } from '../api/fileApi';
-	import axios from 'axios';
-	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
+	import { DataTable, Pagination } from 'carbon-components-svelte';
 
-
-	// 上传文件组件所需要导入的包、要定义的变量和方法
-	import { FileUploader } from "carbon-components-svelte";
-	let fileVar;
-    import FilePond, { registerPlugin, supported } from 'svelte-filepond';
-    let pond;
-    // the name to use for the internal file input
-    let name = 'upload_file'; // 这个值就对应了form-data的key
+	import FilePond from 'svelte-filepond';
+	let pond;
+	// the name to use for the internal file input
+	let name = 'upload_file'; // 这个值就对应了form-data的key
 	let filename;
-    // handle filepond events
-    function handleInit() {
-        console.log('FilePond has initialised');
-    }
+	// handle filepond events
+	function handleInit() {
+		console.log('FilePond has initialised');
+	}
 
-    function handleAddFile(err, fileItem) {
-        console.log('A file has been added', fileItem);
+	function handleAddFile(err, fileItem) {
+		console.log('A file has been added', fileItem);
 		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
-			fileItem.abortLoad()
-			fileItem.abortProcessing()
-			console.log('文件需为Excel或CSV格式')
+			fileItem.abortLoad();
+			fileItem.abortProcessing();
+			console.log('文件需为Excel或CSV格式');
 		}
-		filename = fileItem.filename
-    }
+		filename = fileItem.filename;
+	}
 
-	let xy = 0;
 	let show = { showtable: false };
 	let shift = { shiftbutton: false };
 	let display = { displayfinal: false };
@@ -133,17 +122,14 @@
 	}
 </script>
 
-<NavigationBar />
-
-	<FilePond
-		bind:this={pond}
-		{name}
-		server="http://localhost:8123/api/v1/files/upload"
-		allowMultiple={true}
-		oninit={handleInit}
-		onaddfile={handleAddFile}
-	/>
-
+<FilePond
+	bind:this={pond}
+	{name}
+	server="http://localhost:8123/api/v1/files/upload"
+	allowMultiple={true}
+	oninit={handleInit}
+	onaddfile={handleAddFile}
+/>
 
 <div class="container mx-auto">
 
@@ -177,7 +163,6 @@
 	<div
 		class="container mx-auto  rounded-xl p-8 w-1/5 border-4 border-indigo-600 border-light-blue-500 border-opacity-100"
 	>
-
 		{#if shift.shiftbutton == true}
 			{#if show.showtable == true}
 				<button on:click={showTable} class="btn btn-info">Hide</button>
@@ -236,3 +221,7 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	@import 'filepond/dist/filepond.css';
+</style>
