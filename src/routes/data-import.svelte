@@ -30,45 +30,35 @@
 		pageSize: 5,
 		page: 1
 	};
-	let file = {
-		data:[]
-	};
+
 	let dataheader = {
 		header: []
 	};
-	let rowData = []
+	let rowData = [];
 	let datachoice = {
 		header: []
 	};
-	
 
-	function receiveData(){
+	function receiveData() {
 		analyzeUploadFileContentApi(filename).then((response) => {
 			if (response.status == 200) {
-				rowData=response.data.content
-				dataheader.header=response.data.header
-				console.log(rowData,"aaa",dataheader.header)
+				rowData = response.data.content;
+				dataheader.header = response.data.header;
+				console.log(rowData, 'aaa', dataheader.header);
 				for (let i = 0; i < dataheader.header.length; i++) {
 					let b = {
-					key: dataheader.header[i]['key'],
-					value: dataheader.header[i]['value'],
-					choice: 0
-				};
-				datachoice.header.push(b);
-				console.log(dataheader.header.length)
+						key: dataheader.header[i]['key'],
+						value: dataheader.header[i]['value'],
+						choice: 0
+					};
+					datachoice.header.push(b);
+					console.log(dataheader.header.length);
 				}
-
-
 			} else {
-				console.log('error!')
+				console.log('error!');
 			}
 		});
-		
-		
 	}
-	
-
-	
 
 	let chosenheader = {
 		header: []
@@ -79,9 +69,6 @@
 	let xheader = {
 		header: []
 	};
-	
-
-	
 
 	function showTable() {
 		if (show.showtable == false && shift.shiftbutton == false) {
@@ -98,10 +85,8 @@
 		}
 	}
 
-	
-
 	function showChosenTable() {
-		console.log("xxx",datachoice.header)
+		console.log('xxx', datachoice.header);
 		for (let i = 0; i < datachoice.header.length; i++) {
 			if (datachoice.header[i]['choice'] == 1) {
 				yheader.header.push(dataheader.header[i]);
@@ -132,13 +117,8 @@
 />
 
 <div class="container mx-auto">
-
-	<button on:click={receiveData} class="mx-auto btn btn-success "
-		>获取数据</button
-	>
-	<button on:click={showTableFirst}  class="mx-auto btn btn-success "
-		>开始分析</button
-	>
+	<button on:click={receiveData} class="mx-auto btn btn-success ">获取数据</button>
+	<button on:click={showTableFirst} class="mx-auto btn btn-success ">开始分析</button>
 
 	{#if show.showtable == true}
 		<div class="container w-3/4 mx-auto">
@@ -178,7 +158,7 @@
 				<RadioButton labelText="无影响" value="None" />
 			</RadioButtonGroup>
 		-->
-			<label align="left">{header.value}</label>
+				<label align="left">{header.value}</label>
 				<div align="right">
 					<label><input type="radio" bind:group={header.choice} value={1} />预测目标</label>
 					<label><input type="radio" bind:group={header.choice} value={-1} />特征</label>
