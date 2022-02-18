@@ -2,7 +2,7 @@
 	"name": "wudao",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "prettier --ignore-path .gitignore --write --plugin-search-dir=. . && prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore . && svelte-kit dev --host",
+		"dev": "svelte-kit dev --host",
 		"build": "svelte-kit build",
 		"package": "svelte-kit package",
 		"preview": "svelte-kit preview",
