@@ -1,17 +1,17 @@
 <script>
 	import NavigationBar from '../components/NavigationBar.svelte';
-    import { registerApi } from '../api/userApi';
-	import {goto} from '$app/navigation';
+	import { registerApi } from '../api/userApi';
+	import { goto } from '$app/navigation';
 
 	let username = '';
 	let password1 = '';
 	let password2 = '';
-    
+
 	function handleRegister() {
 		registerApi(username, password1, password2).then((response) => {
 			if (response.status == 200) {
 				console.log('Succeesfully Registered');
-				goto(`/login`)
+				goto(`/login`);
 			} else {
 				console.log(response.data.detail);
 			}

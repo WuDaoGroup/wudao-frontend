@@ -2,8 +2,8 @@
 	import NavigationBar from '../components/NavigationBar.svelte';
 	import { loginApi } from '../api/userApi';
 	import { user } from '../stores/userStore';
-	import { browser } from "$app/env";
-	import {goto} from '$app/navigation';
+	import { browser } from '$app/env';
+	import { goto } from '$app/navigation';
 
 	let username = '';
 	let password = '';
@@ -12,13 +12,16 @@
 		loginApi(username, password).then((response) => {
 			if (response.status == 200) {
 				console.log('成功登录');
-				const newUser = {'username':response.data.username, 'password':response.data.password, 'usertype':response.data.usertype}
-				user.set(newUser)
-				if (browser){
-					localStorage.setItem("user", JSON.stringify(newUser))
+				const newUser = {
+					username: response.data.username,
+					password: response.data.password,
+					usertype: response.data.usertype
+				};
+				user.set(newUser);
+				if (browser) {
+					localStorage.setItem('user', JSON.stringify(newUser));
 				}
-				goto(`/`)
-				
+				goto(`/`);
 			} else {
 				console.log(response.data.detail);
 			}
@@ -48,7 +51,7 @@
 				<div class="space-y-5">
 					<div class="space-y-2">
 						<label class="text-sm font-medium text-gray-700 tracking-wide">Email</label>
-						<input 
+						<input
 							bind:value={username}
 							class=" w-full text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
 							type="email"

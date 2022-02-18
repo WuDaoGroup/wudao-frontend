@@ -1,9 +1,8 @@
 <script>
-    import "../app.css"
-    import "carbon-components-svelte/css/g80.css";
-    
+	import '../app.css';
+	import 'carbon-components-svelte/css/g80.css';
 </script>
 
 <div class="">
-    <slot></slot>
+	<slot />
 </div>

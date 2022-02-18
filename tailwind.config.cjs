@@ -7,9 +7,7 @@ module.exports = {
 	variants: {
 		extend: {}
 	},
-    plugins: [
-		require('daisyui'),
-	],
+	plugins: [require('daisyui')],
 	daisyui: {
 		styled: true,
 		themes: [
@@ -21,6 +19,6 @@ module.exports = {
 		base: true,
 		utils: true,
 		logs: true,
-		rtl: false,
-	},
+		rtl: false
+	}
 };

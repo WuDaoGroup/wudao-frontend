@@ -1,9 +1,9 @@
 <script>
-    import NavigationBar from "../components/NavigationBar.svelte"
+	import NavigationBar from '../components/NavigationBar.svelte';
 </script>
 
-<NavigationBar></NavigationBar>
+<NavigationBar />
 
 <main>
-    <h1>Hello, World!</h1>
+	<h1>Hello, World!</h1>
 </main>
