@@ -1,4 +1,10 @@
 <script>
+	import {
+		TextInput,
+		PasswordInput,
+	} from "carbon-components-svelte";
+
+	import { base } from '$app/paths';
 	import { loginApi } from '../api/userApi';
 	import { user } from '../stores/userStore';
 	import { browser } from '$app/env';
@@ -28,51 +34,27 @@
 	}
 </script>
 
-<div class="sm:flex sm:flex-row mx-0 justify-center">
-	<div class="flex-col flex  self-center p-10 sm:max-w-5xl xl:max-w-2xl  z-10">
-		<div class="self-start hidden lg:flex flex-col  text-black">
-			<h1 class="mb-3 font-bold text-5xl">Hello~ 👋 Welcome</h1>
-			<p class="pr-3">一起向未来 | Together for a Shared Future</p>
+<body class="flex flex-col items-center justify-center mt-8">
+
+	<!-- Component Start -->
+	<h1 class="font-bold text-2xl">Sign In</h1>
+	<form class="flex flex-col bg-white rounded shadow-lg p-12 mt-12" on:submit|preventDefault={handleLogin}>
+		<TextInput labelText="Username" placeholder="Enter username..." required bind:value={username} />
+		<div class="mt-4">
+			<PasswordInput
+				required
+				type="password"
+				labelText="Password"
+				placeholder="Enter password..."
+				bind:value={password}
+			/>
 		</div>
-	</div>
-	<div class="flex justify-center self-center  z-10">
-		<div class="p-12 bg-white mx-auto rounded-2xl w-100 ">
-			<div class="mb-4">
-				<h3 class="font-semibold text-2xl text-gray-800">登录 | Sign In</h3>
-				<p class="text-gray-500">Please sign in to your account.</p>
-			</div>
-			<div class="space-y-5">
-				<div class="space-y-2">
-					<label class="text-sm font-medium text-gray-700 tracking-wide">Email</label>
-					<input
-						bind:value={username}
-						class=" w-full text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
-						type="email"
-						placeholder="mail@gmail.com"
-					/>
-				</div>
-				<div class="space-y-2">
-					<label class="mb-5 text-sm font-medium text-gray-700 tracking-wide"> Password </label>
-					<input
-						bind:value={password}
-						class="w-full content-center text-base px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
-						type="password"
-						placeholder="Enter your password"
-					/>
-				</div>
-				<div>
-					<button
-						type="submit"
-						on:click={handleLogin}
-						class="w-full flex justify-center bg-green-400  hover:bg-green-500 text-gray-100 p-3  rounded-full tracking-wide font-semibold  shadow-lg cursor-pointer transition ease-in duration-500"
-					>
-						Sign in
-					</button>
-				</div>
-			</div>
-			<div class="pt-5 text-center text-gray-400 text-xs">
-				<span> Copyright © 2022 Wudao </span>
-			</div>
+		<button class="flex items-center justify-center h-10 px-6 w-72 bg-blue-600 mt-8 font-semibold text-sm text-blue-100 hover:bg-blue-700" type="submit">Login</button>
+		<div class="flex mt-6 justify-center text-xs">
+			<span class="mx-2 text-gray-300">Don't have an account yet?</span>
+			<a class="text-blue-400 hover:text-blue-500" href="{base}/register">Sign Up</a>
 		</div>
-	</div>
-</div>
+	</form>
+	<!-- Component End  -->
+
+</body>
