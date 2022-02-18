@@ -1,5 +1,4 @@
 <script>
-	import NavigationBar from '../components/NavigationBar.svelte';
 	import { registerApi } from '../api/userApi';
 	import { goto } from '$app/navigation';
 
@@ -19,15 +18,9 @@
 	}
 </script>
 
-<div class="min-h-screen">
-	<nav class="mb-10">
-		<NavigationBar />
-	</nav>
-
 	<div class="sm:flex sm:flex-row mx-0 justify-center">
 		<div class="flex-col flex  self-center p-10 sm:max-w-5xl xl:max-w-2xl  z-10">
-			<div class="self-start hidden lg:flex flex-col  text-white">
-				<img src="" class="mb-3" />
+			<div class="self-start hidden lg:flex flex-col  text-black">
 				<h1 class="mb-3 font-bold text-5xl">Hello~ 👋 Welcome</h1>
 				<p class="pr-3">一起向未来 | Together for a Shared Future</p>
 			</div>
@@ -86,4 +79,3 @@
 			</div>
 		</div>
 	</div>
-</div>

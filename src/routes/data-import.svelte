@@ -1,5 +1,4 @@
 <script>
-	import NavigationBar from '../components/NavigationBar.svelte';
 	import { analyzeUploadFileContentApi } from '../api/fileApi';
 	import { DataTable, Pagination } from 'carbon-components-svelte';
 
@@ -167,8 +166,6 @@
 		display.displayfinal = true;
 	}
 </script>
-
-<NavigationBar />
 
 <FilePond
 	bind:this={pond}
