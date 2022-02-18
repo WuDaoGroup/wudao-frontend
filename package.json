@@ -12,6 +12,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
+		"@zerodevx/svelte-toast": "^0.6.3",
 		"autoprefixer": "^10.4.2",
 		"carbon-components-svelte": "^0.58.1",
 		"carbon-icons-svelte": "^10.44.4",

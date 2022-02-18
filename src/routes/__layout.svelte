@@ -1,6 +1,13 @@
 <script>
 	import '../app.css';
 	import 'carbon-components-svelte/css/white.css';
+	import { SvelteToast } from '@zerodevx/svelte-toast';
+	const options = {
+		theme: {
+			'--toastBackground': '#48BB78',
+			'--toastBarBackground': '#2F855A'
+		}
+	};
 	import {
 		Header,
 		HeaderUtilities,
@@ -11,7 +18,6 @@
 		SideNav,
 		SideNavItems,
 		SideNavLink,
-		SkipToContent,
 		Content
 	} from 'carbon-components-svelte';
 	import UserAvatarFilledAlt20 from 'carbon-icons-svelte/lib/UserAvatarFilledAlt20';
@@ -28,7 +34,13 @@
 	});
 </script>
 
-<Header persistentHamburgerMenu={false} href="{base}/" company="悟道" platformName="WuDao" bind:isSideNavOpen>
+<Header
+	persistentHamburgerMenu={false}
+	href="{base}/"
+	company="悟道"
+	platformName="WuDao"
+	bind:isSideNavOpen
+>
 	<HeaderUtilities>
 		<HeaderAction
 			bind:isOpen={isOpen1}
@@ -56,5 +68,6 @@
 </SideNav>
 
 <Content>
+	<SvelteToast {options} />
 	<slot />
 </Content>
