@@ -1,7 +1,9 @@
 <script>
-    import Chart from "./Chart.svelte";
+    import LineChart from"../components/charts/LineChart.svelte"
+    import AreaChart from"../components/charts/AreaChart.svelte"
 </script>
-<div>
-<h1>Svelte version </h1>
-<Chart ></Chart>
-</div>
+<h1>数据观察</h1>
+<span>
+<LineChart title = "Line"/>
+<AreaChart title = "Area"/>
+</span>

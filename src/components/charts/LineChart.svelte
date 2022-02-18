@@ -5,7 +5,7 @@
     export let title = "default title xxx"
     // Render line chart and components.
     onMount(async () => {
-      echarts.init(document.getElementById("main")).setOption({
+      echarts.init(document.getElementById("Line")).setOption({
         title: { text: title },
         tooltip: {},
         toolbox: {
@@ -30,4 +30,4 @@
     });
   </script>
   
-  <div id="main" style="width: 600px;height:400px;"></div>
+  <div id="Line" style="width: 600px;height:400px;"></div>
