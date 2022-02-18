@@ -41,26 +41,45 @@
 		pageSize: 5,
 		page: 1
 	};
-
-	let dataheader = {
-		header: [
-			{ key: 'y', value: 'First' },
-			{ key: 'x1', value: 'Second' },
-			{ key: 'x2', value: 'Third' }
-		]
+	let file = {
+		data:[]
 	};
-
+	let dataheader = {
+		header: []
+	};
+	let rowData = []
 	let datachoice = {
 		header: []
 	};
-	for (let i = 0; i < dataheader.header.length; i++) {
-		let b = {
-			key: dataheader.header[i]['key'],
-			value: dataheader.header[i]['value'],
-			choice: 0
-		};
-		datachoice.header.push(b);
+	
+
+	function receiveData(){
+		analyzeUploadFileContentApi(filename).then((response) => {
+			if (response.status == 200) {
+				rowData=response.data.content
+				dataheader.header=response.data.header
+				console.log(rowData,"aaa",dataheader.header)
+				for (let i = 0; i < dataheader.header.length; i++) {
+					let b = {
+					key: dataheader.header[i]['key'],
+					value: dataheader.header[i]['value'],
+					choice: 0
+				};
+				datachoice.header.push(b);
+				console.log(dataheader.header.length)
+				}
+
+
+			} else {
+				console.log('error!')
+			}
+		});
+		
+		
 	}
+	
+
+	
 
 	let chosenheader = {
 		header: []
@@ -71,66 +90,9 @@
 	let xheader = {
 		header: []
 	};
-	let file = {
-		data: [
-			{
-				id: 'a',
-				y: 2.5,
-				x1: 4,
-				x2: 7
-			},
-			{
-				id: 'b',
-				y: 2.6,
-				x1: 5,
-				x2: 8
-			},
-			{
-				id: 'c',
-				y: 2.7,
-				x1: 15,
-				x2: 9
-			},
-			{
-				id: 'd',
-				y: 2.9,
-				x1: 9,
-				x2: 17
-			},
-			{
-				id: 'e',
-				y: 3.2,
-				x1: 12,
-				x2: 5
-			},
-			{
-				id: 'f',
-				y: 3.6,
-				x1: 15,
-				x2: 8
-			}
-		]
-	};
+	
 
-	let rowData = [
-		{
-			id: file.data[0]['id'],
-			y: file.data[0]['y'],
-			x1: file.data[0]['x1'],
-			x2: file.data[0]['x2']
-		}
-	];
-	for (let i = 1; i < file.data.length; i++) {
-		let a = {
-			id: file.data[i]['id'],
-			y: file.data[i]['y'],
-			x1: file.data[i]['x1'],
-			x2: file.data[i]['x2']
-		};
-		rowData.push(a);
-	}
-	console.log(rowData);
-	//console.log(a)
+	
 
 	function showTable() {
 		if (show.showtable == false && shift.shiftbutton == false) {
@@ -147,18 +109,10 @@
 		}
 	}
 
-	function receiveData(){
-		analyzeUploadFileContentApi(filename).then((response) => {
-			if (response.status == 200) {
-				console.log('1234----',response.data);
-			} else {
-				console.log('error!');
-			}
-		});
-		
-	}
+	
 
 	function showChosenTable() {
+		console.log("xxx",datachoice.header)
 		for (let i = 0; i < datachoice.header.length; i++) {
 			if (datachoice.header[i]['choice'] == 1) {
 				yheader.header.push(dataheader.header[i]);
@@ -193,7 +147,10 @@
 
 <div class="container mx-auto">
 
-	<button on:click={showTableFirst} on:click={receiveData} class="mx-auto btn btn-success "
+	<button on:click={receiveData} class="mx-auto btn btn-success "
+		>获取数据</button
+	>
+	<button on:click={showTableFirst}  class="mx-auto btn btn-success "
 		>开始分析</button
 	>
 
@@ -201,8 +158,8 @@
 		<div class="container w-3/4 mx-auto">
 			<DataTable
 				sortable
-				title="Load balancers"
-				description="Your organization's active load balancers."
+				title="原始表格"
+				description="数据种类：{dataheader.header.length}"
 				headers={dataheader.header}
 				pageSize={pagination.pageSize}
 				page={pagination.page}
@@ -236,7 +193,7 @@
 				<RadioButton labelText="无影响" value="None" />
 			</RadioButtonGroup>
 		-->
-				<label align="left">{header.value}</label>
+			<label align="left">{header.value}</label>
 				<div align="right">
 					<label><input type="radio" bind:group={header.choice} value={1} />预测目标</label>
 					<label><input type="radio" bind:group={header.choice} value={-1} />特征</label>
@@ -263,8 +220,8 @@
 		<div class="container w-3/4 mx-auto">
 			<DataTable
 				sortable
-				title="Load balancers"
-				description="Your organization's active load balancers."
+				title="处理后数据"
+				description="已选预测目标：{yheader.header.length}个，已选特征：{xheader.header.length}个"
 				headers={chosenheader.header}
 				pageSize={pagination.pageSize}
 				page={pagination.page}
