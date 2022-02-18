@@ -1,6 +1,7 @@
 <script>
 	import { analyzeUploadFileContentApi } from '../api/fileApi';
 	import { DataTable, Pagination } from 'carbon-components-svelte';
+	import { toast } from '@zerodevx/svelte-toast';
 
 	import FilePond from 'svelte-filepond';
 	let pond;
@@ -15,11 +16,20 @@
 	function handleAddFile(err, fileItem) {
 		console.log('A file has been added', fileItem);
 		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
+			
+			toast.push("文件类型错误", {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+			console.log()
 			fileItem.abortLoad();
 			fileItem.abortProcessing();
-			console.log('文件需为Excel或CSV格式');
+		} else {
+			filename = fileItem.filename;
+			toast.push('点击上传');
 		}
-		filename = fileItem.filename;
 	}
 
 	let show = { showtable: false };
@@ -109,11 +119,13 @@
 
 <FilePond
 	bind:this={pond}
+	labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
 	{name}
 	server="http://localhost:8123/api/v1/files/upload"
 	allowMultiple={true}
 	oninit={handleInit}
 	onaddfile={handleAddFile}
+	instantUpload={false}
 />
 
 <div class="container mx-auto">
@@ -158,7 +170,7 @@
 				<RadioButton labelText="无影响" value="None" />
 			</RadioButtonGroup>
 		-->
-				<label align="left">{header.value}</label>
+				<div align="left">{header.value}</div>
 				<div align="right">
 					<label><input type="radio" bind:group={header.choice} value={1} />预测目标</label>
 					<label><input type="radio" bind:group={header.choice} value={-1} />特征</label>
