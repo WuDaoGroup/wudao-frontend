@@ -1,6 +1,6 @@
 <script>
 	import '../app.css';
-	import 'carbon-components-svelte/css/g80.css';
+	import "carbon-components-svelte/css/white.css";
 </script>
 
 <div class="">
