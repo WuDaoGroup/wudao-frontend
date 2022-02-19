@@ -107,30 +107,26 @@
     </p>
     <div align="center">
         <div class = 'dis-bottom'>
-            <button 
+            <Button 
                 type="submit"
-                class="btn btn-info" 
                 on:click={ordinaryLeastSquares}>
             Ordinary Least Squares
-            </button>
-            <button 
+            </Button>
+            <Button 
                 type = "submit" 
                 class="btn btn-success" 
-                on:click={getInalpha}>Ridge regression</button>
-            <button class="btn btn-warning">Lasso</button>
-            <button class="btn btn-error">Multi-task Lasso</button>
-            <button 
+                on:click={getInalpha}>Ridge regression</Button>
+            <Button>Multi-task Lasso</Button>
+            <Button 
                 type="submit"
-                class="btn btn-info" 
                 on:click={boostedDecisionTreeRegression}
-            >Decision Tree Regression with AdaBoost</button>
+            >Decision Tree Regression with AdaBoost</Button>
         </div>
         <div class = 'dis-bottom'>
-            <button class="btn btn-info">Ordinary Least Squares</button>
-            <button class="btn btn-success">Ridge regression</button>
-            <button class="btn btn-warning">Lasso</button>
-            <button class="btn btn-error">Multi-task Lasso</button>
-            <button class="btn btn-info" >Decision Tree Regression with AdaBoost</button>
+            <Button>Ordinary Least Squares</Button>
+            <Button>Ridge regression</Button>
+            <Button>Multi-task Lasso</Button>
+            <Button>Decision Tree Regression with AdaBoost</Button>
         </div>
         <div class = 'dis-bottom'>
             <input bind:value = {filename} type = "file" enctype = "multipart/form-data" size = "16">
@@ -154,13 +150,6 @@
         </div>
     </div>
 </div>
-<FormGroup>
-    <Select id="select-1" labelText="models" value="placeholder-item">
-        <SelectItem value="option-1" text="Decision Tree Regression with AdaBoost"/>
-        <SelectItem value="option-2" text="Ordinary Least Squares"/>
-        <SelectItem value="option-3" text="Ridge regression and classification"/>
-    </Select>
-</FormGroup>
 <div align="center">
     <Button type="submit" >Submit</Button>
 </div>
