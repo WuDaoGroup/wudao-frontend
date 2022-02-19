@@ -3,8 +3,8 @@
 </style>
 
 <script>
-	import { analyzeUploadFileContentApi } from '../api/fileApi';
-	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
+	import { analyzeUploadFileContentApi, uploadFileHeaderApi} from '../api/fileApi';
+	import { DataTable, Pagination, RadioButtonGroup, RadioButton, InlineNotification } from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { Button } from 'carbon-components-svelte';
 
@@ -46,28 +46,29 @@
 		page: 1
 	};
 
-	let dataheader = {
+	let dataHeader = {
 		header: []
 	};
 	let rowData = [];
-	let datachoice = {
+	let dataChoice = {
 		header: []
 	};
 
 	function receiveData() {
 		analyzeUploadFileContentApi(filename).then((response) => {
+			dataChoice.header=[]
 			if (response.status == 200) {
 				rowData = response.data.content;
-				dataheader.header = response.data.header;
-				console.log(rowData, 'aaa', dataheader.header);
-				for (let i = 0; i < dataheader.header.length; i++) {
+				dataHeader.header = response.data.header;
+				console.log(rowData, 'aaa', dataHeader.header);
+				for (let i = 0; i < dataHeader.header.length; i++) {
 					let b = {
-						key: dataheader.header[i]['key'],
-						value: dataheader.header[i]['value'],
+						key: dataHeader.header[i]['key'],
+						value: dataHeader.header[i]['value'],
 						choice: 0
 					};
-					datachoice.header.push(b);
-					console.log(dataheader.header.length);
+					dataChoice.header.push(b);
+					console.log(dataHeader.header.length);
 				}
 				analysis.showbutton = true
 			} else {
@@ -102,17 +103,20 @@
 	}
 
 	function showChosenTable() {
-		console.log('xxx', datachoice.header);
-		for (let i = 0; i < datachoice.header.length; i++) {
-			if (datachoice.header[i]['choice'] == 1) {
-				yheader.header.push(dataheader.header[i]);
-			} else if (datachoice.header[i]['choice'] == -1) {
-				xheader.header.push(dataheader.header[i]);
+		console.log('xxx', dataChoice.header);
+		yheader.header=[]
+		xheader.header=[]
+		chosenheader.header=[]
+		for (let i = 0; i < dataChoice.header.length; i++) {
+			if (dataChoice.header[i]['choice'] == 1) {
+				yheader.header.push(dataHeader.header[i]);
+			} else if (dataChoice.header[i]['choice'] == -1) {
+				xheader.header.push(dataHeader.header[i]);
 			}
 		}
 		console.log(yheader);
 		console.log(xheader);
-		console.log(dataheader.header[1]['choice']);
+		console.log(dataHeader.header[1]['choice']);
 		for (let i = 0; i < yheader.header.length; i++) {
 			chosenheader.header.push(yheader.header[i]);
 		}
@@ -121,6 +125,17 @@
 		}
 		display.displayfinal = true;
 	}
+	 
+	function uploadHeader(){
+		uploadFileHeaderApi(filename,yheader.header,xheader.header).then((response) => {
+			if (response.status == 200) {
+				toast.push('上传成功');
+			}
+		});
+
+	}
+
+
 </script>
 <div class="grid grid-rows-2 grid-cols-5 gap-4">
 	<div class="row-span-2 col-span-4">
@@ -151,8 +166,8 @@
 				size="compact"
 				sortable
 				title="原始表格"
-				description="数据种类：{dataheader.header.length}"
-				headers={dataheader.header}
+				description="数据种类：{dataHeader.header.length}"
+				headers={dataHeader.header}
 				pageSize={pagination.pageSize}
 				page={pagination.page}
 				rows={rowData}
@@ -176,17 +191,13 @@
 				<button on:click={showTable} class="btn btn-info">Show</button>
 			{/if}
 			<br />
-			<RadioButtonGroup selected="standard">
-				<RadioButton labelText="Free (1 GB)" value="free" />
-				<RadioButton labelText="Standard (10 GB)" value="standard" />
-				<RadioButton labelText="Pro (128 GB)" value="pro" />
-			</RadioButtonGroup>
-			{#each datachoice.header as header}
+			
+			{#each dataChoice.header as header}
 				<!--
-			<RadioButtonGroup labelPosition="left" legendText={header.value}>
-				<RadioButton  labelText="因变量" bind:selected={header.choice} value= {1} />
-				<RadioButton  labelText="自变量" bind:selected={header.choice} value= {-1} />
-				<RadioButton labelText="无影响" value="None" />
+			<RadioButtonGroup labelPosition="left" legendText={header.value} selected={header.choice} >
+				<RadioButton  labelText="因变量" value={1}/>
+				<RadioButton  labelText="自变量" value={-1}/>
+				<RadioButton labelText="无影响"  value={0}/>
 			</RadioButtonGroup>
 		-->
 				<div align="left">{header.value}</div>
@@ -196,6 +207,7 @@
 					<label><input type="radio" bind:group={header.choice} value={0} />无用变量</label>
 				</div>
 				<br />
+				
 			{/each}
 			<br />
 			<button on:click={showChosenTable} class="mx-auto btn btn-success ">Confirm</button>
@@ -213,7 +225,7 @@
 		<head><meta name="referrer" content="no-referrer" /></head>
 	</div>
 	{#if display.displayfinal == true}
-		<div class="container w-3/4 mx-auto">
+		<div class="container mx-auto">
 			<DataTable
 				size="compact"
 				sortable
@@ -231,5 +243,15 @@
 				pageSizeInputDisabled
 			/>
 		</div>
+	{/if}
+	{#if yheader.header.length == 1}
+		<Button on:click={uploadHeader} kind="tertiary" >上传数据</Button>
+	{:else}
+		<InlineNotification
+		hideCloseButton
+		kind="warning"
+		title="提示:"
+		subtitle="预测目标只能由1个"
+	/>
 	{/if}
 
