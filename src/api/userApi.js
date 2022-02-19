@@ -19,6 +19,7 @@ export const registerApi = async (username, password1, password2) => {
 		form.append('username', username);
 		form.append('password1', password1);
 		form.append('password2', password2);
+		console.log(form.data)
 		const response = await api.post(`/users/register`, form);
 		return response;
 	} catch (err) {

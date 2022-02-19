@@ -9,6 +9,7 @@
 	import { Button } from 'carbon-components-svelte';
 	import { dataHeader, rowData } from '../stores/dataStore';
 	import FilePond from 'svelte-filepond';
+	import { goto } from '$app/navigation';
 	let pond;
 	// the name to use for the internal file input
 	let name = 'upload_file'; // 这个值就对应了form-data的key
@@ -125,6 +126,7 @@
 		uploadFileHeaderApi(filename,yheader.header,xheader.header).then((response) => {
 			if (response.status == 200) {
 				toast.push('上传成功');
+				goto(`/data-observation`);
 			}
 		});
 
@@ -144,10 +146,10 @@
 			instantUpload={false}
 		/>
 	</div>
-	<div class="col-span-1  m-auto">
+	<div class=" m-auto">
 		<Button on:click={receiveData} kind="tertiary" >获取数据</Button>
 	</div>
-	<div class="col-span-1 m-auto">
+	<div class=" m-auto">
 		{#if analysis.showbutton == true}
 			<Button on:click={showTableFirst} kind="tertiary" >开始分析</Button>
 		{/if}
@@ -176,15 +178,17 @@
 	{/if}
 
 	<div
-		class="container mx-auto  rounded-xl p-8 w-1/5 border-4 border-indigo-600 border-light-blue-500 border-opacity-100"
+		class="container m-auto"
 	>
 		{#if shift.shiftbutton == true}
+		<!--
 			{#if show.showtable == true}
 				<button on:click={showTable} class="btn btn-info">Hide</button>
 			{:else}
 				<button on:click={showTable} class="btn btn-info">Show</button>
 			{/if}
 			<br />
+		-->
 			{#each dataChoice.header as header}
 				<!--
 			<RadioButtonGroup labelPosition="left" legendText={header.value} selected={header.choice} >
@@ -193,8 +197,8 @@
 				<RadioButton labelText="无影响"  value={0}/>
 			</RadioButtonGroup>
 		-->
-				<div align="left">{header.value}</div>
-				<div align="right">
+				<div align="center">{header.value}</div>
+				<div align="center">
 					<label><input type="radio" bind:group={header.choice} value={1} />预测目标</label>
 					<label><input type="radio" bind:group={header.choice} value={-1} />特征</label>
 					<label><input type="radio" bind:group={header.choice} value={0} />无用变量</label>
@@ -203,7 +207,7 @@
 				
 			{/each}
 			<br />
-			<button on:click={showChosenTable} class="mx-auto btn btn-success ">Confirm</button>
+			<Button on:click={showChosenTable} kind="tertiary" class="m-center" >展示表格</Button>
 		{/if}
 		<!--
     <form on:submit={uploadData}>
@@ -237,9 +241,9 @@
 			/>
 		</div>
 	{/if}
-	{#if yheader.header.length == 1}
+	{#if yheader.header.length == 1 & display.displayfinal == true}
 		<Button on:click={uploadHeader} kind="tertiary" >上传数据</Button>
-	{:else}
+	{:else if display.displayfinal == true}
 		<InlineNotification
 		hideCloseButton
 		kind="warning"
