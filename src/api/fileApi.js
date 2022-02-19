@@ -11,14 +11,9 @@ export const analyzeUploadFileContentApi = async (uploadFilename) => {
 	}
 };
 
-export const uploadFileHeaderApi = async (uploadFilename,yheader,xheader) => {
+export const uploadFileFeatureInfoApi = async (selectedFeatures) => {
 	try {
-		let form = new FormData();
-		//for (let i = 0; i < yheader.header.length; i++) {
-		//		form.append(yheader.header[i]);
-		form.append('yheader', yheader);
-		form.append('xheader', xheader);
-		const response = await api.post(`/files/${uploadFilename}/analysis/header`, form);
+		const response = await api.post(`/files/features/info`, selectedFeatures);
 		return response;
 	} catch (err) {
 		console.error(err);

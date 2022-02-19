@@ -1,5 +1,5 @@
 <script>
-	import { analyzeUploadFileContentApi, uploadFileHeaderApi } from '../api/fileApi';
+	import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/fileApi';
 	import {
 		DataTable,
 		Pagination,
@@ -20,9 +20,9 @@
 	};
 	const featureTypes = ['target', 'feature', 'useless'];
 	const defaultChoice = featureTypes[1];
-	let selectFeatures = [];
-	// let selectFeatures = [{'value': 'Y', 'type': defaultChoice},{'value': 'm', 'type': defaultChoice},{'value': 'n', 'type': defaultChoice}]
-	$: console.log(selectFeatures);
+	let selectedFeatures = [];
+	// let selectedFeatures = [{'value': 'Y', 'type': defaultChoice},{'value': 'm', 'type': defaultChoice},{'value': 'n', 'type': defaultChoice}]
+	$: console.log(selectedFeatures);
 
 	let pond;
 	// the name to use for the internal file input
@@ -60,7 +60,7 @@
 
 	function receiveData() {
 		analyzeUploadFileContentApi(filename).then((response) => {
-			selectFeatures = [];
+			selectedFeatures = [];
 			if (response.status == 200) {
 				// console.log('response_data:', response.data)
 				rawData.content = response.data.content;
@@ -72,7 +72,7 @@
 						value: rawData.features[i]['value'],
 						type: defaultChoice
 					};
-					selectFeatures.push(e);
+					selectedFeatures.push(e);
 				}
 				showAnalysisButton = true;
 			} else {
@@ -81,14 +81,15 @@
 		});
 	}
 
-	// function uploadHeader(){
-	// 	uploadFileHeaderApi(filename,yheader.header,xheader.header).then((response) => {
-	// 		if (response.status == 200) {
-	// 			toast.push('上传成功');
-	// 			goto(`/data-observation`);
-	// 		}
-	// 	});
-	// }
+	function uploadFeatureInfo(){
+		uploadFileFeatureInfoApi(selectedFeatures).then((response) => {
+			if (response.status == 200) {
+				toast.push('上传数据的特征信息成功');
+				console.log('data feature info:', response.data)
+				goto(`/data-observation`);
+			}
+		});
+	}
 </script>
 
 <div class="grid grid-rows-2 grid-cols-5 gap-4">
@@ -133,7 +134,10 @@
 			pageSizeInputDisabled
 		/>
 	</div>
-	{#each selectFeatures as f}
+
+	<InlineNotification hideCloseButton kind="warning" title="提示: " subtitle="请选择预测目标, 注意预测目标只能有1个" />
+
+	{#each selectedFeatures as f}
 		<RadioButtonGroup legendText={f.value} bind:selected={f.type}>
 			{#each featureTypes as p}
 				<RadioButton labelText={p} value={p} />
@@ -141,10 +145,9 @@
 		</RadioButtonGroup>
 		Selected feature: <strong>{f.type}</strong>
 	{/each}
-	<InlineNotification hideCloseButton kind="warning" title="提示: " subtitle="预测目标只能有1个" />
 {/if}
 
-<!-- <Button on:click={uploadHeader} kind="tertiary" >上传数据</Button> -->
+<Button on:click={uploadFeatureInfo} kind="tertiary" >上传数据</Button>
 
 <style>
 	@import 'filepond/dist/filepond.css';
