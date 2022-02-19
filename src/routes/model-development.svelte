@@ -1,5 +1,4 @@
 <script>
-    import NavigationBar from "../components/NavigationBar.svelte"
     import "carbon-components-svelte/css/g100.css";
     import { base } from '$app/paths';
     import { ordinaryLeastSquaresData, boostedDecisionTreeRegressionData, 
@@ -93,7 +92,6 @@
         height:30px;
     }
 </style>
-<NavigationBar></NavigationBar>
 <div>
     <h1>Supervised Learning (监督学习)</h1>
     <p>
