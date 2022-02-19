@@ -54,9 +54,9 @@
 			dataChoice.header=[]
 			if (response.status == 200) {
 
-				rowData = response.data.content;
+				rowData.data = response.data.content;
 				dataHeader.header = response.data.header;
-				console.log(rowData, 'aaa', dataHeader.header);
+				console.log(rowData.data, 'aaa', dataHeader.header);
 				for (let i = 0; i < dataHeader.header.length; i++) {
 					let b = {
 						key: dataHeader.header[i]['key'],
