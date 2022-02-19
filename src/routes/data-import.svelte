@@ -23,6 +23,7 @@
 	let selectedFeatures = [];
 	// let selectedFeatures = [{'value': 'Y', 'type': defaultChoice},{'value': 'm', 'type': defaultChoice},{'value': 'n', 'type': defaultChoice}]
 	$: console.log(selectedFeatures);
+	$: featureTypeTargetCount = selectedFeatures.filter((e) => e.type === 'target').length;
 
 	let pond;
 	// the name to use for the internal file input
@@ -54,7 +55,7 @@
 	let showTable = false;
 	let showAnalysisButton = false;
 	let pagination = {
-		pageSize: 5,
+		pageSize: 10,
 		page: 1
 	};
 
@@ -81,11 +82,11 @@
 		});
 	}
 
-	function uploadFeatureInfo(){
-		uploadFileFeatureInfoApi(selectedFeatures).then((response) => {
+	function uploadFeatureInfo() {
+		uploadFileFeatureInfoApi(filename, selectedFeatures).then((response) => {
 			if (response.status == 200) {
 				toast.push('上传数据的特征信息成功');
-				console.log('data feature info:', response.data)
+				console.log('data feature info:', response.data);
 				goto(`/data-observation`);
 			}
 		});
@@ -135,19 +136,29 @@
 		/>
 	</div>
 
-	<InlineNotification hideCloseButton kind="warning" title="提示: " subtitle="请选择预测目标, 注意预测目标只能有1个" />
-
-	{#each selectedFeatures as f}
-		<RadioButtonGroup legendText={f.value} bind:selected={f.type}>
-			{#each featureTypes as p}
-				<RadioButton labelText={p} value={p} />
+	<div class="flex flex-col items-center justify-center">
+		{#if !(featureTypeTargetCount == 1)}
+			<InlineNotification
+				hideCloseButton
+				kind="warning"
+				title="提示: "
+				subtitle="请选择预测目标, 注意预测目标只能有1个"
+			/>
+		{/if}
+		<div class="flex flex-row items-center justify-center">
+			{#each selectedFeatures as f}
+				<RadioButtonGroup legendText={f.value}  orientation="vertical" labelPosition="right" bind:selected={f.type}>
+					{#each featureTypes as p}
+						<RadioButton labelText={p} value={p} />
+					{/each}
+				</RadioButtonGroup>
 			{/each}
-		</RadioButtonGroup>
-		Selected feature: <strong>{f.type}</strong>
-	{/each}
+		</div>
+		{#if featureTypeTargetCount == 1}
+			<Button on:click={uploadFeatureInfo} kind="tertiary" class="mt-4">上传数据</Button>
+		{/if}
+	</div>
 {/if}
-
-<Button on:click={uploadFeatureInfo} kind="tertiary" >上传数据</Button>
 
 <style>
 	@import 'filepond/dist/filepond.css';
