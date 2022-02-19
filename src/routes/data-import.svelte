@@ -1,7 +1,13 @@
+<style>
+	@import 'filepond/dist/filepond.css';
+</style>
+
 <script>
 	import { analyzeUploadFileContentApi } from '../api/fileApi';
-	import { DataTable, Pagination } from 'carbon-components-svelte';
-
+	import { dataHeader, rowData } from '../stores/dataStore';
+	import { toast } from '@zerodevx/svelte-toast';
+	import { Button } from 'carbon-components-svelte';
+	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
 	import FilePond from 'svelte-filepond';
 	let pond;
 	// the name to use for the internal file input
@@ -15,73 +21,66 @@
 	function handleAddFile(err, fileItem) {
 		console.log('A file has been added', fileItem);
 		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
+			toast.push('文件类型错误', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+			console.log();
 			fileItem.abortLoad();
 			fileItem.abortProcessing();
-			console.log('文件需为Excel或CSV格式');
+		} else {
+			filename = fileItem.filename;
+			toast.push('点击上传');
 		}
-		filename = fileItem.filename;
 	}
 
 	let show = { showtable: false };
 	let shift = { shiftbutton: false };
 	let display = { displayfinal: false };
+	let analysis = { showbutton: false };
 
 	let pagination = {
 		pageSize: 5,
 		page: 1
 	};
-	let file = {
-		data:[]
-	};
-	let dataheader = {
+	let dataChoice = {
 		header: []
 	};
-	let rowData = []
-	let datachoice = {
-		header: []
-	};
-	
 
-	function receiveData(){
+	function receiveData() {
 		analyzeUploadFileContentApi(filename).then((response) => {
 			if (response.status == 200) {
-				rowData=response.data.content
-				dataheader.header=response.data.header
-				console.log(rowData,"aaa",dataheader.header)
-				for (let i = 0; i < dataheader.header.length; i++) {
+				rowData.data=response.data.content
+				dataHeader.header=response.data.header
+				console.log(rowData.data,"aaa",dataHeader.header)
+				for (let i = 0; i < dataHeader.header.length; i++) {
 					let b = {
-					key: dataheader.header[i]['key'],
-					value: dataheader.header[i]['value'],
+					key: dataHeader.header[i]['key'],
+					value: dataHeader.header[i]['value'],
 					choice: 0
 				};
-				datachoice.header.push(b);
-				console.log(dataheader.header.length)
+				dataChoice.header.push(b);
+				console.log(dataHeader.header.length);
 				}
-
-
+				console.log(dataChoice);
+				analysis.showbutton = true
 			} else {
-				console.log('error!')
+				console.log('error!');
 			}
 		});
-		
-		
 	}
-	
-
-	
 
 	let chosenheader = {
 		header: []
 	};
-	let yheader = {
+	export let yheader = {
 		header: []
 	};
-	let xheader = {
+	export let xheader = {
 		header: []
 	};
-	
-
-	
 
 	function showTable() {
 		if (show.showtable == false && shift.shiftbutton == false) {
@@ -98,20 +97,18 @@
 		}
 	}
 
-	
-
 	function showChosenTable() {
-		console.log("xxx",datachoice.header)
-		for (let i = 0; i < datachoice.header.length; i++) {
-			if (datachoice.header[i]['choice'] == 1) {
-				yheader.header.push(dataheader.header[i]);
-			} else if (datachoice.header[i]['choice'] == -1) {
-				xheader.header.push(dataheader.header[i]);
+		console.log("xxx",dataChoice.header)
+		for (let i = 0; i < dataChoice.header.length; i++) {
+			if (dataChoice.header[i]['choice'] == 1) {
+				yheader.header.push(dataHeader.header[i]);
+			} else if (dataChoice.header[i]['choice'] == -1) {
+				xheader.header.push(dataHeader.header[i]);
 			}
 		}
 		console.log(yheader);
 		console.log(xheader);
-		console.log(dataheader.header[1]['choice']);
+		console.log(dataHeader.header[1]['choice']);
 		for (let i = 0; i < yheader.header.length; i++) {
 			chosenheader.header.push(yheader.header[i]);
 		}
@@ -121,40 +118,45 @@
 		display.displayfinal = true;
 	}
 </script>
-
-<FilePond
-	bind:this={pond}
-	{name}
-	server="http://localhost:8123/api/v1/files/upload"
-	allowMultiple={true}
-	oninit={handleInit}
-	onaddfile={handleAddFile}
-/>
-
-<div class="container mx-auto">
-
-	<button on:click={receiveData} class="mx-auto btn btn-success "
-		>获取数据</button
-	>
-	<button on:click={showTableFirst}  class="mx-auto btn btn-success "
-		>开始分析</button
-	>
+<div class="grid grid-rows-2 grid-cols-5 gap-4">
+	<div class="row-span-2 col-span-4">
+		<FilePond
+			bind:this={pond}
+			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
+			{name}
+			server="http://localhost:8123/api/v1/files/upload"
+			allowMultiple={true}
+			oninit={handleInit}
+			onaddfile={handleAddFile}
+			instantUpload={false}
+		/>
+	</div>
+	<div class="col-span-1  m-auto">
+		<Button on:click={receiveData} kind="tertiary" >获取数据</Button>
+	</div>
+	<div class="col-span-1 m-auto">
+		{#if analysis.showbutton == true}
+			<Button on:click={showTableFirst} kind="tertiary" >开始分析</Button>
+		{/if}
+	</div>
+</div>
 
 	{#if show.showtable == true}
-		<div class="container w-3/4 mx-auto">
+		<div class="container mx-auto">
 			<DataTable
+				size="compact"
 				sortable
 				title="原始表格"
-				description="数据种类：{dataheader.header.length}"
-				headers={dataheader.header}
+				description="数据种类：{dataHeader.header.length}"
+				headers={dataHeader.header}
 				pageSize={pagination.pageSize}
 				page={pagination.page}
-				rows={rowData}
+				rows={rowData.data}
 			/>
 			<Pagination
 				bind:pageSize={pagination.pageSize}
 				bind:page={pagination.page}
-				totalItems={rowData.length}
+				totalItems={rowData.data.length}
 				pageSizeInputDisabled
 			/>
 		</div>
@@ -170,7 +172,12 @@
 				<button on:click={showTable} class="btn btn-info">Show</button>
 			{/if}
 			<br />
-			{#each datachoice.header as header}
+			<RadioButtonGroup selected="standard">
+				<RadioButton labelText="Free (1 GB)" value="free" />
+				<RadioButton labelText="Standard (10 GB)" value="standard" />
+				<RadioButton labelText="Pro (128 GB)" value="pro" />
+			</RadioButtonGroup>
+			{#each dataChoice.header as header}
 				<!--
 			<RadioButtonGroup labelPosition="left" legendText={header.value}>
 				<RadioButton  labelText="因变量" bind:selected={header.choice} value= {1} />
@@ -178,7 +185,7 @@
 				<RadioButton labelText="无影响" value="None" />
 			</RadioButtonGroup>
 		-->
-			<label align="left">{header.value}</label>
+				<div align="left">{header.value}</div>
 				<div align="right">
 					<label><input type="radio" bind:group={header.choice} value={1} />预测目标</label>
 					<label><input type="radio" bind:group={header.choice} value={-1} />特征</label>
@@ -204,24 +211,21 @@
 	{#if display.displayfinal == true}
 		<div class="container w-3/4 mx-auto">
 			<DataTable
+				size="compact"
 				sortable
 				title="处理后数据"
 				description="已选预测目标：{yheader.header.length}个，已选特征：{xheader.header.length}个"
 				headers={chosenheader.header}
 				pageSize={pagination.pageSize}
 				page={pagination.page}
-				rows={rowData}
+				rows={rowData.data}
 			/>
 			<Pagination
 				bind:pageSize={pagination.pageSize}
 				bind:page={pagination.page}
-				totalItems={rowData.length}
+				totalItems={rowData.data.length}
 				pageSizeInputDisabled
 			/>
 		</div>
 	{/if}
-</div>
 
-<style>
-	@import 'filepond/dist/filepond.css';
-</style>
