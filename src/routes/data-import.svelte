@@ -1,131 +1,87 @@
 <style>
-    @import 'filepond/dist/filepond.css';
+	@import 'filepond/dist/filepond.css';
 </style>
 
 <script>
-	import NavigationBar from '../components/NavigationBar.svelte';
-	import {  } from '../api/fileApi';
-	import axios from 'axios';
-	import { DataTable, Pagination, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
+	import { analyzeUploadFileContentApi, uploadFileHeaderApi} from '../api/fileApi';
+	import { DataTable, Pagination, RadioButtonGroup, RadioButton, InlineNotification } from 'carbon-components-svelte';
+	import { toast } from '@zerodevx/svelte-toast';
+	import { Button } from 'carbon-components-svelte';
+	import { dataHeader, rowData } from '../stores/dataStore';
+	import FilePond from 'svelte-filepond';
+	let pond;
+	// the name to use for the internal file input
+	let name = 'upload_file'; // 这个值就对应了form-data的key
+	let filename;
+	// handle filepond events
+	function handleInit() {
+		console.log('FilePond has initialised');
+	}
 
+	function handleAddFile(err, fileItem) {
+		console.log('A file has been added', fileItem);
+		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
+			toast.push('文件类型错误', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+			console.log();
+			fileItem.abortLoad();
+			fileItem.abortProcessing();
+		} else {
+			filename = fileItem.filename;
+			toast.push('点击上传');
+		}
+	}
 
-	// 上传文件组件所需要导入的包、要定义的变量和方法
-	import { FileUploader } from "carbon-components-svelte";
-	let fileVar;
-    import FilePond, { registerPlugin, supported } from 'svelte-filepond';
-    let pond;
-    // the name to use for the internal file input
-    let name = 'upload_file'; // 这个值就对应了form-data的key
-
-    // handle filepond events
-    function handleInit() {
-        console.log('FilePond has initialised');
-    }
-
-    function handleAddFile(err, fileItem) {
-        console.log('A file has been added', fileItem);
-    }
-
-
-	let xy = 0;
 	let show = { showtable: false };
 	let shift = { shiftbutton: false };
 	let display = { displayfinal: false };
+	let analysis = { showbutton: false };
 
 	let pagination = {
 		pageSize: 5,
 		page: 1
 	};
-
-	let dataheader = {
-		header: [
-			{ key: 'y', value: 'First' },
-			{ key: 'x1', value: 'Second' },
-			{ key: 'x2', value: 'Third' }
-		]
+	let dataChoice = {
+		header: []
 	};
 
-	let datachoice = {
-		header: [{ key: 'y', value: 'First', choice: -1 }]
-	};
-	for (let i = 1; i < dataheader.header.length; i++) {
-		let b = {
-			key: dataheader.header[i]['key'],
-			value: dataheader.header[i]['value'],
-			choice: 0
-		};
-		datachoice.header.push(b);
+	function receiveData() {
+		analyzeUploadFileContentApi(filename).then((response) => {
+			dataChoice.header=[]
+			if (response.status == 200) {
+
+				rowData.data = response.data.content;
+				dataHeader.header = response.data.header;
+				console.log(rowData.data, 'aaa', dataHeader.header);
+				for (let i = 0; i < dataHeader.header.length; i++) {
+					let b = {
+						key: dataHeader.header[i]['key'],
+						value: dataHeader.header[i]['value'],
+						choice: 0
+					};
+					dataChoice.header.push(b);
+					console.log(dataHeader.header.length);
+				}
+				analysis.showbutton = true
+			} else {
+				console.log('error!');
+			}
+		});
 	}
 
 	let chosenheader = {
 		header: []
 	};
-	let yheader = {
+	export let yheader = {
 		header: []
 	};
-	let xheader = {
+	export let xheader = {
 		header: []
 	};
-	let file = {
-		data: [
-			{
-				id: 'a',
-				y: 2.5,
-				x1: 4,
-				x2: 7
-			},
-			{
-				id: 'b',
-				y: 2.6,
-				x1: 5,
-				x2: 8
-			},
-			{
-				id: 'c',
-				y: 2.7,
-				x1: 15,
-				x2: 9
-			},
-			{
-				id: 'd',
-				y: 2.9,
-				x1: 9,
-				x2: 17
-			},
-			{
-				id: 'e',
-				y: 3.2,
-				x1: 12,
-				x2: 5
-			},
-			{
-				id: 'f',
-				y: 3.6,
-				x1: 15,
-				x2: 8
-			}
-		]
-	};
-
-	let rowData = [
-		{
-			id: file.data[0]['id'],
-			y: file.data[0]['y'],
-			x1: file.data[0]['x1'],
-			x2: file.data[0]['x2']
-		}
-	];
-	for (let i = 1; i < file.data.length; i++) {
-		let a = {
-			id: file.data[i]['id'],
-			y: file.data[i]['y'],
-			x1: file.data[i]['x1'],
-			x2: file.data[i]['x2']
-		};
-		rowData.push(a);
-	}
-	console.log(rowData);
-	//console.log(a)
 
 	function showTable() {
 		if (show.showtable == false && shift.shiftbutton == false) {
@@ -143,16 +99,20 @@
 	}
 
 	function showChosenTable() {
-		for (let i = 0; i < datachoice.header.length; i++) {
-			if (datachoice.header[i]['choice'] == 1) {
-				yheader.header.push(dataheader.header[i]);
-			} else if (datachoice.header[i]['choice'] == -1) {
-				xheader.header.push(dataheader.header[i]);
+		console.log('xxx', dataChoice.header);
+		yheader.header=[]
+		xheader.header=[]
+		chosenheader.header=[]
+		for (let i = 0; i < dataChoice.header.length; i++) {
+			if (dataChoice.header[i]['choice'] == 1) {
+				yheader.header.push(dataHeader.header[i]);
+			} else if (dataChoice.header[i]['choice'] == -1) {
+				xheader.header.push(dataHeader.header[i]);
 			}
 		}
 		console.log(yheader);
 		console.log(xheader);
-		console.log(dataheader.header[1]['choice']);
+		console.log(dataHeader.header[1]['choice']);
 		for (let i = 0; i < yheader.header.length; i++) {
 			chosenheader.header.push(yheader.header[i]);
 		}
@@ -161,41 +121,55 @@
 		}
 		display.displayfinal = true;
 	}
+	function uploadHeader(){
+		uploadFileHeaderApi(filename,yheader.header,xheader.header).then((response) => {
+			if (response.status == 200) {
+				toast.push('上传成功');
+			}
+		});
+
+	}
+
 </script>
-
-<NavigationBar />
-
-	<FilePond
-		bind:this={pond}
-		{name}
-		server="http://api.yhzhu.top/v1/web/files/upload"
-		allowMultiple={true}
-		oninit={handleInit}
-		onaddfile={handleAddFile}
-	/>
-
-
-<div class="container mx-auto">
-
-	<button on:click={showTableFirst} class="mx-auto btn btn-success "
-		>Upload</button
-	>
+<div class="grid grid-rows-2 grid-cols-5 gap-4">
+	<div class="row-span-2 col-span-4">
+		<FilePond
+			bind:this={pond}
+			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
+			{name}
+			server="http://localhost:8123/api/v1/files/upload"
+			allowMultiple={true}
+			oninit={handleInit}
+			onaddfile={handleAddFile}
+			instantUpload={false}
+		/>
+	</div>
+	<div class="col-span-1  m-auto">
+		<Button on:click={receiveData} kind="tertiary" >获取数据</Button>
+	</div>
+	<div class="col-span-1 m-auto">
+		{#if analysis.showbutton == true}
+			<Button on:click={showTableFirst} kind="tertiary" >开始分析</Button>
+		{/if}
+	</div>
+</div>
 
 	{#if show.showtable == true}
-		<div class="container w-3/4 mx-auto">
+		<div class="container mx-auto">
 			<DataTable
+				size="compact"
 				sortable
-				title="Load balancers"
-				description="Your organization's active load balancers."
-				headers={dataheader.header}
+				title="原始表格"
+				description="数据种类：{dataHeader.header.length}"
+				headers={dataHeader.header}
 				pageSize={pagination.pageSize}
 				page={pagination.page}
-				rows={rowData}
+				rows={rowData.data}
 			/>
 			<Pagination
 				bind:pageSize={pagination.pageSize}
 				bind:page={pagination.page}
-				totalItems={rowData.length}
+				totalItems={rowData.data.length}
 				pageSizeInputDisabled
 			/>
 		</div>
@@ -204,7 +178,6 @@
 	<div
 		class="container mx-auto  rounded-xl p-8 w-1/5 border-4 border-indigo-600 border-light-blue-500 border-opacity-100"
 	>
-
 		{#if shift.shiftbutton == true}
 			{#if show.showtable == true}
 				<button on:click={showTable} class="btn btn-info">Hide</button>
@@ -212,21 +185,22 @@
 				<button on:click={showTable} class="btn btn-info">Show</button>
 			{/if}
 			<br />
-			{#each datachoice.header as header}
+			{#each dataChoice.header as header}
 				<!--
-			<RadioButtonGroup labelPosition="left" legendText={header.value}>
-				<RadioButton  labelText="因变量" bind:selected={header.choice} value= {1} />
-				<RadioButton  labelText="自变量" bind:selected={header.choice} value= {-1} />
-				<RadioButton labelText="无影响" value="None" />
+			<RadioButtonGroup labelPosition="left" legendText={header.value} selected={header.choice} >
+				<RadioButton  labelText="因变量" value={1}/>
+				<RadioButton  labelText="自变量" value={-1}/>
+				<RadioButton labelText="无影响"  value={0}/>
 			</RadioButtonGroup>
 		-->
-				<label align="left">{header.value}</label>
+				<div align="left">{header.value}</div>
 				<div align="right">
 					<label><input type="radio" bind:group={header.choice} value={1} />预测目标</label>
 					<label><input type="radio" bind:group={header.choice} value={-1} />特征</label>
 					<label><input type="radio" bind:group={header.choice} value={0} />无用变量</label>
 				</div>
 				<br />
+				
 			{/each}
 			<br />
 			<button on:click={showChosenTable} class="mx-auto btn btn-success ">Confirm</button>
@@ -244,22 +218,32 @@
 		<head><meta name="referrer" content="no-referrer" /></head>
 	</div>
 	{#if display.displayfinal == true}
-		<div class="container w-3/4 mx-auto">
+		<div class="container mx-auto">
 			<DataTable
+				size="compact"
 				sortable
-				title="Load balancers"
-				description="Your organization's active load balancers."
+				title="处理后数据"
+				description="已选预测目标：{yheader.header.length}个，已选特征：{xheader.header.length}个"
 				headers={chosenheader.header}
 				pageSize={pagination.pageSize}
 				page={pagination.page}
-				rows={rowData}
+				rows={rowData.data}
 			/>
 			<Pagination
 				bind:pageSize={pagination.pageSize}
 				bind:page={pagination.page}
-				totalItems={rowData.length}
+				totalItems={rowData.data.length}
 				pageSizeInputDisabled
 			/>
 		</div>
 	{/if}
-</div>
+	{#if yheader.header.length == 1}
+		<Button on:click={uploadHeader} kind="tertiary" >上传数据</Button>
+	{:else}
+		<InlineNotification
+		hideCloseButton
+		kind="warning"
+		title="提示:"
+		subtitle="预测目标只能由1个"
+	/>
+	{/if}
