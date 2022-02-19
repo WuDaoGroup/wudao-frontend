@@ -1,1 +1,168 @@
-<h1>构建你的模型</h1>
+<script>
+    import NavigationBar from "../components/NavigationBar.svelte"
+    import "carbon-components-svelte/css/g100.css";
+    import { base } from '$app/paths';
+    import { ordinaryLeastSquaresData, boostedDecisionTreeRegressionData, 
+        ridgeRegressionData } from '../api/modelApi';
+    import {
+    Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton, Select, SelectItem, Button,
+    } from "carbon-components-svelte";
+
+    let filename = ''
+    let coef = []
+    let intercept = []
+    let picAdd = ''
+    let judge = ''
+    let alpha_check = false
+    let alpha = 0.5
+
+    function getInalpha(){
+        alpha_check = true
+        console.log(alpha)
+    }
+    function ridgeRegression(){
+        judge = ''
+        coef = []
+        intercept = []
+        let theFile = filename.split('\\');
+        let lenFile = theFile.length
+        filename = theFile[lenFile-1]
+        ridgeRegressionData(filename, alpha ).then((response) =>{
+            coef = response.data["result_coef"]
+            intercept = response.data["result_intercept"]
+            if( response.status == 200 ){
+                judge = 'rd'
+                alpha_check = false
+            }
+                
+        });
+    }
+    function ordinaryLeastSquares(){
+        judge = ''
+        coef = []
+        intercept = []
+        let theFile = filename.split('\\');
+        let lenFile = theFile.length
+        filename = theFile[lenFile-1]
+        ordinaryLeastSquaresData(filename).then((response) =>{
+            coef = response.data["result_coef"]
+            intercept = response.data["result_intercept"]
+            if( response.status == 200 )
+                judge = 'ols'
+        });
+    }
+
+    function boostedDecisionTreeRegression(){
+        judge = ''
+        coef = []
+        intercept = []
+        let theFile = filename.split('\\');
+        let lenFile = theFile.length
+        filename = theFile[lenFile-1]
+        boostedDecisionTreeRegressionData(filename).then((response) =>{
+            picAdd = 'http://localhost:8123/static/images/'+response.data["pic_addr"]
+            console.log(picAdd)
+            if( response.status == 200 )
+                judge = 'bdtr'
+        });
+    }
+
+</script>
+<style>
+    h1{
+        text-align: center;
+        font-size:40px;
+        margin-bottom: 30px;
+    }
+    p{
+        text-indent:50px;
+        font-size:20px;
+        margin-bottom: 30px;
+        margin-left: 30px;
+        margin-right: 30px;
+    }
+
+    .dis-bottom{
+        margin-bottom: 30px;
+        align: center;
+    }
+
+    .input-bac{
+        background-color:rgb(0, 0, 0);
+        color:white;
+        height:30px;
+    }
+</style>
+<NavigationBar></NavigationBar>
+<div>
+    <h1>Supervised Learning (监督学习)</h1>
+    <p>
+        从给定的训练数据集中学习出一个函数(模型参数),当新的数据到来时,可以根据这个函数预测结果。
+        监督学习的训练集要求包括输入输出,也可以说是特征和目标。训练集中
+        的标签是由人标注的。监督学习就是最常见的分类(注意和聚类区分)问题,通过已有的训练样本(
+        即已知数据及其对应的输出)去训练得到一个最优模型,再利用这个模型将所有的输入映射为相应的输出,对输出进行简单的判断
+        从而实现分类的目的。也就具有了对未知数据分类的能力。
+        监督学习的目标往往是让计算机根据已有的数据集去学习我们已经创建好的分类系统,知道输入和输出结果之间的关系。
+        根据这种已知的关系,训练得到一个最优的模型。
+        也就是说,在监督学习中训练数据既有特征(feature)又有标签(label),通过训练,让机器可以自己找到特征和标签之间的联
+        系,在面对只有特征没有标签的数据时,可以判断出标签。通俗一点,可以把机器学习理解为我们教机器如何做事情。
+    </p>
+    <div align="center">
+        <div class = 'dis-bottom'>
+            <button 
+                type="submit"
+                class="btn btn-info" 
+                on:click={ordinaryLeastSquares}>
+            Ordinary Least Squares
+            </button>
+            <button 
+                type = "submit" 
+                class="btn btn-success" 
+                on:click={getInalpha}>Ridge regression</button>
+            <button class="btn btn-warning">Lasso</button>
+            <button class="btn btn-error">Multi-task Lasso</button>
+            <button 
+                type="submit"
+                class="btn btn-info" 
+                on:click={boostedDecisionTreeRegression}
+            >Decision Tree Regression with AdaBoost</button>
+        </div>
+        <div class = 'dis-bottom'>
+            <button class="btn btn-info">Ordinary Least Squares</button>
+            <button class="btn btn-success">Ridge regression</button>
+            <button class="btn btn-warning">Lasso</button>
+            <button class="btn btn-error">Multi-task Lasso</button>
+            <button class="btn btn-info" >Decision Tree Regression with AdaBoost</button>
+        </div>
+        <div class = 'dis-bottom'>
+            <input bind:value = {filename} type = "file" enctype = "multipart/form-data" size = "16">
+        </div>
+        <div>
+            {#if alpha_check == true }
+                <div class = 'dis-bottom'><input class = 'input-bac' bind:value = {alpha}></div>
+                <div><Button kind="tertiary" on:click = {ridgeRegression}>Tertiary button</Button></div>
+            {/if}
+        </div>
+        <div>
+            {#if judge == 'rd'}
+                <p>系数分别为:{coef}</p>
+                <p>常数项为:{intercept}</p>
+            {:else if judge == 'ols'}
+                <p>系数分别为:{coef}</p>
+                <p>常数项为:{intercept}</p>
+            {:else if judge == 'bdtr'}
+                <img src = {picAdd} alt = 'the result'>
+            {/if}
+        </div>
+    </div>
+</div>
+<FormGroup>
+    <Select id="select-1" labelText="models" value="placeholder-item">
+        <SelectItem value="option-1" text="Decision Tree Regression with AdaBoost"/>
+        <SelectItem value="option-2" text="Ordinary Least Squares"/>
+        <SelectItem value="option-3" text="Ridge regression and classification"/>
+    </Select>
+</FormGroup>
+<div align="center">
+    <Button type="submit" >Submit</Button>
+</div>
