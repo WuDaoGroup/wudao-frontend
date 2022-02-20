@@ -11,9 +11,9 @@ export const analyzeUploadFileContentApi = async (uploadFilename) => {
 	}
 };
 
-export const uploadFileFeatureInfoApi = async (selectedFeatures) => {
+export const uploadFileFeatureInfoApi = async (uploadFilename, selectedFeatures) => {
 	try {
-		const response = await api.post(`/files/features/info`, selectedFeatures);
+		const response = await api.post(`/files/${uploadFilename}/features/info`, selectedFeatures);
 		return response;
 	} catch (err) {
 		console.error(err);

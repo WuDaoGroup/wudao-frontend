@@ -5,7 +5,9 @@
 		Pagination,
 		RadioButtonGroup,
 		RadioButton,
-		InlineNotification
+		InlineNotification,
+		ProgressIndicator,
+		ProgressStep
 	} from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { Button } from 'carbon-components-svelte';
@@ -18,11 +20,17 @@
 		features: [],
 		content: []
 	};
+	let currentIndex = 0;
+	let checkUploadFiles = { current: true, complete: false, invalid: false };
+	let receiveDataFiles = { current: false, complete: false, disabled: true };
+	let analyzeDataFiles = { current: false, complete: false, disabled: true };
+	let chooseFeature = { current: false, complete: false, disabled: true };
 	const featureTypes = ['target', 'feature', 'useless'];
 	const defaultChoice = featureTypes[1];
 	let selectedFeatures = [];
 	// let selectedFeatures = [{'value': 'Y', 'type': defaultChoice},{'value': 'm', 'type': defaultChoice},{'value': 'n', 'type': defaultChoice}]
 	$: console.log(selectedFeatures);
+	$: featureTypeTargetCount = selectedFeatures.filter((e) => e.type === 'target').length;
 
 	let pond;
 	// the name to use for the internal file input
@@ -36,6 +44,7 @@
 	function handleAddFile(err, fileItem) {
 		console.log('A file has been added', fileItem);
 		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
+			(checkUploadFiles.current = false), (checkUploadFiles.invalid = true);
 			toast.push('文件类型错误', {
 				theme: {
 					'--toastBackground': '#F56565',
@@ -48,13 +57,16 @@
 		} else {
 			filename = fileItem.filename;
 			toast.push('点击上传');
+			currentIndex = 1;
+			(checkUploadFiles.current = false), (checkUploadFiles.complete = true), (checkUploadFiles.invalid = false);
+			(receiveDataFiles.disabled = false), (receiveDataFiles.current = true);
 		}
 	}
 
 	let showTable = false;
 	let showAnalysisButton = false;
 	let pagination = {
-		pageSize: 5,
+		pageSize: 10,
 		page: 1
 	};
 
@@ -75,23 +87,53 @@
 					selectedFeatures.push(e);
 				}
 				showAnalysisButton = true;
+				(receiveDataFiles.current = false), (receiveDataFiles.complete = true);
+				(analyzeDataFiles.disabled = false), (analyzeDataFiles.current = true);
+				currentIndex = 2;
 			} else {
 				console.log('error!');
 			}
 		});
 	}
 
-	function uploadFeatureInfo(){
-		uploadFileFeatureInfoApi(selectedFeatures).then((response) => {
+	function uploadFeatureInfo() {
+		uploadFileFeatureInfoApi(filename, selectedFeatures).then((response) => {
 			if (response.status == 200) {
 				toast.push('上传数据的特征信息成功');
-				console.log('data feature info:', response.data)
-				goto(`/data-observation`);
+				console.log('data feature info:', response.data);
+				(chooseFeature.current = false), (chooseFeature.complete = true), (currentIndex = 5);
+				// goto(`/data-observation`);
 			}
 		});
 	}
 </script>
 
+<ProgressIndicator bind:currentIndex spaceEqually preventChangeOnClick>
+	<ProgressStep
+		bind:current={checkUploadFiles.current}
+		bind:complete={checkUploadFiles.complete}
+		bind:invalid={checkUploadFiles.invalid}
+		label="Upload File"
+	/>
+	<ProgressStep
+		bind:disabled={receiveDataFiles.disabled}
+		bind:current={receiveDataFiles.current}
+		bind:complete={receiveDataFiles.complete}
+		label="Load Data"
+	/>
+	<ProgressStep
+		bind:disabled={analyzeDataFiles.disabled}
+		bind:current={analyzeDataFiles.current}
+		bind:complete={analyzeDataFiles.complete}
+		label="Show Table"
+	/>
+	<ProgressStep
+		bind:disabled={chooseFeature.disabled}
+		bind:current={chooseFeature.current}
+		bind:complete={chooseFeature.complete}
+		label="Upload Features"
+	/>
+</ProgressIndicator>
 <div class="grid grid-rows-2 grid-cols-5 gap-4">
 	<div class="row-span-2 col-span-4">
 		<FilePond
@@ -110,7 +152,16 @@
 	</div>
 	{#if showAnalysisButton == true}
 		<div class=" m-auto">
-			<Button on:click={() => (showTable = true)} kind="tertiary">开始分析</Button>
+			<Button
+				on:click={() => (
+					(showTable = true),
+					(currentIndex = 3),
+					(analyzeDataFiles.complete = true),
+					(chooseFeature.current = true),
+					(chooseFeature.disabled = false)
+				)}
+				kind="tertiary">开始分析</Button
+			>
 		</div>
 	{/if}
 </div>
@@ -135,19 +186,34 @@
 		/>
 	</div>
 
-	<InlineNotification hideCloseButton kind="warning" title="提示: " subtitle="请选择预测目标, 注意预测目标只能有1个" />
-
-	{#each selectedFeatures as f}
-		<RadioButtonGroup legendText={f.value} bind:selected={f.type}>
-			{#each featureTypes as p}
-				<RadioButton labelText={p} value={p} />
+	<div class="flex flex-col items-center justify-center">
+		{#if !(featureTypeTargetCount == 1)}
+			<InlineNotification
+				hideCloseButton
+				kind="warning"
+				title="提示: "
+				subtitle="请选择预测目标, 注意预测目标只能有1个"
+			/>
+		{/if}
+		<div class="flex flex-row items-center justify-center">
+			{#each selectedFeatures as f}
+				<RadioButtonGroup
+					legendText={f.value}
+					orientation="vertical"
+					labelPosition="right"
+					bind:selected={f.type}
+				>
+					{#each featureTypes as p}
+						<RadioButton labelText={p} value={p} />
+					{/each}
+				</RadioButtonGroup>
 			{/each}
-		</RadioButtonGroup>
-		Selected feature: <strong>{f.type}</strong>
-	{/each}
+		</div>
+		{#if featureTypeTargetCount == 1}
+			<Button on:click={uploadFeatureInfo} kind="tertiary" class="mt-4">上传数据</Button>
+		{/if}
+	</div>
 {/if}
-
-<Button on:click={uploadFeatureInfo} kind="tertiary" >上传数据</Button>
 
 <style>
 	@import 'filepond/dist/filepond.css';

@@ -1,97 +1,78 @@
 <script>
-    import "carbon-components-svelte/css/g100.css";
-    import { base } from '$app/paths';
-    import { ordinaryLeastSquaresData, boostedDecisionTreeRegressionData, 
-        ridgeRegressionData } from '../api/modelApi';
-    import {
-    Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton, Select, SelectItem, Button,
-    } from "carbon-components-svelte";
+	import { base } from '$app/paths';
+	import {
+		ordinaryLeastSquaresData,
+		boostedDecisionTreeRegressionData,
+		ridgeRegressionData
+	} from '../api/modelApi';
+	import {
+		Form,
+		FormGroup,
+		Checkbox,
+		RadioButtonGroup,
+		RadioButton,
+		Select,
+		SelectItem,
+		Button
+	} from 'carbon-components-svelte';
 
-    let filename = ''
-    let coef = []
-    let intercept = []
-    let picAdd = ''
-    let judge = ''
-    let alpha_check = false
-    let alpha = 0.5
+	let filename = '';
+	let coef = [];
+	let intercept = [];
+	let picAdd = '';
+	let judge = '';
+	let alpha_check = false;
+	let alpha = 0.5;
 
-    function getInalpha(){
-        alpha_check = true
-        console.log(alpha)
-    }
-    function ridgeRegression(){
-        judge = ''
-        coef = []
-        intercept = []
-        let theFile = filename.split('\\');
-        let lenFile = theFile.length
-        filename = theFile[lenFile-1]
-        ridgeRegressionData(filename, alpha ).then((response) =>{
-            coef = response.data["result_coef"]
-            intercept = response.data["result_intercept"]
-            if( response.status == 200 ){
-                judge = 'rd'
-                alpha_check = false
-            }
-                
-        });
-    }
-    function ordinaryLeastSquares(){
-        judge = ''
-        coef = []
-        intercept = []
-        let theFile = filename.split('\\');
-        let lenFile = theFile.length
-        filename = theFile[lenFile-1]
-        ordinaryLeastSquaresData(filename).then((response) =>{
-            coef = response.data["result_coef"]
-            intercept = response.data["result_intercept"]
-            if( response.status == 200 )
-                judge = 'ols'
-        });
-    }
+	function getInalpha() {
+		alpha_check = true;
+		console.log(alpha);
+	}
+	function ridgeRegression() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		ridgeRegressionData(filename, alpha).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			if (response.status == 200) {
+				judge = 'rd';
+				alpha_check = false;
+			}
+		});
+	}
+	function ordinaryLeastSquares() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		ordinaryLeastSquaresData(filename).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			if (response.status == 200) judge = 'ols';
+		});
+	}
 
-    function boostedDecisionTreeRegression(){
-        judge = ''
-        coef = []
-        intercept = []
-        let theFile = filename.split('\\');
-        let lenFile = theFile.length
-        filename = theFile[lenFile-1]
-        boostedDecisionTreeRegressionData(filename).then((response) =>{
-            picAdd = 'http://localhost:8123/static/images/'+response.data["pic_addr"]
-            console.log(picAdd)
-            if( response.status == 200 )
-                judge = 'bdtr'
-        });
-    }
-
+	function boostedDecisionTreeRegression() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		boostedDecisionTreeRegressionData(filename).then((response) => {
+			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+			console.log(picAdd);
+			if (response.status == 200) judge = 'bdtr';
+		});
+	}
 </script>
-<style>
-    h1{
-        text-align: center;
-        font-size:40px;
-        margin-bottom: 30px;
-    }
-    p{
-        text-indent:50px;
-        font-size:20px;
-        margin-bottom: 30px;
-        margin-left: 30px;
-        margin-right: 30px;
-    }
 
-    .dis-bottom{
-        margin-bottom: 30px;
-        align: center;
-    }
-
-    .input-bac{
-        background-color:rgb(0, 0, 0);
-        color:white;
-        height:30px;
-    }
-</style>
 <div>
     <h1>Supervised Learning (监督学习)</h1>
     <p>
@@ -151,5 +132,31 @@
     </div>
 </div>
 <div align="center">
-    <Button type="submit" >Submit</Button>
+	<Button type="submit">Submit</Button>
 </div>
+
+<style>
+	h1 {
+		text-align: center;
+		font-size: 40px;
+		margin-bottom: 30px;
+	}
+	p {
+		text-indent: 50px;
+		font-size: 20px;
+		margin-bottom: 30px;
+		margin-left: 30px;
+		margin-right: 30px;
+	}
+
+	.dis-bottom {
+		margin-bottom: 30px;
+		align: center;
+	}
+
+	.input-bac {
+		background-color: rgb(0, 0, 0);
+		color: white;
+		height: 30px;
+	}
+</style>
