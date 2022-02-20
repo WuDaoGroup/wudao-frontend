@@ -1,97 +1,78 @@
 <script>
-    import "carbon-components-svelte/css/g100.css";
-    import { base } from '$app/paths';
-    import { ordinaryLeastSquaresData, boostedDecisionTreeRegressionData, 
-        ridgeRegressionData } from '../api/modelApi';
-    import {
-    Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton, Select, SelectItem, Button,
-    } from "carbon-components-svelte";
+	import { base } from '$app/paths';
+	import {
+		ordinaryLeastSquaresData,
+		boostedDecisionTreeRegressionData,
+		ridgeRegressionData
+	} from '../api/modelApi';
+	import {
+		Form,
+		FormGroup,
+		Checkbox,
+		RadioButtonGroup,
+		RadioButton,
+		Select,
+		SelectItem,
+		Button
+	} from 'carbon-components-svelte';
 
-    let filename = ''
-    let coef = []
-    let intercept = []
-    let picAdd = ''
-    let judge = ''
-    let alpha_check = false
-    let alpha = 0.5
+	let filename = '';
+	let coef = [];
+	let intercept = [];
+	let picAdd = '';
+	let judge = '';
+	let alpha_check = false;
+	let alpha = 0.5;
 
-    function getInalpha(){
-        alpha_check = true
-        console.log(alpha)
-    }
-    function ridgeRegression(){
-        judge = ''
-        coef = []
-        intercept = []
-        let theFile = filename.split('\\');
-        let lenFile = theFile.length
-        filename = theFile[lenFile-1]
-        ridgeRegressionData(filename, alpha ).then((response) =>{
-            coef = response.data["result_coef"]
-            intercept = response.data["result_intercept"]
-            if( response.status == 200 ){
-                judge = 'rd'
-                alpha_check = false
-            }
-                
-        });
-    }
-    function ordinaryLeastSquares(){
-        judge = ''
-        coef = []
-        intercept = []
-        let theFile = filename.split('\\');
-        let lenFile = theFile.length
-        filename = theFile[lenFile-1]
-        ordinaryLeastSquaresData(filename).then((response) =>{
-            coef = response.data["result_coef"]
-            intercept = response.data["result_intercept"]
-            if( response.status == 200 )
-                judge = 'ols'
-        });
-    }
+	function getInalpha() {
+		alpha_check = true;
+		console.log(alpha);
+	}
+	function ridgeRegression() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		ridgeRegressionData(filename, alpha).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			if (response.status == 200) {
+				judge = 'rd';
+				alpha_check = false;
+			}
+		});
+	}
+	function ordinaryLeastSquares() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		ordinaryLeastSquaresData(filename).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			if (response.status == 200) judge = 'ols';
+		});
+	}
 
-    function boostedDecisionTreeRegression(){
-        judge = ''
-        coef = []
-        intercept = []
-        let theFile = filename.split('\\');
-        let lenFile = theFile.length
-        filename = theFile[lenFile-1]
-        boostedDecisionTreeRegressionData(filename).then((response) =>{
-            picAdd = 'http://localhost:8123/static/images/'+response.data["pic_addr"]
-            console.log(picAdd)
-            if( response.status == 200 )
-                judge = 'bdtr'
-        });
-    }
-
+	function boostedDecisionTreeRegression() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		boostedDecisionTreeRegressionData(filename).then((response) => {
+			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+			console.log(picAdd);
+			if (response.status == 200) judge = 'bdtr';
+		});
+	}
 </script>
-<style>
-    h1{
-        text-align: center;
-        font-size:40px;
-        margin-bottom: 30px;
-    }
-    p{
-        text-indent:50px;
-        font-size:20px;
-        margin-bottom: 30px;
-        margin-left: 30px;
-        margin-right: 30px;
-    }
 
-    .dis-bottom{
-        margin-bottom: 30px;
-        align: center;
-    }
-
-    .input-bac{
-        background-color:rgb(0, 0, 0);
-        color:white;
-        height:30px;
-    }
-</style>
 <div>
     <h1>Supervised Learning (监督学习)</h1>
     <p>
@@ -107,30 +88,26 @@
     </p>
     <div align="center">
         <div class = 'dis-bottom'>
-            <button 
+            <Button 
                 type="submit"
-                class="btn btn-info" 
                 on:click={ordinaryLeastSquares}>
             Ordinary Least Squares
-            </button>
-            <button 
+            </Button>
+            <Button 
                 type = "submit" 
                 class="btn btn-success" 
-                on:click={getInalpha}>Ridge regression</button>
-            <button class="btn btn-warning">Lasso</button>
-            <button class="btn btn-error">Multi-task Lasso</button>
-            <button 
+                on:click={getInalpha}>Ridge regression</Button>
+            <Button>Multi-task Lasso</Button>
+            <Button 
                 type="submit"
-                class="btn btn-info" 
                 on:click={boostedDecisionTreeRegression}
-            >Decision Tree Regression with AdaBoost</button>
+            >Decision Tree Regression with AdaBoost</Button>
         </div>
         <div class = 'dis-bottom'>
-            <button class="btn btn-info">Ordinary Least Squares</button>
-            <button class="btn btn-success">Ridge regression</button>
-            <button class="btn btn-warning">Lasso</button>
-            <button class="btn btn-error">Multi-task Lasso</button>
-            <button class="btn btn-info" >Decision Tree Regression with AdaBoost</button>
+            <Button>Ordinary Least Squares</Button>
+            <Button>Ridge regression</Button>
+            <Button>Multi-task Lasso</Button>
+            <Button>Decision Tree Regression with AdaBoost</Button>
         </div>
         <div class = 'dis-bottom'>
             <input bind:value = {filename} type = "file" enctype = "multipart/form-data" size = "16">
@@ -154,13 +131,32 @@
         </div>
     </div>
 </div>
-<FormGroup>
-    <Select id="select-1" labelText="models" value="placeholder-item">
-        <SelectItem value="option-1" text="Decision Tree Regression with AdaBoost"/>
-        <SelectItem value="option-2" text="Ordinary Least Squares"/>
-        <SelectItem value="option-3" text="Ridge regression and classification"/>
-    </Select>
-</FormGroup>
 <div align="center">
-    <Button type="submit" >Submit</Button>
+	<Button type="submit">Submit</Button>
 </div>
+
+<style>
+	h1 {
+		text-align: center;
+		font-size: 40px;
+		margin-bottom: 30px;
+	}
+	p {
+		text-indent: 50px;
+		font-size: 20px;
+		margin-bottom: 30px;
+		margin-left: 30px;
+		margin-right: 30px;
+	}
+
+	.dis-bottom {
+		margin-bottom: 30px;
+		align: center;
+	}
+
+	.input-bac {
+		background-color: rgb(0, 0, 0);
+		color: white;
+		height: 30px;
+	}
+</style>
