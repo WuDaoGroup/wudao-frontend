@@ -26,12 +26,17 @@
 
 
     let basicDataContent = []
-    let filename = 'movie_data.xlsx'
+    let basicData = {
+        content:[],
+        header:[]
+    }
+    let filename = 'data.csv'
     function receiveBasicData() {
 		receiveBasicFileInfoApi(filename).then((response) => {
 			if (response.status == 200) {
 				console.log('response_data:', response.data)
-                basicDataContent = response.data.content
+                basicData.content = response.data.content
+                basicData.header = response.data.feature
                 showTable = true;
 			} else {
 				console.log('error!');
@@ -59,16 +64,17 @@
         sortable
         title="原始表格"
         description="数据:5"
-        headers={featureHeader}
+        headers={basicData.header}
         pageSize={pagination.pageSize}
         page={pagination.page}
-        rows={basicDataContent}
+        rows={basicData.content}
     />
     <Pagination
         bind:pageSize={pagination.pageSize}
         bind:page={pagination.page}
-        totalItems={basicDataContent.length}
+        totalItems={basicData.content.length}
         pageSizeInputDisabled
     />
 </div>
+<Button on:click={receiveBasicData} kind="tertiary">获取数据</Button>
 {/if}
