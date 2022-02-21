@@ -1,6 +1,21 @@
 // AI模型相关的API接口
 import api from '../services/api.js';
 
+export const lassoLarsData = async (filename, alpha, normalize) => {
+	try{
+		let form = new FormData()
+		form.append('filename', filename)
+		form.append('alpha', alpha)
+		form.append('normalize', normalize)
+		console.log(form)
+		const response = await api.post(`/models/predict/lassoLars`, form)
+		console.log(response)
+		return response
+	}catch (err){
+		console.error(err)
+	}
+}
+
 export const lassoData = async (filename, alpha ) => {
 	try{
 		let form = new FormData()
@@ -30,6 +45,7 @@ export const ordinaryLeastSquaresData = async (filename) => {
 		let form = new FormData()
 		form.append('filename', filename)
 		const response = await api.post(`/models/predict/ols`, form)
+		console.log(response)
 		return response
 	}catch (err){
 		console.error(err)

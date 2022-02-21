@@ -4,7 +4,8 @@
 		ordinaryLeastSquaresData,
 		boostedDecisionTreeRegressionData,
 		ridgeRegressionData,
-		lassoData
+		lassoData,
+		lassoLarsData
 	} from '../api/modelApi';
 	import {
 		Form,
@@ -23,6 +24,7 @@
 	let picAdd = '';
 	let judge = '';
 	let alphaCheck = '';
+	let normalize = '';
 	let alpha = 0.5;
 
 	function getInAlphaRidgeRegression() {
@@ -33,6 +35,28 @@
 		alphaCheck = 'lasso'
 		alpha = 0.1
 	}
+	function getInAlphaLassoLars(){
+		alphaCheck = 'lassoLars'
+		normalize = 'False'
+		alpha = 0.1
+	}
+	function lassoLars() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		lassoLarsData(filename, alpha, normalize).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			if (response.status == 200) {
+				judge = 'll';
+				alphaCheck = '';
+			}
+		});
+	}
+
 	function lasso() {
 		judge = '';
 		coef = [];
@@ -115,7 +139,7 @@
 			<Button type="submit" on:click={boostedDecisionTreeRegression}>Decision Tree Regression with AdaBoost</Button>
 		</div>
 		<div class = "flex mb-10 justify-center">
-			<Button>Ordinary Least Squares</Button>
+			<Button type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button>
 			<Button>Ridge regression</Button>
 			<Button>Multi-task Lasso</Button>
 			<Button>Decision Tree Regression with AdaBoost</Button>
@@ -125,11 +149,37 @@
 		</div>
 		<div>
 			{#if alphaCheck == 'ridgeRegression'}
-				<div  class = "flex justify-center mb-4"><input class="text-center" bind:value={alpha} /></div>
-				<div  class = "flex mb-10 justify-center"><Button kind="tertiary" on:click={ridgeRegression}>Tertiary button</Button></div>
+				<div class = "flex justify-center mb-4">
+					<p>Select the appropriate value of alpha: </p>
+					<input class="text-center" bind:value={alpha} />
+					<p>(0~1)</p>
+				</div>
+				<div class = "flex mb-10 justify-center">
+					<Button kind="tertiary" on:click={ridgeRegression}>ascertain</Button>
+				</div>
 			{:else if alphaCheck == 'lasso'}
-				<div><input class="input-bac" bind:value={alpha} /></div>
-				<div><Button kind="tertiary" on:click={lasso}>Tertiary button</Button></div>
+				<div class = "flex justify-center mb-4">
+					<p>Select the appropriate value of alpha: </p>
+					<input class="text-center" bind:value={alpha} />
+					<p>(0~1)</p>
+				</div>
+				<div class = "flex mb-10 justify-center">
+					<Button kind="tertiary" on:click={lasso}>ascertain</Button>
+				</div>
+			{:else if alphaCheck == 'lassoLars'}
+				<div class = "flex justify-center mb-4">
+					<p>Select the appropriate value of alpha: </p>
+					<input class="text-center" bind:value={alpha} />
+					<p>(0~1)</p>
+				</div>
+				<div class = "flex justify-center mb-4">
+					<p>Select the mode of normalize: </p>
+					<input class="text-center" bind:value={normalize} />
+					<p>(True or False)</p>
+				</div>
+				<div class = "flex mb-10 justify-center">
+					<Button kind="tertiary" on:click={lassoLars}>ascertain</Button>
+				</div>
 			{/if}
 		</div>
 		<div>
@@ -142,6 +192,9 @@
 			{:else if judge == 'bdtr'}
 				<img src={picAdd} alt="the result" />
 			{:else if judge == 'l'}
+				<p class = "mb-5 text-center">系数分别为:{coef}</p>
+				<p class = "mb-5 text-center">常数项为:{intercept}</p>
+			{:else if judge == 'll'}
 				<p class = "mb-5 text-center">系数分别为:{coef}</p>
 				<p class = "mb-5 text-center">常数项为:{intercept}</p>
 			{/if}
