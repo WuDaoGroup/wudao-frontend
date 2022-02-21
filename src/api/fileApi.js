@@ -19,3 +19,12 @@ export const uploadFileFeatureInfoApi = async (uploadFilename, selectedFeatures)
 		console.error(err);
 	}
 };
+
+export const receiveBasicFileInfoApi = async (uploadFilename) => {
+	try {
+		const response = await api.get(`/data/${uploadFilename}_selected_feature.csv/features/info`);
+		return response;
+	} catch (err) {
+		console.error(err);
+	}
+};
