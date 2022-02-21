@@ -30,13 +30,13 @@
         content:[],
         header:[]
     }
-    let filename = 'data.csv'
+    let filename = 'movie_data.xlsx'
     function receiveBasicData() {
 		receiveBasicFileInfoApi(filename).then((response) => {
 			if (response.status == 200) {
 				console.log('response_data:', response.data)
                 basicData.content = response.data.content
-                basicData.header = response.data.feature
+                basicData.header = response.data.header
                 showTable = true;
 			} else {
 				console.log('error!');

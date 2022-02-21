@@ -11,15 +11,14 @@
 	};
 	let showAnalysis = false;
 	let dataReceived = false;
-	var option = {
+	let option = {
 		color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
 		title: {
 			text: title,
 			subtext: 'chart analysis',
 			left: 'center',
 			textStyle: {
-				fontSize: 20,
-				fontFamily: 'monospace'
+				fontSize: 20
 			},
 			subtextStyle: {
 				fontSize: 10
@@ -46,8 +45,31 @@
 				dataZoom: {
 					yAxisIndex: 'none'
 				},
-				dataView: { readOnly: false },
-				magicType: { type: ['line', 'bar'] },
+				dataView: { 
+					readOnly: false,
+					optionToContent: function(opt) {
+						var axisData = opt.xAxis[0].data;
+						var series = opt.series;
+						var table = '<table style="width:100%;text-align:center"><tbody><tr>'
+									+ '<td>features</td>';
+									for(let j = 0; j < series.length; j++) {
+										table += '<td>' + series[j].name + '</td>';
+									}
+									table += '</tr>';
+						for (let i = 0; i < axisData.length; i++) {
+							table += '<tr>' + '<td>' + axisData[i] + '</td>';
+							for(let j = 0; j < series.length; j++) {
+								table += '<td>' + series[j].data[i] + '</td>';
+							}
+							table += '</tr>';
+						}
+						table += '</tbody></table>';
+						return table;
+					}
+				},
+				magicType: { 
+					type: ['line', 'bar','stack']
+				},
 				restore: {},
 				saveAsImage: {}
 			}
@@ -60,7 +82,10 @@
 			{
 				type: 'category',
 				boundaryGap: false,
-				data: []
+				data: [],
+				axisLabel: {
+					interval: 0
+				}
 			}
 		],
 		yAxis: [
@@ -78,7 +103,6 @@
 				rawData.content = response.data.content;
 				rawData.features = response.data.header;
 				option.legend.data = [];
-				option.xAxis.data = [];
 				let arr1 = Object.keys(rawData.content); //key(0)
 				let arr2 = []; //key and value(0)
 				for (let i = 0; i < arr1.length; i++) {
@@ -97,6 +121,7 @@
 				}
 				console.log('xarr', xarr);
 				option.xAxis[0].data = xarr;
+				console.log('option',option.xAxis);
 				option.series = [];
 				option.legend.data = [];
 				for (let i = 0; i < arr2.length; i++) {
