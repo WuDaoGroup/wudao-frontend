@@ -10,6 +10,9 @@
 		content: []
 	};
 	var option = {
+            title: {
+                text: title
+            },
             legend: {
                 top:0,
                 type: 'scroll'
