@@ -3,7 +3,8 @@
 	import {
 		ordinaryLeastSquaresData,
 		boostedDecisionTreeRegressionData,
-		ridgeRegressionData
+		ridgeRegressionData,
+		lassoData
 	} from '../api/modelApi';
 	import {
 		Form,
@@ -21,12 +22,32 @@
 	let intercept = [];
 	let picAdd = '';
 	let judge = '';
-	let alpha_check = false;
+	let alphaCheck = '';
 	let alpha = 0.5;
 
-	function getInalpha() {
-		alpha_check = true;
-		console.log(alpha);
+	function getInAlphaRidgeRegression() {
+		alphaCheck = 'ridgeRegression'
+		alpha = 0.5
+	}
+	function getInAlphaLasso() {
+		alphaCheck = 'lasso'
+		alpha = 0.1
+	}
+	function lasso() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		lassoData(filename, alpha).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			if (response.status == 200) {
+				judge = 'l';
+				alphaCheck = '';
+			}
+		});
 	}
 	function ridgeRegression() {
 		judge = '';
@@ -40,7 +61,7 @@
 			intercept = response.data['result_intercept'];
 			if (response.status == 200) {
 				judge = 'rd';
-				alpha_check = false;
+				alphaCheck = '';
 			}
 		});
 	}
@@ -89,8 +110,8 @@
 	<div>
 		<div class = "flex mb-10 justify-center">
 			<Button type="submit" on:click={ordinaryLeastSquares}>Ordinary Least Squares</Button>
-			<Button type="submit" on:click={getInalpha}>Ridge regression</Button>
-			<Button>Multi-task Lasso</Button>
+			<Button type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button>
+			<Button type="submit" on:click={getInAlphaLasso}>Lasso</Button>
 			<Button type="submit" on:click={boostedDecisionTreeRegression}>Decision Tree Regression with AdaBoost</Button>
 		</div>
 		<div class = "flex mb-10 justify-center">
@@ -103,20 +124,26 @@
 			<input bind:value={filename} type="file" enctype="multipart/form-data" size="16" />
 		</div>
 		<div>
-			{#if alpha_check == true}
+			{#if alphaCheck == 'ridgeRegression'}
+				<div  class = "flex justify-center mb-4"><input class="text-center" bind:value={alpha} /></div>
+				<div  class = "flex mb-10 justify-center"><Button kind="tertiary" on:click={ridgeRegression}>Tertiary button</Button></div>
+			{:else if alphaCheck == 'lasso'}
 				<div><input class="input-bac" bind:value={alpha} /></div>
-				<div><Button kind="tertiary" on:click={ridgeRegression}>Tertiary button</Button></div>
+				<div><Button kind="tertiary" on:click={lasso}>Tertiary button</Button></div>
 			{/if}
 		</div>
 		<div>
 			{#if judge == 'rd'}
-				<p>系数分别为:{coef}</p>
-				<p>常数项为:{intercept}</p>
+				<p class = "mb-5 text-center">系数分别为:{coef}</p>
+				<p class = "mb-5 text-center">常数项为:{intercept}</p>
 			{:else if judge == 'ols'}
-				<p>系数分别为:{coef}</p>
-				<p>常数项为:{intercept}</p>
+				<p class = "mb-5 text-center">系数分别为:{coef}</p>
+				<p class = "mb-5 text-center">常数项为:{intercept}</p>
 			{:else if judge == 'bdtr'}
 				<img src={picAdd} alt="the result" />
+			{:else if judge == 'l'}
+				<p class = "mb-5 text-center">系数分别为:{coef}</p>
+				<p class = "mb-5 text-center">常数项为:{intercept}</p>
 			{/if}
 		</div>
 	</div>
