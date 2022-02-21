@@ -2,7 +2,7 @@
 	import { Button } from 'carbon-components-svelte';
 	// Import the main module of echarts.
 	import * as echarts from 'echarts';
-	import { analyzeUploadFileContentApi } from '../../api/fileApi';
+	import { receiveBasicFileInfoApi } from '../../api/fileApi';
 	export let title = 'default title xxx';
 	// Render line chart and components.
 	let rawData = {
@@ -72,7 +72,7 @@
 	};
 
 	function receiveData() {
-		analyzeUploadFileContentApi('data.xlsx').then((response) => {
+		receiveBasicFileInfoApi('movie_data.xlsx').then((response) => {
 			if (response.status == 200) {
 				// console.log('response_data:', response.data)
 				rawData.content = response.data.content;
@@ -85,9 +85,9 @@
 					let key = arr1[i];
 					arr2[i] = rawData.content[key];
 				}
-				console.log(rawData);
-				console.log('arr1', arr1);
-				console.log('arr2', arr2);
+				console.log('rawData',rawData);
+				// console.log('arr1', arr1);
+				// console.log('arr2', arr2);
 				let arr3 = Object.keys(arr2[0]); //key(1)
 				// console.log('arr3',arr3)
 				let xarr = [];
@@ -113,7 +113,7 @@
 					for (let j = 0; j < xarr.length; j++) {
 						series.data.push(arr2[i][xarr[j]]);
 					}
-					console.log('series.data', series.data);
+					// console.log('series.data', series.data);
 					option.series.push(series);
 					option.legend.data.push(arr2[i][label]);
 
@@ -133,10 +133,9 @@
 
 <div class=" m-auto grid-cols-2 gap-4">
 	<Button on:click={receiveData} kind="tertiary" class=" col-auto ">获取数据</Button>
-	<Button on:click={showCharts} kind="tertiary" class=" col-auto ">展示图表</Button>
 </div>
 
 {#if dataReceived == true}
-	<!-- <div style = "backgroundColor : yellow;width: 800px;height:600px;"></div> -->
+	<Button on:click={showCharts} kind="tertiary" class=" col-auto ">展示图表</Button>
 	<div id="Area" style="width: 800px;height:600px;" />
 {/if}
