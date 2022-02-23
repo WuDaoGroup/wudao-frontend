@@ -102,7 +102,7 @@
 				toast.push('上传数据的特征信息成功');
 				console.log('data feature info:', response.data);
 				(chooseFeature.current = false), (chooseFeature.complete = true), (currentIndex = 5);
-				goto(`/data-observation`);
+				// goto(`/data-observation`);
 			}
 		});
 	}
