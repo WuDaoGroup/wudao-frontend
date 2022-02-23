@@ -1,36 +1,26 @@
 <script>
     import { toast } from '@zerodevx/svelte-toast';
-    import { receiveBasicFileInfoApi } from '../api/fileApi'
+    import { receiveBasicFileInfoApi, zscoreFilterInfoApi, originZscoreApi, confirmOriginZscoreApi } from '../api/fileApi'
 
     import {
 		Button,
         DataTable,
 		Pagination,
+        Select,
+        SelectItem
 	} from 'carbon-components-svelte';
 
     let showTable = false;
 
-
-    let featureHeader = [
-        {key:'name',value:'name'},
-        {key:'count',value:'count'},
-        {key:'missing_rate',value:'missing_rate'},
-        {key:'mean',value:'mean'},
-        {key:'max',value:'max'},
-        {key:'min',value:'min'},
-        {key:'std',value:'std'},
-        {key:'median',value:'median'},
-        
-
-    ]
-
-
-    let basicDataContent = []
     let basicData = {
         content:[],
         header:[]
     }
-    let filename = 'movie_data.xlsx'
+    const zscorechoice = ["请选择","Mean","Median"]
+    const defaultChoice = zscorechoice[0]
+    let zscoreType = {'key':defaultChoice}
+
+    let filename = 'data.csv'
     function receiveBasicData() {
 		receiveBasicFileInfoApi(filename).then((response) => {
 			if (response.status == 200) {
@@ -43,6 +33,50 @@
 			}
 		});
 	}
+    let bar = 1
+    function zscoreFilter(){
+        zscoreFilterInfoApi(filename, bar).then((response) => {
+                if (response.status == 200) {
+                    console.log('response_data:', response.data)
+                } else {
+                    
+                    console.log('error!');
+                }
+            });
+
+    }
+
+    function originZscore(){
+        originZscoreApi(filename).then((response) => {
+                if (response.status == 200) {
+                    console.log('response_data:', response.data)
+                } else {
+                    console.log('error!');
+                }
+            });
+
+    }
+
+    function confirmOriginZscore(){
+        console.log(zscoreType.key)
+        confirmOriginZscoreApi(filename, zscoreType.key).then((response) => {
+                if (response.status == 200) {
+                    console.log('response_data:', response.data)
+                    toast.push('选择成功');
+                } else {
+                    toast.push("请选择类型", {
+					theme: {
+						'--toastBackground': '#F56565',
+						'--toastBarBackground': '#C53030'
+					}
+				});
+                    console.log('error!');
+                }
+            });
+
+    }
+
+
     let pagination = {
 		pageSize: 10,
 		page: 1
@@ -76,5 +110,17 @@
         pageSizeInputDisabled
     />
 </div>
-<Button on:click={receiveBasicData} kind="tertiary">获取数据</Button>
+
 {/if}
+
+<Button on:click={originZscore} kind="tertiary">原始规划</Button>
+
+<Select inline labelText="Carbon theme" bind:selected={zscoreType.key}>
+    {#each zscorechoice as p}
+		<SelectItem text={p} value={p} />
+	{/each}
+</Select>
+<Button on:click={confirmOriginZscore} kind="tertiary">确定</Button>
+
+
+<Button on:click={zscoreFilter} kind="tertiary">数据筛选</Button>
