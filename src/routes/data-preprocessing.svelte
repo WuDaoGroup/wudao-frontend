@@ -7,7 +7,10 @@
         DataTable,
 		Pagination,
         Select,
-        SelectItem
+        SelectItem,
+        InlineNotification,
+		ProgressIndicator,
+		ProgressStep
 	} from 'carbon-components-svelte';
 
     let showTable = false;
@@ -16,7 +19,16 @@
         content:[],
         header:[]
     }
-    const zscorechoice = ["请选择","Mean","Median"]
+
+    let currentIndex = 0;
+    let getFileData = { current: true, complete: false, invalid: false};
+    let dataZscore = { current: false, complete: false, disabled: true, invalid: false};
+    let chooseZscoreMethod = { current: false, complete: false, disabled: true, invalid: false};
+    let filterData = { current: false, complete: false, disabled: true, invalid: false};
+
+
+
+    const zscorechoice = ["请选择", "均值填充", "中位数填充"]
     const defaultChoice = zscorechoice[0]
     let zscoreType = {'key':defaultChoice}
 
@@ -28,8 +40,23 @@
                 basicData.content = response.data.content
                 basicData.header = response.data.header
                 showTable = true;
+                getFileData.current = false;
+                getFileData.complete = true;
+                getFileData.invalid = false;
+                currentIndex++;
+                dataZscore.disabled = false;
+                dataZscore.current = true;
+                toast.push("获取数据成功")
 			} else {
+                getFileData.current = false;
+                getFileData.invalid = true;
 				console.log('error!');
+                toast.push("获取数据失败", {
+					theme: {
+						'--toastBackground': '#F56565',
+						'--toastBarBackground': '#C53030'
+					}
+				});
 			}
 		});
 	}
@@ -37,6 +64,10 @@
     function zscoreFilter(){
         zscoreFilterInfoApi(filename, bar).then((response) => {
                 if (response.status == 200) {
+                    filterData.current = false;
+                    filterData.complete = true;
+                    currentIndex++;
+                    toast.push("筛选成功")
                     console.log('response_data:', response.data)
                 } else {
                     
@@ -50,6 +81,12 @@
         originZscoreApi(filename).then((response) => {
                 if (response.status == 200) {
                     console.log('response_data:', response.data)
+                    dataZscore.current = false;
+                    dataZscore.complete = true;
+                    currentIndex++;
+                    chooseZscoreMethod.current = true;
+                    chooseZscoreMethod.disabled = false;
+                    toast.push("归一化文件成功");
                 } else {
                     console.log('error!');
                 }
@@ -62,8 +99,18 @@
         confirmOriginZscoreApi(filename, zscoreType.key).then((response) => {
                 if (response.status == 200) {
                     console.log('response_data:', response.data)
+                    chooseZscoreMethod.invalid = false;
+                    chooseZscoreMethod.current = false;
+                    chooseZscoreMethod.complete = true;
+                    currentIndex++;
+                    filterData.disabled = false;
+                    filterData.current = true;
+
+
                     toast.push('选择成功');
                 } else {
+                    chooseZscoreMethod.invalid = true;
+                    chooseZscoreMethod.current = false;
                     toast.push("请选择类型", {
 					theme: {
 						'--toastBackground': '#F56565',
@@ -81,7 +128,8 @@
 		pageSize: 10,
 		page: 1
 	};
-
+    
+   
 
 
 </script>
@@ -90,6 +138,37 @@
 
 
 <h1>数据预处理</h1>
+
+<ProgressIndicator bind:currentIndex spaceEqually preventChangeOnClick>
+	<ProgressStep
+		bind:current={getFileData.current}
+		bind:complete={getFileData.complete}
+        bind:invalid={getFileData.invalid}
+		label="Get File"
+	/>
+	<ProgressStep
+        bind:current={dataZscore.current}
+        bind:complete={dataZscore.complete}
+        bind:invalid={dataZscore.invalid}
+        bind:disabled={dataZscore.disabled}
+		label="Zscore Data"
+	/>
+	<ProgressStep
+        bind:current={chooseZscoreMethod.current}
+        bind:complete={chooseZscoreMethod.complete}
+        bind:invalid={chooseZscoreMethod.invalid}
+        bind:disabled={chooseZscoreMethod.disabled}
+		label="Fill Data"
+	/>
+	<ProgressStep
+        bind:current={filterData.current}
+        bind:complete={filterData.complete}
+        bind:invalid={filterData.invalid}
+        bind:disabled={filterData.disabled}
+		label="Filter Data"
+	/>
+</ProgressIndicator>
+
 <Button on:click={receiveBasicData} kind="tertiary">获取数据</Button>
 {#if showTable == true}
 <div class="container mx-auto">
@@ -113,7 +192,7 @@
 
 {/if}
 
-<Button on:click={originZscore} kind="tertiary">原始规划</Button>
+<Button on:click={originZscore} kind="tertiary">数据归一化</Button>
 
 <Select inline labelText="Carbon theme" bind:selected={zscoreType.key}>
     {#each zscorechoice as p}
