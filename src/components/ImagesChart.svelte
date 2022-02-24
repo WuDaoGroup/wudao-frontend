@@ -32,7 +32,7 @@
 </div>
 {#if showImage == true}
 	<!-- <div class="flex flex-nowrap"> -->
-	{#if length <=1}
+	{#if length <= 1}
 		{#each images as image}
 			<div class="flex-initial"><img src={image.str} /></div>
 		{/each}
