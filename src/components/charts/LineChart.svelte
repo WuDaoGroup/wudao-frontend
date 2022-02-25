@@ -97,7 +97,7 @@
 	};
 
 	function receiveData() {
-		receiveBasicFileInfoApi('movie_data.xlsx').then((response) => {
+		receiveBasicFileInfoApi('data.csv').then((response) => {
 			if (response.status == 200) {
 				// console.log('response_data:', response.data)
 				rawData.content = response.data.content;

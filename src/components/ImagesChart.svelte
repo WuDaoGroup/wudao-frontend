@@ -3,14 +3,16 @@
 	import { Button } from 'carbon-components-svelte';
 	import { receiveBasicImageInfoApi } from '../api/fileApi';
 	let showImage = false;
+	$: length = 0;
+	let filename = "data.csv"
 	function receiveData() {
-		receiveBasicImageInfoApi('movie_data.xlsx').then((response) => {
+		receiveBasicImageInfoApi(filename).then((response) => {
 			if (response.status == 200) {
 				console.log(response);
-				$: length = response.data.data;
+				length = response.data.data
 				for (let i = 1; i <= length; i++) {
 					let str =
-						'http://localhost:8123/static/images/movie_data.xlsx_selected_features_' + i + '.png';
+						`http://localhost:8123/static/images/${filename}_selected_features_` + i + '.png';
 					console.log(str);
 					let image = {
 						key: i,
@@ -47,7 +49,7 @@
 			{/each}
 		</div>
 	{:else}
-		<div class="grid grid-cols-2 gap-4">
+		<div class="grid grid-cols-3 gap-4">
 			{#each images as image}
 				<img src={image.str} />
 			{/each}
