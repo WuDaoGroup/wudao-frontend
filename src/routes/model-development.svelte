@@ -17,27 +17,140 @@
 		SelectItem,
 		Button
 	} from 'carbon-components-svelte';
+	import TrashCan16 from "carbon-icons-svelte/lib/TrashCan16";
+	import { toast } from '@zerodevx/svelte-toast';
 
 	let filename = '';
 	let coef = [];
 	let intercept = [];
 	let picAdd = '';
 	let judge = '';
-	let alphaCheck = '';
+	let alphaCheck = ''; // 是否显示针对于alpha参数的修改
 	let normalize = '';
 	let alpha = 0.5;
+	let methods = [];
+	let theNumberOfMethod = 1;
 
+	//对没有参数的方法是否进行添加的判断
+	let ordinaryLeastSquaresJudge = false;
+	let boostedDecisionTreeRegressionJudge = false;
+
+
+	//增添选择的方法
+	function ordinaryLeastSquaresAdd() {
+		alphaCheck = ''
+		if( !ordinaryLeastSquaresJudge ){
+			ordinaryLeastSquaresJudge = true;
+			let newMthod = { 
+				name:"Ordinary Least Squares",
+				id:theNumberOfMethod
+			}
+			methods.push(newMthod);
+			methods = methods;
+		}
+		else if( ordinaryLeastSquaresJudge ){
+			ordinaryLeastSquaresJudge = false;
+			methods = methods.filter(function (item) {
+        		return item.name != "Ordinary Least Squares";
+    		});
+			methods = methods;
+		}
+	}
+	function ridgeRegressionAdd() {
+		alphaCheck = ''
+		let newMthod = { 
+			name:"Ridge regression",
+			alpha:alpha,
+		}
+		methods = methods.filter(function (item) {
+        	return (item.name != newMthod.name) || (item.alpha != newMthod.alpha);
+    	});
+		methods.push(newMthod);
+		methods = methods;
+	}
+	function lassoAdd() {
+		alphaCheck = ''
+		let newMthod = { 
+			name:"Lasso",
+			alpha:alpha,
+		}
+		methods = methods.filter(function (item) {
+        	return (item.name != newMthod.name) || (item.alpha != newMthod.alpha);
+    	});
+		methods.push(newMthod);
+		methods = methods;
+	}
+	function boostedDecisionTreeRegressionAdd() {
+		alphaCheck = ''
+		if( !boostedDecisionTreeRegressionJudge ){
+			boostedDecisionTreeRegressionJudge = true;
+			let newMthod = { 
+				name:"Decision Tree Regression with AdaBoost",
+			}
+			methods.push(newMthod);
+			methods = methods;
+		}
+		else if( boostedDecisionTreeRegressionJudge ){
+			boostedDecisionTreeRegressionJudge = false;
+			methods = methods.filter(function (item) {
+        		return item.name != "Decision Tree Regression with AdaBoost";
+    		});
+			methods = methods;
+		}
+	}
+	function lassoLarsAdd() {
+		alphaCheck = ''
+		let newMthod = { 
+			name:"LARS Lasso",
+			alpha:alpha,
+			normalize:normalize,
+		}
+		methods = methods.filter(function (item) {
+        	return (item.name != newMthod.name) || (item.alpha != newMthod.alpha) || (item.normalize != newMthod.normalize);
+    	});
+		methods.push(newMthod);
+		methods = methods;
+	}
+	//部分方法的删除(针对于需要增添参数的方法)
+	function ridgeRegressionDelite() {
+		ridgeRegressionJudge = false;
+		methods = methods.filter(function (item) {
+			return item.name != "Ridge regression";
+		});
+		methods = methods;
+		alphaCheck = ''
+	}
+	function lassoDelite() {
+		lassoJudge = false;
+		methods = methods.filter(function (item) {
+			return item.name != "Lasso";
+		});
+		methods = methods;
+		alphaCheck = ''
+	}
+	function lassoLarsDelite() {
+		lassoLarsJudge = false;
+		methods = methods.filter(function (item) {
+			return item.name != "LARS Lasso";
+		});
+		methods = methods;
+		alphaCheck = ''
+	}
+	//获取部分方法所需要的参数
 	function getInAlphaRidgeRegression() {
 		alphaCheck = 'ridgeRegression'
+		judge = ''
 		alpha = 0.5
 	}
 	function getInAlphaLasso() {
 		alphaCheck = 'lasso'
+		judge = ''
 		alpha = 0.1
 	}
 	function getInAlphaLassoLars(){
 		alphaCheck = 'lassoLars'
 		normalize = 'False'
+		judge = ''
 		alpha = 0.1
 	}
 	function lassoLars() {
@@ -132,19 +245,14 @@
 		系,在面对只有特征没有标签的数据时,可以判断出标签。通俗一点,可以把机器学习理解为我们教机器如何做事情。
 	</p>
 	<div>
-		<div class = "flex mb-10 justify-center">
-			<Button type="submit" on:click={ordinaryLeastSquares}>Ordinary Least Squares</Button>
-			<Button type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button>
-			<Button type="submit" on:click={getInAlphaLasso}>Lasso</Button>
-			<Button type="submit" on:click={boostedDecisionTreeRegression}>Decision Tree Regression with AdaBoost</Button>
+		<div class = "flex mb-10 flex-wrap">
+			<div class="m-2"><Button  type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
+			<div class="m-2"><Button  type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button></div>
+			<div class="m-2"><Button  type="submit" on:click={getInAlphaLasso}>Lasso</Button></div>
+			<div class="m-2"><Button  type="submit" on:click={boostedDecisionTreeRegressionAdd}>Decision Tree Regression with AdaBoost</Button></div>
+			<div class="m-2"><Button  type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
 		</div>
 		<div class = "flex mb-10 justify-center">
-			<Button type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button>
-			<Button>Ridge regression</Button>
-			<Button>Multi-task Lasso</Button>
-			<Button>Decision Tree Regression with AdaBoost</Button>
-		</div>
-		<div class = "flex mb-5 justify-center">
 			<input bind:value={filename} type="file" enctype="multipart/form-data" size="16" />
 		</div>
 		<div>
@@ -155,7 +263,7 @@
 					<p>(0~1)</p>
 				</div>
 				<div class = "flex mb-10 justify-center">
-					<Button kind="tertiary" on:click={ridgeRegression}>ascertain</Button>
+					<Button kind="tertiary" on:click={ridgeRegressionAdd}>Confirm</Button>
 				</div>
 			{:else if alphaCheck == 'lasso'}
 				<div class = "flex justify-center mb-4">
@@ -164,7 +272,7 @@
 					<p>(0~1)</p>
 				</div>
 				<div class = "flex mb-10 justify-center">
-					<Button kind="tertiary" on:click={lasso}>ascertain</Button>
+					<Button kind="tertiary" on:click={lassoAdd}>Confirm</Button>
 				</div>
 			{:else if alphaCheck == 'lassoLars'}
 				<div class = "flex justify-center mb-4">
@@ -178,7 +286,7 @@
 					<p>(True or False)</p>
 				</div>
 				<div class = "flex mb-10 justify-center">
-					<Button kind="tertiary" on:click={lassoLars}>ascertain</Button>
+					<Button kind="tertiary" on:click={lassoLarsAdd}>Confirm</Button>
 				</div>
 			{/if}
 		</div>
@@ -199,6 +307,51 @@
 				<p class = "mb-5 text-center">常数项为:{intercept}</p>
 			{/if}
 		</div>
+	</div>
+</div>
+<div>
+	<div class = "mb-5">the methods you have chosen:</div>
+	<div class="flex flex-col">
+		{#each methods as method, i}
+			{#if method.name == 'Ordinary Least Squares'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-black text-white py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-black text-white py-3 px-6 w-60 mb-5">{method.name}</div>
+					<button class="btn btn-circle btn-outline h-2 w-10 ">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+					</button>
+				</div>
+			{:else if method.name == 'Ridge regression'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-yellow-300 text-black py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-yellow-300 text-black py-3 px-6 w-44 mb-5" >{method.name}</div>
+					<div class="rounded-full bg-yellow-300 text-black py-3 px-6 w-28 mb-5" >alpha:{method.alpha}</div>
+					<div><buttton kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} /></div>
+				</div>
+			{:else if method.name == 'Lasso'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-green-300 text-black py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-green-300 text-black py-3 px-6 w-24 mb-5">{method.name}</div>
+					<div class="rounded-full bg-green-300 text-black py-3 px-6 w-28 mb-5">alpha:{method.alpha}</div>
+					<Button kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} />
+				</div>
+			{:else if method.name == 'Decision Tree Regression with AdaBoost'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-blue-500 text-white py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-blue-500 text-white py-3 px-6 w-80 mb-5">{method.name}</div>
+					<Button kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} />
+				</div>
+			{:else if method.name == 'LARS Lasso'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-pink-300 text-white py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-36 mb-5">{method.name}</div>
+					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-28 mb-5">alpha:{method.alpha}</div>
+					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-40 mb-5">normalize:{method.normalize}</div>
+					<Button kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} />
+				</div>
+			{/if}
+			
+		{/each}
 	</div>
 </div>
 <div class = "flex justify-center">
