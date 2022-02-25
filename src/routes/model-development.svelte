@@ -45,40 +45,85 @@
 				name:"Ordinary Least Squares",
 				id:theNumberOfMethod
 			}
+			theNumberOfMethod ++;
 			methods.push(newMthod);
 			methods = methods;
+			toast.push('您成功添加了该种方法');
 		}
-		else if( ordinaryLeastSquaresJudge ){
-			ordinaryLeastSquaresJudge = false;
-			methods = methods.filter(function (item) {
-        		return item.name != "Ordinary Least Squares";
-    		});
-			methods = methods;
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
 		}
 	}
 	function ridgeRegressionAdd() {
+		let i = 0; 
+		let status = true;
 		alphaCheck = ''
 		let newMthod = { 
 			name:"Ridge regression",
 			alpha:alpha,
+			id:theNumberOfMethod
 		}
-		methods = methods.filter(function (item) {
-        	return (item.name != newMthod.name) || (item.alpha != newMthod.alpha);
-    	});
-		methods.push(newMthod);
-		methods = methods;
+		theNumberOfMethod ++;
+		for( i = 0; i < methods.length; i++ ){
+			if( methods[i].name == newMthod.name && methods[i].alpha == newMthod.alpha ){
+				status = false;
+				break;
+			}
+		}
+		if( status ){
+			methods = methods.filter(function (item) {
+				return (item.name != newMthod.name) || (item.alpha != newMthod.alpha);
+			});
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+		}
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
 	}
 	function lassoAdd() {
+		let i = 0; 
+		let status = true;
 		alphaCheck = ''
 		let newMthod = { 
 			name:"Lasso",
 			alpha:alpha,
+			id:theNumberOfMethod
 		}
-		methods = methods.filter(function (item) {
-        	return (item.name != newMthod.name) || (item.alpha != newMthod.alpha);
-    	});
-		methods.push(newMthod);
-		methods = methods;
+		theNumberOfMethod ++;
+		for( i = 0; i < methods.length; i++ ){
+			if( methods[i].name == newMthod.name && methods[i].alpha == newMthod.alpha ){
+				status = false;
+				break;
+			}
+		}
+		if( status ){
+			methods = methods.filter(function (item) {
+				return (item.name != newMthod.name) || (item.alpha != newMthod.alpha);
+			});
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+		}
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
 	}
 	function boostedDecisionTreeRegressionAdd() {
 		alphaCheck = ''
@@ -86,56 +131,77 @@
 			boostedDecisionTreeRegressionJudge = true;
 			let newMthod = { 
 				name:"Decision Tree Regression with AdaBoost",
+				id:theNumberOfMethod
 			}
+			theNumberOfMethod ++;
 			methods.push(newMthod);
 			methods = methods;
+			toast.push('您成功添加了该种方法');
 		}
-		else if( boostedDecisionTreeRegressionJudge ){
-			boostedDecisionTreeRegressionJudge = false;
-			methods = methods.filter(function (item) {
-        		return item.name != "Decision Tree Regression with AdaBoost";
-    		});
-			methods = methods;
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
 		}
 	}
 	function lassoLarsAdd() {
+		let i = 0; 
+		let status = true;
 		alphaCheck = ''
 		let newMthod = { 
 			name:"LARS Lasso",
 			alpha:alpha,
 			normalize:normalize,
+			id:theNumberOfMethod
 		}
+		for( i = 0; i < methods.length; i++ ){
+			if( methods[i].name == newMthod.name && methods[i].alpha == newMthod.alpha && methods[i].normalize == newMthod.normalize){
+				status = false;
+				break;
+			}
+		}
+		if( status ){
+			methods = methods.filter(function (item) {
+				return (item.name != newMthod.name) || (item.alpha != newMthod.alpha);
+			});
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+		}
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+	}
+
+	//部分方法的删除(针对于不需要增添参数的方法)
+	function ordinaryLeastSquaresDelite( id ){
+		ordinaryLeastSquaresJudge = false;
 		methods = methods.filter(function (item) {
-        	return (item.name != newMthod.name) || (item.alpha != newMthod.alpha) || (item.normalize != newMthod.normalize);
+        	return item.id != id;
     	});
-		methods.push(newMthod);
-		methods = methods;
 	}
-	//部分方法的删除(针对于需要增添参数的方法)
-	function ridgeRegressionDelite() {
-		ridgeRegressionJudge = false;
+	function boostedDecisionTreeRegressionDelite( id ){
+		boostedDecisionTreeRegressionJudge = false;
 		methods = methods.filter(function (item) {
-			return item.name != "Ridge regression";
-		});
-		methods = methods;
-		alphaCheck = ''
+        	return item.id != id;
+    	});
 	}
-	function lassoDelite() {
-		lassoJudge = false;
+
+	//需要参数方法的删除
+	function ordinaryDelite( id ){
 		methods = methods.filter(function (item) {
-			return item.name != "Lasso";
-		});
-		methods = methods;
-		alphaCheck = ''
+        	return item.id != id;
+    	});
 	}
-	function lassoLarsDelite() {
-		lassoLarsJudge = false;
-		methods = methods.filter(function (item) {
-			return item.name != "LARS Lasso";
-		});
-		methods = methods;
-		alphaCheck = ''
-	}
+
 	//获取部分方法所需要的参数
 	function getInAlphaRidgeRegression() {
 		alphaCheck = 'ridgeRegression'
@@ -246,11 +312,11 @@
 	</p>
 	<div>
 		<div class = "flex mb-10 flex-wrap">
-			<div class="m-2"><Button  type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
-			<div class="m-2"><Button  type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button></div>
-			<div class="m-2"><Button  type="submit" on:click={getInAlphaLasso}>Lasso</Button></div>
-			<div class="m-2"><Button  type="submit" on:click={boostedDecisionTreeRegressionAdd}>Decision Tree Regression with AdaBoost</Button></div>
-			<div class="m-2"><Button  type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
+			<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
+			<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button></div>
+			<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLasso}>Lasso</Button></div>
+			<div class="m-2"><Button  class="h-14" type="submit" on:click={boostedDecisionTreeRegressionAdd}>Decision Tree Regression with AdaBoost</Button></div>
+			<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
 		</div>
 		<div class = "flex mb-10 justify-center">
 			<input bind:value={filename} type="file" enctype="multipart/form-data" size="16" />
@@ -315,39 +381,37 @@
 		{#each methods as method, i}
 			{#if method.name == 'Ordinary Least Squares'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-black text-white py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-black text-white py-3 text-center w-10 mb-5">{i+1}</div>
 					<div class="rounded-full bg-black text-white py-3 px-6 w-60 mb-5">{method.name}</div>
-					<button class="btn btn-circle btn-outline h-2 w-10 ">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-					</button>
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryLeastSquaresDelite(method.id)}>X</button>
 				</div>
 			{:else if method.name == 'Ridge regression'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-yellow-300 text-black py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-yellow-300 text-black py-3 text-center w-10 mb-5">{i+1}</div>
 					<div class="rounded-full bg-yellow-300 text-black py-3 px-6 w-44 mb-5" >{method.name}</div>
 					<div class="rounded-full bg-yellow-300 text-black py-3 px-6 w-28 mb-5" >alpha:{method.alpha}</div>
-					<div><buttton kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} /></div>
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
 				</div>
 			{:else if method.name == 'Lasso'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-green-300 text-black py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-green-300 text-black py-3 text-center w-10 mb-5">{i+1}</div>
 					<div class="rounded-full bg-green-300 text-black py-3 px-6 w-24 mb-5">{method.name}</div>
 					<div class="rounded-full bg-green-300 text-black py-3 px-6 w-28 mb-5">alpha:{method.alpha}</div>
-					<Button kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} />
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
 				</div>
 			{:else if method.name == 'Decision Tree Regression with AdaBoost'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-blue-500 text-white py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-blue-500 text-white py-3 text-center w-10 mb-5">{i+1}</div>
 					<div class="rounded-full bg-blue-500 text-white py-3 px-6 w-80 mb-5">{method.name}</div>
-					<Button kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} />
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={boostedDecisionTreeRegressionDelite(method.id)}>X</button>
 				</div>
 			{:else if method.name == 'LARS Lasso'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-pink-300 text-white py-3 text-center w-8 mb-5">{i+1}</div>
+					<div class="rounded-full bg-pink-300 text-white py-3 text-center w-10 mb-5">{i+1}</div>
 					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-36 mb-5">{method.name}</div>
 					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-28 mb-5">alpha:{method.alpha}</div>
 					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-40 mb-5">normalize:{method.normalize}</div>
-					<Button kind="danger-tertiary" iconDescription="Delete" icon={TrashCan16} />
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
 				</div>
 			{/if}
 			
