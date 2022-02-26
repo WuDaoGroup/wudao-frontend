@@ -4,12 +4,12 @@
 	import { receiveBasicImageInfoApi } from '../api/fileApi';
 	let showImage = false;
 	$: length = 0;
-	let filename = "data.csv"
+	let filename = 'movie_data.xlsx';
 	function receiveData() {
 		receiveBasicImageInfoApi(filename).then((response) => {
 			if (response.status == 200) {
 				console.log(response);
-				length = response.data.data
+				length = response.data.data;
 				for (let i = 1; i <= length; i++) {
 					let str =
 						`http://localhost:8123/static/images/${filename}_selected_features_` + i + '.png';
@@ -33,27 +33,9 @@
 	<Button on:click={receiveData} kind="tertiary" class=" col-auto ">获取数据</Button>
 </div>
 {#if showImage == true}
-	<!-- <div class="flex flex-nowrap"> -->
-	{#if length <= 1}
+	<div class="grid grid-cols-3 gap-4">
 		{#each images as image}
-			<div class="flex-initial"><img src={image.str} /></div>
+			<img src={image.str} />
 		{/each}
-	{:else if length % 2 == 1}
-		<div class="grid grid-cols-2 gap-4">
-			{#each images as image}
-				{#if image.key == length}
-					<img class="col-span-2" src={image.str} />
-				{:else}
-					<img src={image.str} />
-				{/if}
-			{/each}
-		</div>
-	{:else}
-		<div class="grid grid-cols-3 gap-4">
-			{#each images as image}
-				<img src={image.str} />
-			{/each}
-		</div>
-	{/if}
-	<!-- </div> -->
+	</div>
 {/if}
