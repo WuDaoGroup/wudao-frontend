@@ -39,7 +39,8 @@
 	let lassoAnswerSheet = [];
 	let lassoLarsAnswerSheet = [];
 
-	let judge = false;
+	let judge = false; // 判断此时是否显示得到的答案
+	let judgeReset = false; // 判断此时是否需要显示reset
 	let coef = [];
 	let	intercept = [];
 	
@@ -58,6 +59,7 @@
 				coef: coef,
 				intercept: intercept
 			}
+			console.log("lassoLars:", theNewAns);
 			lassoLarsAnswerSheet.push(theNewAns);
 			lassoLarsAnswerSheet = lassoLarsAnswerSheet;
 		});
@@ -138,54 +140,66 @@
 	}
 
 	function handleAnswerSheet() {
-		let ordinaryLeastSquaresAns = [];
-		let boostedDecisionTreeAns = [];
-		let ridgeRegressionAns = [];
-		let lassoAns = [];
-		let lassoLarsAns = [];
-		alphaCheck = '';
-		for (var i = 0; i < methods.length; i++ ){
-			let newAns = methods[i];
-			console.log(newAns);
-			if( methods[i].name == 'Ordinary Least Squares' ){
-				ordinaryLeastSquaresAns.push(newAns);
-				ordinaryLeastSquaresAns = ordinaryLeastSquaresAns;
+		if( !judgeReset ){
+			let ordinaryLeastSquaresAns = [];
+			let boostedDecisionTreeAns = [];
+			let ridgeRegressionAns = [];
+			let lassoAns = [];
+			let lassoLarsAns = [];
+			alphaCheck = '';
+			for (var i = 0; i < methods.length; i++ ){
+				let newAns = methods[i];
+				console.log(newAns);
+				if( methods[i].name == 'Ordinary Least Squares' ){
+					ordinaryLeastSquaresAns.push(newAns);
+					ordinaryLeastSquaresAns = ordinaryLeastSquaresAns;
+				}
+				else if( methods[i].name == 'Ridge regression' ){
+					ridgeRegressionAns.push(newAns);
+					ridgeRegressionAns = ridgeRegressionAns;
+				}
+				else if( methods[i].name == "Lasso" ){
+					lassoAns.push(newAns);
+					lassoAns = lassoAns;
+				}
+				else if( methods[i].name == "LARS Lasso" ){
+					lassoLarsAns.push(newAns);
+					lassoLarsAns = lassoLarsAns;
+				}
+				else if( methods[i].name == "Decision Tree Regression with AdaBoost"){
+					boostedDecisionTreeAns.push(newAns);
+					boostedDecisionTreeAns = boostedDecisionTreeAns;
+				}
 			}
-			else if( methods[i].name == 'Ridge regression' ){
-				ridgeRegressionAns.push(newAns);
-				ridgeRegressionAns = ridgeRegressionAns;
+			for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
+				ordinaryLeastSquares();
 			}
-			else if( methods[i].name == "Lasso" ){
-				lassoAns.push(newAns);
-				lassoAns = lassoAns;
+			for( var i = 0; i < ridgeRegressionAns.length; i++ ){
+				ridgeRegression( ridgeRegressionAns[i].alpha );
 			}
-			else if( methods[i].name == "Lars Lasso" ){
-				lassoLarsAns.push(newAns);
-				lassoLarsAns = lassoLarsAns;
+			for( var i = 0; i < lassoAns.length; i++ ){
+				lasso( lassoAns[i].alpha );
 			}
-			else if( methods[i].name == "Decision Tree Regression with AdaBoost"){
-				boostedDecisionTreeAns.push(newAns);
-				boostedDecisionTreeAns = boostedDecisionTreeAns;
+			for( var i = 0; i < lassoLarsAns.length; i++ ){
+				console.log("Use the lassoLars!!!");
+				lassoLars( lassoLarsAns[i].alpha, lassoLarsAns[i].normalize );
 			}
+			for( var i = 0; i < boostedDecisionTreeAns.length; i++ ){
+				boostedDecisionTreeRegression();
+			}
+			judge = true;
+			judgeReset = true;
 		}
-		for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
-			ordinaryLeastSquares();
-		}
-		for( var i = 0; i < ridgeRegressionAns.length; i++ ){
-			ridgeRegression( ridgeRegressionAns[i].alpha );
-		}
-		for( var i = 0; i < lassoAns.length; i++ ){
-			lasso( lassoAns[i].alpha );
-		}
-		for( var i = 0; i < lassoLarsAns.length; i++ ){
-			lassoLars( lassoLarsAns[i].alpha, lassoLarsAns[i].normalize );
-		}
-		for( var i = 0; i < boostedDecisionTreeAns.length; i++ ){
-			boostedDecisionTreeRegression();
-		}
-		judge = true;
 	}
 
+	function reset() {
+		judgeReset = false;
+		ordinaryLeastSquaresAnswerSheet = [];
+		boostedDecisionTreeRegressionAnswerSheet = [];
+	 	ridgeRegressionAnswerSheet = [];
+		lassoAnswerSheet = [];
+		lassoLarsAnswerSheet = [];
+	}
 	//增添选择的方法
 	function ordinaryLeastSquaresAdd() {
 		alphaCheck = ''
@@ -208,6 +222,7 @@
 				}
 			});
 		}
+		judgeReset = false;
 	}
 	function ridgeRegressionAdd() {
 		let i = 0; 
@@ -296,6 +311,7 @@
 				}
 			});
 		}
+		reset();
 	}
 	function lassoLarsAdd() {
 		let i = 0; 
@@ -357,17 +373,20 @@
 		alphaCheck = 'ridgeRegression'
 		judge = ''
 		alpha = 0.5
+		reset();
 	}
 	function getInAlphaLasso() {
 		alphaCheck = 'lasso'
 		judge = ''
 		alpha = 0.1
+		reset();
 	}
 	function getInAlphaLassoLars(){
 		alphaCheck = 'lassoLars'
 		normalize = 'False'
 		judge = ''
 		alpha = 0.1
+		reset();
 	}
 </script>
 
@@ -493,7 +512,12 @@
 </div>
 <div>
 	<div class = "flex justify-center">
-		<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
+		{#if !judgeReset }
+			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
+		{:else}
+			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
+			<Button type="submit" on:click={reset}>Reset</Button>
+		{/if}
 	</div>
 	<div>
 		{#if judge }
@@ -514,7 +538,9 @@
 				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
 			{/each}
 			{#each boostedDecisionTreeRegressionAnswerSheet as ans }
-				<img src={ans.picAdd} alt="the result" />
+				<div class = "flex mb-10 justify-center">
+					<img src={ans.picAdd} alt="the result" />
+				</div>
 			{/each}
 		{/if}
 	</div>
