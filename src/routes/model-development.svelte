@@ -21,10 +21,7 @@
 	import { toast } from '@zerodevx/svelte-toast';
 
 	let filename = '';
-	let coef = [];
-	let intercept = [];
 	let picAdd = '';
-	let judge = '';
 	let alphaCheck = ''; // 是否显示针对于alpha参数的修改
 	let normalize = '';
 	let alpha = 0.5;
@@ -35,6 +32,170 @@
 	let ordinaryLeastSquaresJudge = false;
 	let boostedDecisionTreeRegressionJudge = false;
 
+	//答案列表
+	let ordinaryLeastSquaresAnswerSheet = [];
+	let boostedDecisionTreeRegressionAnswerSheet = [];
+	let ridgeRegressionAnswerSheet = []; 
+	let lassoAnswerSheet = [];
+	let lassoLarsAnswerSheet = [];
+
+	let judge = false;
+	let coef = [];
+	let	intercept = [];
+	
+	//答案处理方法
+	function lassoLars( alpha, normalize ) {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		lassoLarsData(filename, alpha, normalize).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			console.log("从后端反馈回的数据:", coef, intercept );
+		});
+		let theNewAns = {
+			coef: coef,
+			intercept: intercept
+		}
+		return theNewAns;
+	}
+
+	function lasso( alpha ) {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		lassoData(filename, alpha).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+		});
+		let theNewAns = {
+			coef: coef,
+			intercept: intercept
+		}
+		return theNewAns;
+	}
+
+	function ridgeRegression( alpha ) {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		ridgeRegressionData(filename, alpha).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+		});
+		let theNewAns = {
+			coef: coef,
+			intercept: intercept
+		}
+		return theNewAns;
+	}
+
+	function ordinaryLeastSquares() {
+		judge = '';
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		console.log("the filename:", filename);
+		ordinaryLeastSquaresData(filename).then((response) => {
+			coef = response.data['result_coef'];
+			intercept = response.data['result_intercept'];
+			console.log("从后端反馈回的数据:", coef, intercept );
+		});
+		console.log("从后端反馈回的数据:", coef, intercept );
+		let theNewAns = {
+			coef:[],
+			intercept:[]
+		}
+		theNewAns.coef = coef;
+		theNewAns.intercept = intercept;
+		console.log("最终得到的ans",theNewAns);
+		return theNewAns;
+	}
+
+	function boostedDecisionTreeRegression() {
+		judge = '';
+		coef = [];
+		intercept = [];
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		boostedDecisionTreeRegressionData(filename).then((response) => {
+			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+		});
+		let theNewAns = {
+			picAdd:picAdd,
+		}
+		return theNewAns;
+	}
+
+	function handleAnswerSheet() {
+		let ordinaryLeastSquaresAns = [];
+		let boostedDecisionTreeAns = [];
+		let ridgeRegressionAns = [];
+		let lassoAns = [];
+		let lassoLarsAns = [];
+		alphaCheck = '';
+		for (var i = 0; i < methods.length; i++ ){
+			let newAns = methods[i];
+			console.log(newAns);
+			if( methods[i].name == 'Ordinary Least Squares' ){
+				ordinaryLeastSquaresAns.push(newAns);
+				ordinaryLeastSquaresAns = ordinaryLeastSquaresAns;
+			}
+			else if( methods[i].name == 'Ridge regression' ){
+				ridgeRegressionAns.push(newAns);
+				ridgeRegressionAns = ridgeRegressionAns;
+			}
+			else if( methods[i].name == "Lasso" ){
+				lassoAns.push(newAns);
+				lassoAns = lassoAns;
+			}
+			else if( methods[i].name == "Lars Lasso" ){
+				lassoLarsAns.push(newAns);
+				lassoLarsAns = lassoLarsAns;
+			}
+			else if( methods[i].name == "Decision Tree Regression with AdaBoost"){
+				boostedDecisionTreeAns.push(newAns);
+				boostedDecisionTreeAns = boostedDecisionTreeAns;
+			}
+		}
+		for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
+			let newAns = ordinaryLeastSquares();
+			console.log("ordinaryLeastSquares(),the newAns:", newAns);
+			ordinaryLeastSquaresAnswerSheet.push(newAns);
+			ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
+		}
+		for( var i = 0; i < ridgeRegressionAns.length; i++ ){
+			let newAns = ridgeRegression( ridgeRegressionAns[i].alpha );
+			ridgeRegressionAnswerSheet.push(newAns);
+			ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
+		}
+		for( var i = 0; i < lassoAns.length; i++ ){
+			let newAns = lasso( lassoAns[i].alpha );
+			lassoAnswerSheet.push(newAns);
+			lassoAnswerSheet = lassoAnswerSheet;
+		}
+		for( var i = 0; i < lassoLarsAns.length; i++ ){
+			let newAns = lassoLars( lassoLarsAns[i].alpha, lassoLarsAns[i].normalize );
+			lassoLarsAnswerSheet.push(newAns);
+			lassoLarsAnswerSheet = lassoLarsAnswerSheet;
+		}
+		for( var i = 0; i < boostedDecisionTreeAns.length; i++ ){
+			let newAns = boostedDecisionTreeRegression();
+			boostedDecisionTreeRegressionAnswerSheet.push(newAns);
+			boostedDecisionTreeRegressionAnswerSheet = boostedDecisionTreeRegressionAnswerSheet;
+		}
+		judge = true;
+	}
 
 	//增添选择的方法
 	function ordinaryLeastSquaresAdd() {
@@ -219,82 +380,6 @@
 		judge = ''
 		alpha = 0.1
 	}
-	function lassoLars() {
-		judge = '';
-		coef = [];
-		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		lassoLarsData(filename, alpha, normalize).then((response) => {
-			coef = response.data['result_coef'];
-			intercept = response.data['result_intercept'];
-			if (response.status == 200) {
-				judge = 'll';
-				alphaCheck = '';
-			}
-		});
-	}
-
-	function lasso() {
-		judge = '';
-		coef = [];
-		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		lassoData(filename, alpha).then((response) => {
-			coef = response.data['result_coef'];
-			intercept = response.data['result_intercept'];
-			if (response.status == 200) {
-				judge = 'l';
-				alphaCheck = '';
-			}
-		});
-	}
-	function ridgeRegression() {
-		judge = '';
-		coef = [];
-		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		ridgeRegressionData(filename, alpha).then((response) => {
-			coef = response.data['result_coef'];
-			intercept = response.data['result_intercept'];
-			if (response.status == 200) {
-				judge = 'rd';
-				alphaCheck = '';
-			}
-		});
-	}
-	function ordinaryLeastSquares() {
-		judge = '';
-		coef = [];
-		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		ordinaryLeastSquaresData(filename).then((response) => {
-			coef = response.data['result_coef'];
-			intercept = response.data['result_intercept'];
-			if (response.status == 200) judge = 'ols';
-		});
-	}
-
-	function boostedDecisionTreeRegression() {
-		judge = '';
-		coef = [];
-		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		boostedDecisionTreeRegressionData(filename).then((response) => {
-			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
-			console.log(picAdd);
-			if (response.status == 200) judge = 'bdtr';
-		});
-	}
 </script>
 
 <div>
@@ -313,10 +398,27 @@
 	<div>
 		<div class = "flex mb-10 flex-wrap">
 			<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
-			<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button></div>
-			<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLasso}>Lasso</Button></div>
+			
+			{#if alphaCheck == 'ridgeRegression'}
+				<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</button></div>
+			{:else}
+				<div class="m-2"><Button class="h-14" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button></div>
+			{/if}
+			
+			{#if alphaCheck == 'lasso'}
+				<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaLasso}>Lasso</button></div>
+			{:else}
+				<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLasso}>Lasso</Button></div>
+			{/if}
+			
 			<div class="m-2"><Button  class="h-14" type="submit" on:click={boostedDecisionTreeRegressionAdd}>Decision Tree Regression with AdaBoost</Button></div>
-			<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
+			
+			{#if alphaCheck == 'lassoLars'}
+				<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</button></div>
+			{:else}
+				<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
+			{/if}
+
 		</div>
 		<div class = "flex mb-10 justify-center">
 			<input bind:value={filename} type="file" enctype="multipart/form-data" size="16" />
@@ -354,23 +456,6 @@
 				<div class = "flex mb-10 justify-center">
 					<Button kind="tertiary" on:click={lassoLarsAdd}>Confirm</Button>
 				</div>
-			{/if}
-		</div>
-		<div>
-			{#if judge == 'rd'}
-				<p class = "mb-5 text-center">系数分别为:{coef}</p>
-				<p class = "mb-5 text-center">常数项为:{intercept}</p>
-			{:else if judge == 'ols'}
-				<p class = "mb-5 text-center">系数分别为:{coef}</p>
-				<p class = "mb-5 text-center">常数项为:{intercept}</p>
-			{:else if judge == 'bdtr'}
-				<img src={picAdd} alt="the result" />
-			{:else if judge == 'l'}
-				<p class = "mb-5 text-center">系数分别为:{coef}</p>
-				<p class = "mb-5 text-center">常数项为:{intercept}</p>
-			{:else if judge == 'll'}
-				<p class = "mb-5 text-center">系数分别为:{coef}</p>
-				<p class = "mb-5 text-center">常数项为:{intercept}</p>
 			{/if}
 		</div>
 	</div>
@@ -414,10 +499,36 @@
 					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
 				</div>
 			{/if}
-			
 		{/each}
 	</div>
 </div>
-<div class = "flex justify-center">
-	<Button type="submit">Submit</Button>
+<div>
+	<div class = "flex justify-center">
+		<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
+	</div>
+	<div>
+		{#if judge }
+			{#each ordinaryLeastSquaresAnswerSheet as ans }
+				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
+				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
+			{/each}
+			{#each ridgeRegressionAnswerSheet as ans }
+				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
+				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
+			{/each}
+			{#each lassoAnswerSheet as ans }
+				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
+				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
+			{/each}
+			{#each lassoLarsAnswerSheet as ans }
+				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
+				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
+			{/each}
+			{#each boostedDecisionTreeRegressionAnswerSheet as ans }
+				<img src={ans.picAdd} alt="the result" />
+			{/each}
+		{/if}
+	</div>
 </div>
+	
+
