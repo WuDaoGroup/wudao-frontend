@@ -10,7 +10,8 @@
         SelectItem,
         InlineNotification,
 		ProgressIndicator,
-		ProgressStep
+		ProgressStep,
+        TextInput
 	} from 'carbon-components-svelte';
 
     let showTable = false;
@@ -60,7 +61,7 @@
 			}
 		});
 	}
-    let bar = 1
+    let bar
     function zscoreFilter(){
         zscoreFilterInfoApi(filename, bar).then((response) => {
                 if (response.status == 200) {
@@ -201,5 +202,5 @@
 </Select>
 <Button on:click={confirmOriginZscore} kind="tertiary">确定</Button>
 
-
+<TextInput inline labelText="User name" placeholder="Enter user name..." bind:value={bar} />
 <Button on:click={zscoreFilter} kind="tertiary">数据筛选</Button>

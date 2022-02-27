@@ -31,7 +31,7 @@ export const receiveBasicFileInfoApi = async (uploadFilename) => {
 
 export const receiveBasicImageInfoApi = async (uploadFilename) => {
 	try {
-		const response = await api.get(`/data/${uploadFilename}_selected_feature.png/features/info`);
+		const response = await api.get(`/files/${uploadFilename}_selected_feature.png/features/info`);
 		return response;
 	} catch (err) {
 		console.error(err);
