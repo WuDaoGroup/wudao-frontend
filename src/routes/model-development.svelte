@@ -35,7 +35,7 @@
 	//答案列表
 	let ordinaryLeastSquaresAnswerSheet = [];
 	let boostedDecisionTreeRegressionAnswerSheet = [];
-	let ridgeRegressionAnswerSheet = []; 
+	let ridgeRegressionAnswerSheet = [];
 	let lassoAnswerSheet = [];
 	let lassoLarsAnswerSheet = [];
 
@@ -54,13 +54,13 @@
 		lassoLarsData(filename, alpha, normalize).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
-			console.log("从后端反馈回的数据:", coef, intercept );
+			let theNewAns = {
+				coef: coef,
+				intercept: intercept
+			}
+			lassoLarsAnswerSheet.push(theNewAns);
+			lassoLarsAnswerSheet = lassoLarsAnswerSheet;
 		});
-		let theNewAns = {
-			coef: coef,
-			intercept: intercept
-		}
-		return theNewAns;
 	}
 
 	function lasso( alpha ) {
@@ -73,12 +73,13 @@
 		lassoData(filename, alpha).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
+			let theNewAns = {
+				coef: coef,
+				intercept: intercept
+			}
+			lassoAnswerSheet.push(theNewAns);
+			lassoAnswerSheet = lassoAnswerSheet;
 		});
-		let theNewAns = {
-			coef: coef,
-			intercept: intercept
-		}
-		return theNewAns;
 	}
 
 	function ridgeRegression( alpha ) {
@@ -91,12 +92,13 @@
 		ridgeRegressionData(filename, alpha).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
+			let theNewAns = {
+				coef: coef,
+				intercept: intercept
+			}
+			ridgeRegressionAnswerSheet.push(theNewAns);
+			ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
 		});
-		let theNewAns = {
-			coef: coef,
-			intercept: intercept
-		}
-		return theNewAns;
 	}
 
 	function ordinaryLeastSquares() {
@@ -108,17 +110,14 @@
 		ordinaryLeastSquaresData(filename).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
-			console.log("从后端反馈回的数据:", coef, intercept );
+			let theNewAns = {
+				coef: coef,
+				intercept: intercept
+			}
+			console.log("the new ans:-------", theNewAns);
+			ordinaryLeastSquaresAnswerSheet.push(theNewAns);
+			ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
 		});
-		console.log("从后端反馈回的数据:", coef, intercept );
-		let theNewAns = {
-			coef:[],
-			intercept:[]
-		}
-		theNewAns.coef = coef;
-		theNewAns.intercept = intercept;
-		console.log("最终得到的ans",theNewAns);
-		return theNewAns;
 	}
 
 	function boostedDecisionTreeRegression() {
@@ -130,11 +129,12 @@
 		filename = theFile[lenFile - 1];
 		boostedDecisionTreeRegressionData(filename).then((response) => {
 			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+			let theNewAns = {
+				picAdd:picAdd,
+			}
+			boostedDecisionTreeRegressionAnswerSheet.push(theNewAns);
+			boostedDecisionTreeRegressionAnswerSheet = boostedDecisionTreeRegressionAnswerSheet;
 		});
-		let theNewAns = {
-			picAdd:picAdd,
-		}
-		return theNewAns;
 	}
 
 	function handleAnswerSheet() {
@@ -169,30 +169,19 @@
 			}
 		}
 		for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
-			let newAns = ordinaryLeastSquares();
-			console.log("ordinaryLeastSquares(),the newAns:", newAns);
-			ordinaryLeastSquaresAnswerSheet.push(newAns);
-			ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
+			ordinaryLeastSquares();
 		}
 		for( var i = 0; i < ridgeRegressionAns.length; i++ ){
-			let newAns = ridgeRegression( ridgeRegressionAns[i].alpha );
-			ridgeRegressionAnswerSheet.push(newAns);
-			ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
+			ridgeRegression( ridgeRegressionAns[i].alpha );
 		}
 		for( var i = 0; i < lassoAns.length; i++ ){
-			let newAns = lasso( lassoAns[i].alpha );
-			lassoAnswerSheet.push(newAns);
-			lassoAnswerSheet = lassoAnswerSheet;
+			lasso( lassoAns[i].alpha );
 		}
 		for( var i = 0; i < lassoLarsAns.length; i++ ){
-			let newAns = lassoLars( lassoLarsAns[i].alpha, lassoLarsAns[i].normalize );
-			lassoLarsAnswerSheet.push(newAns);
-			lassoLarsAnswerSheet = lassoLarsAnswerSheet;
+			lassoLars( lassoLarsAns[i].alpha, lassoLarsAns[i].normalize );
 		}
 		for( var i = 0; i < boostedDecisionTreeAns.length; i++ ){
-			let newAns = boostedDecisionTreeRegression();
-			boostedDecisionTreeRegressionAnswerSheet.push(newAns);
-			boostedDecisionTreeRegressionAnswerSheet = boostedDecisionTreeRegressionAnswerSheet;
+			boostedDecisionTreeRegression();
 		}
 		judge = true;
 	}
@@ -508,9 +497,9 @@
 	</div>
 	<div>
 		{#if judge }
-			{#each ordinaryLeastSquaresAnswerSheet as ans }
-				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
+			{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept} }
+				<p class = "mb-5 text-center">系数分别为:{coef}</p>
+				<p class = "mb-5 text-center">常数项为:{intercept}</p>
 			{/each}
 			{#each ridgeRegressionAnswerSheet as ans }
 				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
