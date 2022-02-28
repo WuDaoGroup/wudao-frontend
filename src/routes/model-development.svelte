@@ -43,6 +43,13 @@
 	let judgeReset = false; // 判断此时是否需要显示reset
 	let coef = [];
 	let	intercept = [];
+
+	//判断是否存在某方法的出现
+	let ordinaryLeastSquaresAppearance = false;
+	let boostedDecisionTreeRegressionAppearance = false;
+	let ridgeRegressionAppearance = false;
+	let lassoAppearance = false;
+	let lassoLarsAppearance = false;
 	
 	//答案处理方法
 	function lassoLars( alpha, normalize ) {
@@ -57,7 +64,9 @@
 			intercept = response.data['result_intercept'];
 			let theNewAns = {
 				coef: coef,
-				intercept: intercept
+				intercept: intercept,
+				alpha:alpha,
+				normalize: normalize
 			}
 			console.log("lassoLars:", theNewAns);
 			lassoLarsAnswerSheet.push(theNewAns);
@@ -77,7 +86,8 @@
 			intercept = response.data['result_intercept'];
 			let theNewAns = {
 				coef: coef,
-				intercept: intercept
+				intercept: intercept,
+				alpha: alpha,
 			}
 			lassoAnswerSheet.push(theNewAns);
 			lassoAnswerSheet = lassoAnswerSheet;
@@ -96,7 +106,8 @@
 			intercept = response.data['result_intercept'];
 			let theNewAns = {
 				coef: coef,
-				intercept: intercept
+				intercept: intercept,
+				alpha:alpha,
 			}
 			ridgeRegressionAnswerSheet.push(theNewAns);
 			ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
@@ -153,22 +164,27 @@
 				if( methods[i].name == 'Ordinary Least Squares' ){
 					ordinaryLeastSquaresAns.push(newAns);
 					ordinaryLeastSquaresAns = ordinaryLeastSquaresAns;
+					ordinaryLeastSquaresAppearance = true;
 				}
 				else if( methods[i].name == 'Ridge regression' ){
 					ridgeRegressionAns.push(newAns);
 					ridgeRegressionAns = ridgeRegressionAns;
+					ridgeRegressionAppearance = true;
 				}
 				else if( methods[i].name == "Lasso" ){
 					lassoAns.push(newAns);
 					lassoAns = lassoAns;
+					lassoAppearance = true;
 				}
 				else if( methods[i].name == "LARS Lasso" ){
 					lassoLarsAns.push(newAns);
 					lassoLarsAns = lassoLarsAns;
+					lassoLarsAppearance = true;
 				}
 				else if( methods[i].name == "Decision Tree Regression with AdaBoost"){
 					boostedDecisionTreeAns.push(newAns);
 					boostedDecisionTreeAns = boostedDecisionTreeAns;
+					boostedDecisionTreeRegressionAppearance = true;
 				}
 			}
 			for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
@@ -192,6 +208,20 @@
 		}
 	}
 
+	//重设数据
+	function Reset() {
+		judgeReset = false;
+		ordinaryLeastSquaresAnswerSheet = [];
+		boostedDecisionTreeRegressionAnswerSheet = [];
+	 	ridgeRegressionAnswerSheet = [];
+		lassoAnswerSheet = [];
+		lassoLarsAnswerSheet = [];
+		ordinaryLeastSquaresAppearance = false;
+	    boostedDecisionTreeRegressionAppearance = false;
+	    ridgeRegressionAppearance = false;
+	    lassoAppearance = false;
+	    lassoLarsAppearance = false;
+	}
 	function reset() {
 		judgeReset = false;
 		ordinaryLeastSquaresAnswerSheet = [];
@@ -199,6 +229,15 @@
 	 	ridgeRegressionAnswerSheet = [];
 		lassoAnswerSheet = [];
 		lassoLarsAnswerSheet = [];
+	}
+	function allClear(){
+		reset();
+		ordinaryLeastSquaresAppearance = false;
+	    boostedDecisionTreeRegressionAppearance = false;
+	    ridgeRegressionAppearance = false;
+	    lassoAppearance = false;
+	    lassoLarsAppearance = false;
+		methods = [];
 	}
 	//增添选择的方法
 	function ordinaryLeastSquaresAdd() {
@@ -213,6 +252,8 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
+			judge = ''
+			reset();
 		}
 		else{
 			toast.push('您已经添加了该种方法', {
@@ -222,7 +263,6 @@
 				}
 			});
 		}
-		judgeReset = false;
 	}
 	function ridgeRegressionAdd() {
 		let i = 0; 
@@ -302,6 +342,8 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
+			reset();
+			judge = '';
 		}
 		else{
 			toast.push('您已经添加了该种方法', {
@@ -311,7 +353,6 @@
 				}
 			});
 		}
-		reset();
 	}
 	function lassoLarsAdd() {
 		let i = 0; 
@@ -392,6 +433,7 @@
 
 <div>
 	<h1 class = "mb-5 text-center">Supervised Learning (监督学习)</h1>
+	<!-- 对于监督学习的介绍 -->
 	<p class = "mb-5 indent-8">
 		从给定的训练数据集中学习出一个函数(模型参数),当新的数据到来时,可以根据这个函数预测结果。
 		监督学习的训练集要求包括输入输出,也可以说是特征和目标。训练集中
@@ -404,6 +446,7 @@
 		系,在面对只有特征没有标签的数据时,可以判断出标签。通俗一点,可以把机器学习理解为我们教机器如何做事情。
 	</p>
 	<div>
+		<!-- 操作按钮 -->
 		<div class = "flex mb-10 flex-wrap">
 			<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
 			
@@ -426,11 +469,12 @@
 			{:else}
 				<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
 			{/if}
-
 		</div>
+		<!-- 文件提交按钮 -->
 		<div class = "flex mb-10 justify-center">
 			<input bind:value={filename} type="file" enctype="multipart/form-data" size="16" />
 		</div>
+		<!-- 参数选择加载 -->
 		<div>
 			{#if alphaCheck == 'ridgeRegression'}
 				<div class = "flex justify-center mb-4">
@@ -469,6 +513,7 @@
 	</div>
 </div>
 <div>
+	<!-- 方法加载提示框 -->
 	<div class = "mb-5">the methods you have chosen:</div>
 	<div class="flex flex-col">
 		{#each methods as method, i}
@@ -508,40 +553,69 @@
 				</div>
 			{/if}
 		{/each}
+		<Button kind="danger" class = "w-36" on:click={allClear}>Clear all</Button>
 	</div>
 </div>
 <div>
-	<div class = "flex justify-center">
+	<div class = "flex justify-center mb-10">
 		{#if !judgeReset }
 			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
 		{:else}
 			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
-			<Button type="submit" on:click={reset}>Reset</Button>
+			<Button type="submit" on:click={Reset}>Reset</Button>
 		{/if}
 	</div>
 	<div>
 		{#if judge }
-			{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept} }
-				<p class = "mb-5 text-center">系数分别为:{coef}</p>
-				<p class = "mb-5 text-center">常数项为:{intercept}</p>
-			{/each}
-			{#each ridgeRegressionAnswerSheet as ans }
-				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
-			{/each}
-			{#each lassoAnswerSheet as ans }
-				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
-			{/each}
-			{#each lassoLarsAnswerSheet as ans }
-				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
-			{/each}
-			{#each boostedDecisionTreeRegressionAnswerSheet as ans }
-				<div class = "flex mb-10 justify-center">
-					<img src={ans.picAdd} alt="the result" />
+			{#if ordinaryLeastSquaresAppearance }
+				<div class = "mb-10">
+					<div class = "text-center text-lg font-semibold mb-10">Ordinary Least Squares</div>
+					{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept} }
+						<p class = "mb-5 text-center">系数分别为:{coef}</p>
+						<p class = "mb-10 text-center">常数项为:{intercept}</p>
+					{/each}
 				</div>
-			{/each}
+			{/if}
+			{#if ridgeRegressionAppearance }
+				<div class = "mb-10">
+					<div class = "text-center text-lg font-semibold mb-10">Ridge regression</div>
+					{#each ridgeRegressionAnswerSheet as ans }
+						<p class = "mb-5 text-center">alpha为:{ans.alpha}</p>
+						<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
+						<p class = "mb-10 text-center">常数项为:{ans.intercept}</p>
+					{/each}
+				</div>
+			{/if}
+			{#if lassoAppearance }
+				<div class = "mb-10">
+					<div class = "text-center text-lg font-semibold mb-10">Lasso</div>
+					{#each lassoAnswerSheet as ans }
+						<p class = "mb-5 text-center">alpha为:{ans.alpha}</p>
+						<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
+						<p class = "mb-10 text-center">常数项为:{ans.intercept}</p>
+					{/each}
+				</div>
+			{/if}
+			{#if lassoLarsAppearance }
+				<div class = "mb-10">
+					<div class = "text-center text-lg font-semibold mb-10">LARS Lasso</div>
+					{#each lassoLarsAnswerSheet as ans }
+						<p class = "mb-5 text-center">alpha为:{ans.alpha}<span class = "ml-5">normalize为:{ans.normalize}</span></p>
+						<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
+						<p class = "mb-10 text-center">常数项为:{ans.intercept}</p>
+					{/each}
+				</div>
+			{/if}	
+			{#if boostedDecisionTreeRegressionAppearance }
+				<div class = "mb-10">
+					<div class = "text-center text-lg font-semibold">Decision Tree Regression with AdaBoost</div>
+					{#each boostedDecisionTreeRegressionAnswerSheet as ans }
+						<div class = "flex mb-10 justify-center">
+							<img src={ans.picAdd} alt="the result" />
+						</div>
+					{/each}
+				</div>
+			{/if}			
 		{/if}
 	</div>
 </div>
