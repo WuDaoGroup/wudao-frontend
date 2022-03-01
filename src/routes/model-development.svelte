@@ -8,14 +8,8 @@
 		lassoLarsData
 	} from '../api/modelApi';
 	import {
-		Form,
-		FormGroup,
-		Checkbox,
-		RadioButtonGroup,
-		RadioButton,
-		Select,
-		SelectItem,
-		Button
+		Accordion, AccordionItem, Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton,
+		Select, SelectItem, Button, DataTable
 	} from 'carbon-components-svelte';
 	import TrashCan16 from "carbon-icons-svelte/lib/TrashCan16";
 	import { toast } from '@zerodevx/svelte-toast';
@@ -394,12 +388,14 @@
 		methods = methods.filter(function (item) {
         	return item.id != id;
     	});
+		Reset();
 	}
 	function boostedDecisionTreeRegressionDelite( id ){
 		boostedDecisionTreeRegressionJudge = false;
 		methods = methods.filter(function (item) {
         	return item.id != id;
     	});
+		Reset();
 	}
 
 	//需要参数方法的删除
@@ -407,6 +403,7 @@
 		methods = methods.filter(function (item) {
         	return item.id != id;
     	});
+		Reset();
 	}
 
 	//获取部分方法所需要的参数
@@ -568,53 +565,103 @@
 	<div>
 		{#if judge }
 			{#if ordinaryLeastSquaresAppearance }
-				<div class = "mb-10">
-					<div class = "text-center text-lg font-semibold mb-10">Ordinary Least Squares</div>
-					{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept} }
-						<p class = "mb-5 text-center">系数分别为:{coef}</p>
-						<p class = "mb-10 text-center">常数项为:{intercept}</p>
-					{/each}
-				</div>
+				<Accordion>
+					<AccordionItem title="Ordinary Least Squares">
+							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept} }
+								<DataTable
+									headers={[
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+									]}
+									rows={[
+										{
+										coefficient: coef,
+										intercept: intercept,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
 			{/if}
 			{#if ridgeRegressionAppearance }
-				<div class = "mb-10">
-					<div class = "text-center text-lg font-semibold mb-10">Ridge regression</div>
-					{#each ridgeRegressionAnswerSheet as ans }
-						<p class = "mb-5 text-center">alpha为:{ans.alpha}</p>
-						<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-						<p class = "mb-10 text-center">常数项为:{ans.intercept}</p>
-					{/each}
-				</div>
+				<Accordion>
+					<AccordionItem title="Ridge regression">
+							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha } }
+								<DataTable
+									headers={[
+										{ key:"alpha", value: "alpha" },
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+									]}
+									rows={[
+										{
+										alpha: alpha,
+										coefficient: coef,
+										intercept: intercept,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
 			{/if}
 			{#if lassoAppearance }
-				<div class = "mb-10">
-					<div class = "text-center text-lg font-semibold mb-10">Lasso</div>
-					{#each lassoAnswerSheet as ans }
-						<p class = "mb-5 text-center">alpha为:{ans.alpha}</p>
-						<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-						<p class = "mb-10 text-center">常数项为:{ans.intercept}</p>
-					{/each}
-				</div>
+				<Accordion>
+					<AccordionItem title="Lasso">
+							{#each lassoAnswerSheet as { coef, intercept, alpha } }
+								<DataTable
+									headers={[
+										{ key:"alpha", value: "alpha" },
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+									]}
+									rows={[
+										{
+										alpha: alpha,
+										coefficient: coef,
+										intercept: intercept,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
 			{/if}
 			{#if lassoLarsAppearance }
-				<div class = "mb-10">
-					<div class = "text-center text-lg font-semibold mb-10">LARS Lasso</div>
-					{#each lassoLarsAnswerSheet as ans }
-						<p class = "mb-5 text-center">alpha为:{ans.alpha}<span class = "ml-5">normalize为:{ans.normalize}</span></p>
-						<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-						<p class = "mb-10 text-center">常数项为:{ans.intercept}</p>
-					{/each}
-				</div>
+				<Accordion>
+					<AccordionItem title="LARS Lasso">
+							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize } }
+								<DataTable
+									headers={[
+										{ key:"alpha", value: "alpha" },
+										{ key: "normalize", value: "normalize"},
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+									]}
+									rows={[
+										{
+										alpha: alpha,
+										normalize: normalize,
+										coefficient: coef,
+										intercept: intercept,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
 			{/if}	
 			{#if boostedDecisionTreeRegressionAppearance }
-				<div class = "mb-10">
-					<div class = "text-center text-lg font-semibold">Decision Tree Regression with AdaBoost</div>
-					{#each boostedDecisionTreeRegressionAnswerSheet as ans }
-						<div class = "flex mb-10 justify-center">
-							<img src={ans.picAdd} alt="the result" />
-						</div>
-					{/each}
-				</div>
+				<Accordion>
+					<AccordionItem title="Decision Tree Regression with AdaBoost">
+							{#each boostedDecisionTreeRegressionAnswerSheet as ans }
+								<div class = "flex mb-10 justify-center">
+									<img src={ans.picAdd} alt="the result" />
+								</div>
+							{/each}
+					</AccordionItem>
+				</Accordion>
 			{/if}			
 		{/if}
 	</div>
