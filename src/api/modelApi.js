@@ -1,12 +1,13 @@
 // AI模型相关的API接口
 import api from '../services/api.js';
 
-export const lassoLarsData = async (filename, alpha, normalize) => {
+export const lassoLarsData = async (filename, alpha, normalize, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
 		form.append('alpha', alpha)
 		form.append('normalize', normalize)
+		form.append('percent', percent)
 		console.log(form)
 		const response = await api.post(`/models/predict/lassoLars`, form)
 		console.log(response)
@@ -16,11 +17,12 @@ export const lassoLarsData = async (filename, alpha, normalize) => {
 	}
 }
 
-export const lassoData = async (filename, alpha ) => {
+export const lassoData = async (filename, alpha, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
 		form.append('alpha', alpha)
+		form.append('percent', percent)
 		const response = await api.post(`/models/predict/lasso`, form)
 		return response
 	}catch (err){
@@ -28,11 +30,12 @@ export const lassoData = async (filename, alpha ) => {
 	}
 }
 
-export const ridgeRegressionData = async (filename, alpha ) => {
+export const ridgeRegressionData = async (filename, alpha, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
 		form.append('alpha', alpha)
+		form.append('percent', percent)
 		const response = await api.post(`/models/predict/ridge_regression`, form)
 		return response
 	}catch (err){
@@ -40,10 +43,11 @@ export const ridgeRegressionData = async (filename, alpha ) => {
 	}
 }
 
-export const ordinaryLeastSquaresData = async (filename) => {
+export const ordinaryLeastSquaresData = async (filename, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
+		form.append('percent', percent)
 		const response = await api.post(`/models/predict/ols`, form)
 		console.log(response)
 		return response
