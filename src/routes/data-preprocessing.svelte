@@ -23,7 +23,6 @@
 
     let currentIndex = 0;
     let getFileData = { current: true, complete: false, invalid: false};
-    let dataZscore = { current: false, complete: false, disabled: true, invalid: false};
     let chooseZscoreMethod = { current: false, complete: false, disabled: true, invalid: false};
     let filterData = { current: false, complete: false, disabled: true, invalid: false};
 
@@ -33,9 +32,8 @@
     const defaultChoice = zscorechoice[0]
     let zscoreType = {'key':defaultChoice}
 
-    let filename = 'data.csv'
     function receiveBasicData() {
-		receiveBasicFileInfoApi(filename).then((response) => {
+		receiveBasicFileInfoApi(localStorage.filename).then((response) => {
 			if (response.status == 200) {
 				console.log('response_data:', response.data)
                 basicData.content = response.data.content
@@ -45,14 +43,13 @@
                 getFileData.complete = true;
                 getFileData.invalid = false;
                 currentIndex++;
-                dataZscore.disabled = false;
-                dataZscore.current = true;
-                toast.push("获取数据成功")
+                chooseZscoreMethod.current = true;
+                chooseZscoreMethod.disabled = false;
+                toast.push("归一化成功")
 			} else {
-                getFileData.current = false;
                 getFileData.invalid = true;
 				console.log('error!');
-                toast.push("获取数据失败", {
+                toast.push("归一化失败", {
 					theme: {
 						'--toastBackground': '#F56565',
 						'--toastBarBackground': '#C53030'
@@ -63,7 +60,7 @@
 	}
     let bar
     function zscoreFilter(){
-        zscoreFilterInfoApi(filename, bar).then((response) => {
+        zscoreFilterInfoApi(localStorage.filename, bar).then((response) => {
                 if (response.status == 200) {
                     filterData.current = false;
                     filterData.complete = true;
@@ -75,29 +72,13 @@
                     console.log('error!');
                 }
             });
+        }
 
-    }
 
-    function originZscore(){
-        originZscoreApi(filename).then((response) => {
-                if (response.status == 200) {
-                    console.log('response_data:', response.data)
-                    dataZscore.current = false;
-                    dataZscore.complete = true;
-                    currentIndex++;
-                    chooseZscoreMethod.current = true;
-                    chooseZscoreMethod.disabled = false;
-                    toast.push("归一化文件成功");
-                } else {
-                    console.log('error!');
-                }
-            });
-
-    }
 
     function confirmOriginZscore(){
         console.log(zscoreType.key)
-        confirmOriginZscoreApi(filename, zscoreType.key).then((response) => {
+        confirmOriginZscoreApi(localStorage.filename, zscoreType.key).then((response) => {
                 if (response.status == 200) {
                     console.log('response_data:', response.data)
                     chooseZscoreMethod.invalid = false;
@@ -111,7 +92,6 @@
                     toast.push('选择成功');
                 } else {
                     chooseZscoreMethod.invalid = true;
-                    chooseZscoreMethod.current = false;
                     toast.push("请选择类型", {
 					theme: {
 						'--toastBackground': '#F56565',
@@ -145,13 +125,6 @@
 		bind:current={getFileData.current}
 		bind:complete={getFileData.complete}
         bind:invalid={getFileData.invalid}
-		label="Get File"
-	/>
-	<ProgressStep
-        bind:current={dataZscore.current}
-        bind:complete={dataZscore.complete}
-        bind:invalid={dataZscore.invalid}
-        bind:disabled={dataZscore.disabled}
 		label="Zscore Data"
 	/>
 	<ProgressStep
@@ -169,8 +142,10 @@
 		label="Filter Data"
 	/>
 </ProgressIndicator>
-
-<Button on:click={receiveBasicData} kind="tertiary">获取数据</Button>
+<div class="grid grid-cols-5 gap-4">
+    <div class="col-span-2"></div>
+    <Button on:click={receiveBasicData} kind="tertiary">获取数据</Button>
+</div>
 {#if showTable == true}
 <div class="container mx-auto">
     <DataTable
@@ -193,14 +168,20 @@
 
 {/if}
 
-<Button on:click={originZscore} kind="tertiary">数据归一化</Button>
-
-<Select inline labelText="Carbon theme" bind:selected={zscoreType.key}>
+<div class="grid grid-col-5">
+    <div class="col-span-1"></div>
+    <div class="col-span-3">
+<Select inline labelText="选择填充方式" bind:selected={zscoreType.key}>
     {#each zscorechoice as p}
 		<SelectItem text={p} value={p} />
 	{/each}
 </Select>
-<Button on:click={confirmOriginZscore} kind="tertiary">确定</Button>
+</div>
+<div class="col-span-1">
+    <Button on:click={confirmOriginZscore} kind="tertiary">确定</Button>
+</div>
+</div>
 
-<TextInput inline labelText="User name" placeholder="Enter user name..." bind:value={bar} />
+
+<TextInput inline labelText="筛选数据" type="Number" placeholder="请填写筛选范围" bind:value={bar} />
 <Button on:click={zscoreFilter} kind="tertiary">数据筛选</Button>
