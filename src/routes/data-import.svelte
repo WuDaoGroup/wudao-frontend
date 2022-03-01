@@ -9,10 +9,12 @@
 		ProgressIndicator,
 		ProgressStep
 	} from 'carbon-components-svelte';
+	import { browser } from '$app/env';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { Button } from 'carbon-components-svelte';
 	// import { dataHeader, rowData } from '../stores/dataStore';
 	import FilePond from 'svelte-filepond';
+	import { filename } from '../stores/dataStore';
 	import { goto } from '$app/navigation';
 
 	// 接收到的结构化数据 (原始数据)
@@ -22,7 +24,6 @@
 	};
 	let currentIndex = 0;
 	let checkUploadFiles = { current: true, complete: false, invalid: false };
-	let receiveDataFiles = { current: false, complete: false, disabled: true };
 	let analyzeDataFiles = { current: false, complete: false, disabled: true };
 	let chooseFeature = { current: false, complete: false, disabled: true };
 	const featureTypes = ['target', 'feature', 'useless'];
@@ -31,48 +32,52 @@
 	// let selectedFeatures = [{'value': 'Y', 'type': defaultChoice},{'value': 'm', 'type': defaultChoice},{'value': 'n', 'type': defaultChoice}]
 	$: console.log(selectedFeatures);
 	$: featureTypeTargetCount = selectedFeatures.filter((e) => e.type === 'target').length;
-
 	let pond;
 	// the name to use for the internal file input
 	let name = 'upload_file'; // 这个值就对应了form-data的key
-	let filename;
 	// handle filepond events
 	function handleInit() {
 		console.log('FilePond has initialised');
 	}
-
+	
 	function handleAddFile(err, fileItem) {
 		console.log('A file has been added', fileItem);
 		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
-			(checkUploadFiles.current = false), (checkUploadFiles.invalid = true);
+			(checkUploadFiles.invalid = true);
 			toast.push('文件类型错误', {
 				theme: {
 					'--toastBackground': '#F56565',
 					'--toastBarBackground': '#C53030'
 				}
 			});
-			console.log();
+			
 			fileItem.abortLoad();
 			fileItem.abortProcessing();
 		} else {
-			filename = fileItem.filename;
+			const dataFilename = fileItem.filename;
+			filename.set(dataFilename);
+				if (browser) {
+					localStorage.setItem('filename', JSON.stringify(dataFilename));
+				}
 			toast.push('点击上传');
+			localStorage.filename= localStorage.filename.replace("\"", "").replace("\"","")
+			console.log(dataFilename,"aaa",localStorage.filename)
 			currentIndex = 1;
 			(checkUploadFiles.current = false), (checkUploadFiles.complete = true), (checkUploadFiles.invalid = false);
-			(receiveDataFiles.disabled = false), (receiveDataFiles.current = true);
+			(analyzeDataFiles.disabled = false), (analyzeDataFiles.current = true);
 		}
 	}
 
 	let showTable = false;
-	let showAnalysisButton = false;
 	let pagination = {
 		pageSize: 10,
 		page: 1
 	};
 
 	function receiveData() {
-		analyzeUploadFileContentApi(filename).then((response) => {
+		analyzeUploadFileContentApi(localStorage.filename).then((response) => {
 			selectedFeatures = [];
+			
 			if (response.status == 200) {
 				// console.log('response_data:', response.data)
 				rawData.content = response.data.content;
@@ -86,10 +91,11 @@
 					};
 					selectedFeatures.push(e);
 				}
-				showAnalysisButton = true;
-				(receiveDataFiles.current = false), (receiveDataFiles.complete = true);
-				(analyzeDataFiles.disabled = false), (analyzeDataFiles.current = true);
+				(analyzeDataFiles.current = false), (analyzeDataFiles.complete = true);
 				currentIndex = 2;
+				(showTable = true),
+				(chooseFeature.current = true),
+				(chooseFeature.disabled = false)
 			} else {
 				console.log('error!');
 			}
@@ -97,12 +103,12 @@
 	}
 
 	function uploadFeatureInfo() {
-		uploadFileFeatureInfoApi(filename, selectedFeatures).then((response) => {
+		uploadFileFeatureInfoApi(localStorage.filename, selectedFeatures).then((response) => {
 			if (response.status == 200) {
 				toast.push('上传数据的特征信息成功');
 				console.log('data feature info:', response.data);
-				(chooseFeature.current = false), (chooseFeature.complete = true), (currentIndex = 5);
-				// goto(`/data-observation`);
+				(chooseFeature.current = false), (chooseFeature.complete = true), (currentIndex = 4);
+				goto(`/data-preprocessing`);
 			}
 		});
 	}
@@ -114,12 +120,6 @@
 		bind:complete={checkUploadFiles.complete}
 		bind:invalid={checkUploadFiles.invalid}
 		label="Upload File"
-	/>
-	<ProgressStep
-		bind:disabled={receiveDataFiles.disabled}
-		bind:current={receiveDataFiles.current}
-		bind:complete={receiveDataFiles.complete}
-		label="Load Data"
 	/>
 	<ProgressStep
 		bind:disabled={analyzeDataFiles.disabled}
@@ -150,20 +150,6 @@
 	<div class=" m-auto">
 		<Button on:click={receiveData} kind="tertiary">获取数据</Button>
 	</div>
-	{#if showAnalysisButton == true}
-		<div class=" m-auto">
-			<Button
-				on:click={() => (
-					(showTable = true),
-					(currentIndex = 3),
-					(analyzeDataFiles.complete = true),
-					(chooseFeature.current = true),
-					(chooseFeature.disabled = false)
-				)}
-				kind="tertiary">开始分析</Button
-			>
-		</div>
-	{/if}
 </div>
 
 {#if showTable == true}

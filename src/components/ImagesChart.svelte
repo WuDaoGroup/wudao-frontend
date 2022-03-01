@@ -4,6 +4,7 @@
 	import { receiveBasicImageInfoApi } from '../api/fileApi';
 	let showImage = false;
 	$: length = 0;
+
 	let filename = 'movie_data.xlsx';
 	function receiveData() {
 		receiveBasicImageInfoApi(filename).then((response) => {
