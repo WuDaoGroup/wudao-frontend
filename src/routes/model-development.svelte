@@ -69,7 +69,7 @@
 				intercept: intercept,
 				alpha:alpha,
 				normalize: normalize,
-				accuracyOfTestData: percentOfTestData,
+				accuracyOfTestData: accuracyOfTestData,
 				accuracyOfTrainData: accuracyOfTrainData,
 			}
 			console.log("lassoLars:", theNewAns);
@@ -94,7 +94,7 @@
 				coef: coef,
 				intercept: intercept,
 				alpha: alpha,
-				accuracyOfTestData: percentOfTestData,
+				accuracyOfTestData: accuracyOfTestData,
 				accuracyOfTrainData: accuracyOfTrainData,
 			}
 			lassoAnswerSheet.push(theNewAns);
@@ -118,7 +118,7 @@
 				coef: coef,
 				intercept: intercept,
 				alpha:alpha,
-				accuracyOfTestData: percentOfTestData,
+				accuracyOfTestData: accuracyOfTestData,
 				accuracyOfTrainData: accuracyOfTrainData,
 			}
 			ridgeRegressionAnswerSheet.push(theNewAns);
@@ -131,7 +131,7 @@
 		let theFile = filename.split('\\');
 		let lenFile = theFile.length;
 		filename = theFile[lenFile - 1];
-		// console.log("the filename:", filename);
+		console.log("the filename:", filename);
 		ordinaryLeastSquaresData( filename, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
@@ -140,10 +140,10 @@
 			let theNewAns = {
 				coef: coef,
 				intercept: intercept,
-				accuracyOfTestData: percentOfTestData,
+				accuracyOfTestData: accuracyOfTestData,
 				accuracyOfTrainData: accuracyOfTrainData,
 			}
-			// console.log("the new ans:-------", theNewAns);
+			console.log("the accuracyOfTrainData:-------", accuracyOfTrainData);
 			ordinaryLeastSquaresAnswerSheet.push(theNewAns);
 			ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
 		});
@@ -602,7 +602,7 @@
 									headers={[
 										{ key: "coefficient", value: "coefficient" },
 										{ key: "intercept", value: "intercept" },
-										{ key: "test", value: "accuracy of text-data" },
+										{ key: "test", value: "accuracy of test-data" },
 										{ key: "train", value: "accuracy of train-data" },
 									]}
 									rows={[
@@ -627,7 +627,7 @@
 										{ key:"alpha", value: "alpha" },
 										{ key: "coefficient", value: "coefficient" },
 										{ key: "intercept", value: "intercept" },
-										{ key: "test", value: "accuracy of text-data" },
+										{ key: "test", value: "accuracy of test-data" },
 										{ key: "train", value: "accuracy of train-data" },
 									]}
 									rows={[
@@ -653,7 +653,7 @@
 										{ key:"alpha", value: "alpha" },
 										{ key: "coefficient", value: "coefficient" },
 										{ key: "intercept", value: "intercept" },
-										{ key: "test", value: "accuracy of text-data" },
+										{ key: "test", value: "accuracy of test-data" },
 										{ key: "train", value: "accuracy of train-data" },
 									]}
 									rows={[
@@ -680,7 +680,7 @@
 										{ key: "normalize", value: "normalize"},
 										{ key: "coefficient", value: "coefficient" },
 										{ key: "intercept", value: "intercept" },
-										{ key: "test", value: "accuracy of text-data" },
+										{ key: "test", value: "accuracy of test-data" },
 										{ key: "train", value: "accuracy of train-data" },
 									]}
 									rows={[
