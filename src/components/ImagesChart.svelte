@@ -12,7 +12,7 @@
 				let length = response.data.content.length;
 				for (let i = 1; i <= length; i++) {
 					let str =
-						`http://wudao-backend.herokuapp.com/static/images/${localStorage.filename}_selected_features_` + i + '.png';
+						`https://wudao-backend.herokuapp.com/static/images/${localStorage.filename}_selected_features_` + i + '.png';
 					console.log(str);
 					let image = {
 						key: i,

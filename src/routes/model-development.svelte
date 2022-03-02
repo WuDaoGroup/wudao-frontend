@@ -14,8 +14,8 @@
 	} from 'carbon-components-svelte';
 	import TrashCan16 from "carbon-icons-svelte/lib/TrashCan16";
 	import { toast } from '@zerodevx/svelte-toast';
+	import { filename } from '../stores/dataStore'
 
-	let filename = '';
 	let picAdd = '';
 	let alphaCheck = ''; // 是否显示针对于alpha参数的修改
 	let normalize = '';
@@ -57,10 +57,7 @@
 	//答案处理方法
 	function SVC( percentOfTestData ){
 		judge = '';
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		SVCData( filename, percentOfTestData ).then((response) => {
+		SVCData( localStorage.filename + '_zscore.csv', percentOfTestData ).then((response) => {
 			accuracyOfTestData = response.data['result_accuracyOfTestData'];
 			console.log("!!!!!!!",accuracyOfTestData)
 			let theNewAns = {
@@ -74,11 +71,7 @@
 		judge = '';
 		coef = [];
 		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		console.log(percentOfTestData);
-		lassoLarsData(filename, alpha, normalize, percentOfTestData ).then((response) => {
+		lassoLarsData(localStorage.filename + '_zscore.csv', alpha, normalize, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
 			accuracyOfTestData = response.data['result_accuracyOfTestData'];
@@ -101,10 +94,7 @@
 		judge = '';
 		coef = [];
 		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		lassoData( filename, alpha, percentOfTestData ).then((response) => {
+		lassoData( localStorage.filename + '_zscore.csv', alpha, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
 			accuracyOfTestData = response.data['result_accuracyOfTestData'];
@@ -125,10 +115,7 @@
 		judge = '';
 		coef = [];
 		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		ridgeRegressionData( filename, alpha, percentOfTestData ).then((response) => {
+		ridgeRegressionData( localStorage.filename + '_zscore.csv', alpha, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
 			accuracyOfTestData = response.data['result_accuracyOfTestData'];
@@ -147,11 +134,7 @@
 
 	function ordinaryLeastSquares( percentOfTestData ) {
 		judge = '';
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		console.log("the filename:", filename);
-		ordinaryLeastSquaresData( filename, percentOfTestData ).then((response) => {
+		ordinaryLeastSquaresData( localStorage.filename + '_zscore.csv', percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
 			accuracyOfTestData = response.data['result_accuracyOfTestData'];
@@ -170,13 +153,8 @@
 	
 	function boostedDecisionTreeRegression() {
 		judge = '';
-		coef = [];
-		intercept = [];
-		let theFile = filename.split('\\');
-		let lenFile = theFile.length;
-		filename = theFile[lenFile - 1];
-		boostedDecisionTreeRegressionData(filename).then((response) => {
-			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv').then((response) => {
+			picAdd = 'http://localhost:8123/api/v1/static/images/' + response.data['pic_addr'];
 			let theNewAns = {
 				picAdd:picAdd,
 			}
@@ -557,9 +535,9 @@
 			</div>
 		</div>
 		<!-- 文件提交按钮 -->
-		<div class = "flex mb-5 justify-center">
-			<input bind:value={filename} type="file" enctype="multipart/form-data" size="16" />
-		</div>
+		<!-- <div class = "flex mb-5 justify-center">
+			<input bind:value={newFilename} type="file" enctype="multipart/form-data" size="16" />
+		</div> -->
 		<!-- 训练集占比的选择 -->
 		<div class = "flex justify-center mb-5">
 			<p>Choose the percentage of the test data:</p>
