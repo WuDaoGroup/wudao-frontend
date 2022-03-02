@@ -66,7 +66,7 @@
                     filterData.complete = true;
                     currentIndex++;
                     toast.push("筛选成功")
-                    console.log('response_data:', response.data)
+                    console.log('LLLresponse_data:', response.data)
                 } else {
                     
                     console.log('error!');

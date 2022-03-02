@@ -3,7 +3,7 @@ import axios from 'axios';
 // Create a instance of axios to use the same base url.
 const axiosAPI = axios.create({
 	baseURL: 'https://wudao-backend.herokuapp.com/api/v1'
-	//baseURL: 'http://localhost:8123/api/v1'
+	// baseURL: 'http://localhost:8123/api/v1'
 });
 
 // implement a method to execute all the request from here.
