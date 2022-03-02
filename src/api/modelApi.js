@@ -1,7 +1,20 @@
 // AI模型相关的API接口
 import api from '../services/api.js';
 
-export const lassoLarsData = async (filename, alpha, normalize, percent ) => {
+export const SVCData = async ( filename, percent ) => {
+	try{
+		let form = new FormData()
+		form.append('filename', filename)
+		form.append('percent', percent)
+		console.log("SVC!!!!!", form)
+		const response = await api.post(`/models/predict/SVC`, form)
+		console.log(response)
+		return response
+	}catch (err){
+		console.error(err)
+	}
+}
+export const lassoLarsData = async ( filename, alpha, normalize, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
@@ -17,7 +30,7 @@ export const lassoLarsData = async (filename, alpha, normalize, percent ) => {
 	}
 }
 
-export const lassoData = async (filename, alpha, percent ) => {
+export const lassoData = async ( filename, alpha, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
@@ -30,7 +43,7 @@ export const lassoData = async (filename, alpha, percent ) => {
 	}
 }
 
-export const ridgeRegressionData = async (filename, alpha, percent ) => {
+export const ridgeRegressionData = async ( filename, alpha, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
@@ -43,7 +56,7 @@ export const ridgeRegressionData = async (filename, alpha, percent ) => {
 	}
 }
 
-export const ordinaryLeastSquaresData = async (filename, percent ) => {
+export const ordinaryLeastSquaresData = async ( filename, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
@@ -56,7 +69,7 @@ export const ordinaryLeastSquaresData = async (filename, percent ) => {
 	}
 }
 
-export const boostedDecisionTreeRegressionData = async (filename) => {
+export const boostedDecisionTreeRegressionData = async ( filename ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)

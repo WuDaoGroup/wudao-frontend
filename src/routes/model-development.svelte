@@ -5,7 +5,8 @@
 		boostedDecisionTreeRegressionData,
 		ridgeRegressionData,
 		lassoData,
-		lassoLarsData
+		lassoLarsData,
+		SVCData,
 	} from '../api/modelApi';
 	import {
 		Accordion, AccordionItem, Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton,
@@ -24,6 +25,7 @@
 	let percentOfTestData = 0.5;
 
 	//对没有参数的方法是否进行添加的判断
+	let SVCJudge = false;
 	let ordinaryLeastSquaresJudge = false;
 	let boostedDecisionTreeRegressionJudge = false;
 
@@ -33,6 +35,7 @@
 	let ridgeRegressionAnswerSheet = [];
 	let lassoAnswerSheet = [];
 	let lassoLarsAnswerSheet = [];
+	let SVCAnswerSheet = [];
 
 	let judge = false; // 判断此时是否显示得到的答案
 	let judgeReset = false; // 判断此时是否需要显示reset
@@ -49,8 +52,24 @@
 	let ridgeRegressionAppearance = false;
 	let lassoAppearance = false;
 	let lassoLarsAppearance = false;
+	let SVCAppearance = false;
 	
 	//答案处理方法
+	function SVC( percentOfTestData ){
+		judge = '';
+		let theFile = filename.split('\\');
+		let lenFile = theFile.length;
+		filename = theFile[lenFile - 1];
+		SVCData( filename, percentOfTestData ).then((response) => {
+			accuracyOfTestData = response.data['result_accuracyOfTestData'];
+			console.log("!!!!!!!",accuracyOfTestData)
+			let theNewAns = {
+				accuracyOfTestData: accuracyOfTestData,
+			}
+			SVCAnswerSheet.push(theNewAns);
+			SVCAnswerSheet = SVCAnswerSheet;
+		});
+	}
 	function lassoLars( alpha, normalize, percentOfTestData ) {
 		judge = '';
 		coef = [];
@@ -174,6 +193,7 @@
 			let ridgeRegressionAns = [];
 			let lassoAns = [];
 			let lassoLarsAns = [];
+			let SVCAns = [];
 			alphaCheck = '';
 			for (var i = 0; i < methods.length; i++ ){
 				let newAns = methods[i];
@@ -203,6 +223,11 @@
 					boostedDecisionTreeAns = boostedDecisionTreeAns;
 					boostedDecisionTreeRegressionAppearance = true;
 				}
+				else if( methods[i].name == "SVC"){
+					SVCAns.push(newAns);
+					SVCAns = SVCAns;
+					SVCAppearance = true;
+				}
 			}
 			for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
 				ordinaryLeastSquares( percentOfTestData );
@@ -219,6 +244,9 @@
 			}
 			for( var i = 0; i < boostedDecisionTreeAns.length; i++ ){
 				boostedDecisionTreeRegression();
+			}
+			for( var i = 0; i < SVCAns.length; i++ ){
+				SVC( percentOfTestData );
 			}
 			judge = true;
 			judgeReset = true;
@@ -238,6 +266,7 @@
 	    ridgeRegressionAppearance = false;
 	    lassoAppearance = false;
 	    lassoLarsAppearance = false;
+		SVCAppearance = false;
 	}
 	function reset() {
 		judgeReset = false;
@@ -246,6 +275,7 @@
 	 	ridgeRegressionAnswerSheet = [];
 		lassoAnswerSheet = [];
 		lassoLarsAnswerSheet = [];
+		SVCAnswerSheet = [];
 	}
 	function allClear(){
 		reset();
@@ -254,9 +284,34 @@
 	    ridgeRegressionAppearance = false;
 	    lassoAppearance = false;
 	    lassoLarsAppearance = false;
+		SVCAppearance = false;
 		methods = [];
 	}
 	//增添选择的方法
+	function SVCAdd(){
+		alphaCheck = ''
+		if( !SVCJudge ){
+			SVCJudge = true;
+			let newMthod = { 
+				name:"SVC",
+				id:theNumberOfMethod
+			}
+			theNumberOfMethod ++;
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+			judge = ''
+			reset();
+		}
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+	}
 	function ordinaryLeastSquaresAdd() {
 		alphaCheck = ''
 		if( !ordinaryLeastSquaresJudge ){
@@ -466,29 +521,40 @@
 		系,在面对只有特征没有标签的数据时,可以判断出标签。通俗一点,可以把机器学习理解为我们教机器如何做事情。
 	</p>
 	<div>
-		<!-- 操作按钮 -->
-		<div class = "flex mb-10 flex-wrap">
-			<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
-			
-			{#if alphaCheck == 'ridgeRegression'}
-				<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</button></div>
-			{:else}
-				<div class="m-2"><Button class="h-14" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button></div>
-			{/if}
-			
-			{#if alphaCheck == 'lasso'}
-				<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaLasso}>Lasso</button></div>
-			{:else}
-				<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLasso}>Lasso</Button></div>
-			{/if}
-			
-			<div class="m-2"><Button  class="h-14" type="submit" on:click={boostedDecisionTreeRegressionAdd}>Decision Tree Regression with AdaBoost</Button></div>
-			
-			{#if alphaCheck == 'lassoLars'}
-				<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</button></div>
-			{:else}
-				<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
-			{/if}
+		<!-- 操作按钮(regression) -->
+		<div class = "mb-10">
+			<p class = "text-center mb-7 text-3xl">回归分析</p>
+			<div class = "flex flex-wrap">
+				<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
+				
+				{#if alphaCheck == 'ridgeRegression'}
+					<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</button></div>
+				{:else}
+					<div class="m-2"><Button class="h-14" type="submit" on:click={getInAlphaRidgeRegression}>Ridge regression</Button></div>
+				{/if}
+				
+				{#if alphaCheck == 'lasso'}
+					<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaLasso}>Lasso</button></div>
+				{:else}
+					<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLasso}>Lasso</Button></div>
+				{/if}
+				
+				<div class="m-2"><Button  class="h-14" type="submit" on:click={boostedDecisionTreeRegressionAdd}>Decision Tree Regression with AdaBoost</Button></div>
+				
+				{#if alphaCheck == 'lassoLars'}
+					<div class="m-2"><button class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</button></div>
+				{:else}
+					<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
+				{/if}
+				<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
+			</div>
+		</div>
+		<!-- 操作按钮(classification) -->
+		<div class = "mb-10">
+			<p class = "text-center mb-7 text-3xl">分类处理</p>
+			<div class = "flex flex-wrap">
+				<div class="m-2"><Button  class="h-14" type="submit" on:click={SVCAdd}>SVC</Button></div>
+			</div>
 		</div>
 		<!-- 文件提交按钮 -->
 		<div class = "flex mb-5 justify-center">
@@ -539,7 +605,7 @@
 	</div>
 </div>
 <div>
-	<!-- 方法加载提示框 -->
+	<!-- 已选择的方法框 -->
 	<div class = "mb-5">the methods you have chosen:</div>
 	<div class="flex flex-col">
 		{#each methods as method, i}
@@ -577,11 +643,18 @@
 					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-40 mb-5">normalize:{method.normalize}</div>
 					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
 				</div>
+			{:else if method.name == 'SVC'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-yellow-900 text-white py-3 text-center w-10 mb-5">{i+1}</div>
+					<div class="rounded-full bg-yellow-900 text-white py-3 px-6 w-20 mb-5" >{method.name}</div>
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
+				</div>
 			{/if}
 		{/each}
 		<Button kind="danger" class = "w-36" on:click={allClear}>Clear all</Button>
 	</div>
 </div>
+<!-- 最终的答案展示 -->
 <div>
 	<div class = "flex justify-center mb-10">
 		{#if !judgeReset }
@@ -697,7 +770,25 @@
 							{/each}
 					</AccordionItem>
 				</Accordion>
-			{/if}	
+			{/if}
+			{#if SVCAppearance }
+				<Accordion>
+					<AccordionItem title="SVC">
+							{#each SVCAnswerSheet as { accuracyOfTestData } }
+								<DataTable class="w-11/12"
+									headers={[
+										{ key: "test", value: "accuracy of test-data" },
+									]}
+									rows={[
+										{
+											test: accuracyOfTestData,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
+			{/if}
 			{#if boostedDecisionTreeRegressionAppearance }
 				<Accordion>
 					<AccordionItem title="Decision Tree Regression with AdaBoost">
