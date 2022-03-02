@@ -8,14 +8,8 @@
 		lassoLarsData
 	} from '../api/modelApi';
 	import {
-		Form,
-		FormGroup,
-		Checkbox,
-		RadioButtonGroup,
-		RadioButton,
-		Select,
-		SelectItem,
-		Button
+		Accordion, AccordionItem, Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton,
+		Select, SelectItem, Button, DataTable
 	} from 'carbon-components-svelte';
 	import TrashCan16 from "carbon-icons-svelte/lib/TrashCan16";
 	import { toast } from '@zerodevx/svelte-toast';
@@ -27,6 +21,7 @@
 	let alpha = 0.5;
 	let methods = [];
 	let theNumberOfMethod = 1;
+	let percentOfTestData = 0.5;
 
 	//对没有参数的方法是否进行添加的判断
 	let ordinaryLeastSquaresJudge = false;
@@ -41,23 +36,41 @@
 
 	let judge = false; // 判断此时是否显示得到的答案
 	let judgeReset = false; // 判断此时是否需要显示reset
+
+	//返回的答案
 	let coef = [];
 	let	intercept = [];
+	let accuracyOfTestData = 0;
+	let accuracyOfTrainData = 0;
+
+	//判断是否存在某方法的出现
+	let ordinaryLeastSquaresAppearance = false;
+	let boostedDecisionTreeRegressionAppearance = false;
+	let ridgeRegressionAppearance = false;
+	let lassoAppearance = false;
+	let lassoLarsAppearance = false;
 	
 	//答案处理方法
-	function lassoLars( alpha, normalize ) {
+	function lassoLars( alpha, normalize, percentOfTestData ) {
 		judge = '';
 		coef = [];
 		intercept = [];
 		let theFile = filename.split('\\');
 		let lenFile = theFile.length;
 		filename = theFile[lenFile - 1];
-		lassoLarsData(filename, alpha, normalize).then((response) => {
+		console.log(percentOfTestData);
+		lassoLarsData(filename, alpha, normalize, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
+			accuracyOfTestData = response.data['result_accuracyOfTestData'];
+			accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 			let theNewAns = {
 				coef: coef,
-				intercept: intercept
+				intercept: intercept,
+				alpha:alpha,
+				normalize: normalize,
+				accuracyOfTestData: accuracyOfTestData,
+				accuracyOfTrainData: accuracyOfTrainData,
 			}
 			console.log("lassoLars:", theNewAns);
 			lassoLarsAnswerSheet.push(theNewAns);
@@ -65,63 +78,77 @@
 		});
 	}
 
-	function lasso( alpha ) {
+	function lasso( alpha, percentOfTestData ) {
 		judge = '';
 		coef = [];
 		intercept = [];
 		let theFile = filename.split('\\');
 		let lenFile = theFile.length;
 		filename = theFile[lenFile - 1];
-		lassoData(filename, alpha).then((response) => {
+		lassoData( filename, alpha, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
+			accuracyOfTestData = response.data['result_accuracyOfTestData'];
+			accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 			let theNewAns = {
 				coef: coef,
-				intercept: intercept
+				intercept: intercept,
+				alpha: alpha,
+				accuracyOfTestData: accuracyOfTestData,
+				accuracyOfTrainData: accuracyOfTrainData,
 			}
 			lassoAnswerSheet.push(theNewAns);
 			lassoAnswerSheet = lassoAnswerSheet;
 		});
 	}
 
-	function ridgeRegression( alpha ) {
+	function ridgeRegression( alpha, percentOfTestData ) {
 		judge = '';
 		coef = [];
 		intercept = [];
 		let theFile = filename.split('\\');
 		let lenFile = theFile.length;
 		filename = theFile[lenFile - 1];
-		ridgeRegressionData(filename, alpha).then((response) => {
+		ridgeRegressionData( filename, alpha, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
+			accuracyOfTestData = response.data['result_accuracyOfTestData'];
+			accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 			let theNewAns = {
 				coef: coef,
-				intercept: intercept
+				intercept: intercept,
+				alpha:alpha,
+				accuracyOfTestData: accuracyOfTestData,
+				accuracyOfTrainData: accuracyOfTrainData,
 			}
 			ridgeRegressionAnswerSheet.push(theNewAns);
 			ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
 		});
 	}
 
-	function ordinaryLeastSquares() {
+	function ordinaryLeastSquares( percentOfTestData ) {
 		judge = '';
 		let theFile = filename.split('\\');
 		let lenFile = theFile.length;
 		filename = theFile[lenFile - 1];
 		console.log("the filename:", filename);
-		ordinaryLeastSquaresData(filename).then((response) => {
+		ordinaryLeastSquaresData( filename, percentOfTestData ).then((response) => {
 			coef = response.data['result_coef'];
 			intercept = response.data['result_intercept'];
+			accuracyOfTestData = response.data['result_accuracyOfTestData'];
+			accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 			let theNewAns = {
 				coef: coef,
-				intercept: intercept
+				intercept: intercept,
+				accuracyOfTestData: accuracyOfTestData,
+				accuracyOfTrainData: accuracyOfTrainData,
 			}
-			console.log("the new ans:-------", theNewAns);
+			console.log("the accuracyOfTrainData:-------", accuracyOfTrainData);
 			ordinaryLeastSquaresAnswerSheet.push(theNewAns);
 			ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
 		});
 	}
-
+	
 	function boostedDecisionTreeRegression() {
 		judge = '';
 		coef = [];
@@ -139,6 +166,7 @@
 		});
 	}
 
+	//最终的答案处理
 	function handleAnswerSheet() {
 		if( !judgeReset ){
 			let ordinaryLeastSquaresAns = [];
@@ -153,36 +181,41 @@
 				if( methods[i].name == 'Ordinary Least Squares' ){
 					ordinaryLeastSquaresAns.push(newAns);
 					ordinaryLeastSquaresAns = ordinaryLeastSquaresAns;
+					ordinaryLeastSquaresAppearance = true;
 				}
 				else if( methods[i].name == 'Ridge regression' ){
 					ridgeRegressionAns.push(newAns);
 					ridgeRegressionAns = ridgeRegressionAns;
+					ridgeRegressionAppearance = true;
 				}
 				else if( methods[i].name == "Lasso" ){
 					lassoAns.push(newAns);
 					lassoAns = lassoAns;
+					lassoAppearance = true;
 				}
 				else if( methods[i].name == "LARS Lasso" ){
 					lassoLarsAns.push(newAns);
 					lassoLarsAns = lassoLarsAns;
+					lassoLarsAppearance = true;
 				}
 				else if( methods[i].name == "Decision Tree Regression with AdaBoost"){
 					boostedDecisionTreeAns.push(newAns);
 					boostedDecisionTreeAns = boostedDecisionTreeAns;
+					boostedDecisionTreeRegressionAppearance = true;
 				}
 			}
 			for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
-				ordinaryLeastSquares();
+				ordinaryLeastSquares( percentOfTestData );
 			}
 			for( var i = 0; i < ridgeRegressionAns.length; i++ ){
-				ridgeRegression( ridgeRegressionAns[i].alpha );
+				ridgeRegression( ridgeRegressionAns[i].alpha, percentOfTestData );
 			}
 			for( var i = 0; i < lassoAns.length; i++ ){
-				lasso( lassoAns[i].alpha );
+				lasso( lassoAns[i].alpha, percentOfTestData );
 			}
 			for( var i = 0; i < lassoLarsAns.length; i++ ){
 				console.log("Use the lassoLars!!!");
-				lassoLars( lassoLarsAns[i].alpha, lassoLarsAns[i].normalize );
+				lassoLars( lassoLarsAns[i].alpha, lassoLarsAns[i].normalize, percentOfTestData );
 			}
 			for( var i = 0; i < boostedDecisionTreeAns.length; i++ ){
 				boostedDecisionTreeRegression();
@@ -192,6 +225,20 @@
 		}
 	}
 
+	//重设数据
+	function Reset() {
+		judgeReset = false;
+		ordinaryLeastSquaresAnswerSheet = [];
+		boostedDecisionTreeRegressionAnswerSheet = [];
+	 	ridgeRegressionAnswerSheet = [];
+		lassoAnswerSheet = [];
+		lassoLarsAnswerSheet = [];
+		ordinaryLeastSquaresAppearance = false;
+	    boostedDecisionTreeRegressionAppearance = false;
+	    ridgeRegressionAppearance = false;
+	    lassoAppearance = false;
+	    lassoLarsAppearance = false;
+	}
 	function reset() {
 		judgeReset = false;
 		ordinaryLeastSquaresAnswerSheet = [];
@@ -199,6 +246,15 @@
 	 	ridgeRegressionAnswerSheet = [];
 		lassoAnswerSheet = [];
 		lassoLarsAnswerSheet = [];
+	}
+	function allClear(){
+		reset();
+		ordinaryLeastSquaresAppearance = false;
+	    boostedDecisionTreeRegressionAppearance = false;
+	    ridgeRegressionAppearance = false;
+	    lassoAppearance = false;
+	    lassoLarsAppearance = false;
+		methods = [];
 	}
 	//增添选择的方法
 	function ordinaryLeastSquaresAdd() {
@@ -213,6 +269,8 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
+			judge = ''
+			reset();
 		}
 		else{
 			toast.push('您已经添加了该种方法', {
@@ -222,7 +280,6 @@
 				}
 			});
 		}
-		judgeReset = false;
 	}
 	function ridgeRegressionAdd() {
 		let i = 0; 
@@ -302,6 +359,8 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
+			reset();
+			judge = '';
 		}
 		else{
 			toast.push('您已经添加了该种方法', {
@@ -311,7 +370,6 @@
 				}
 			});
 		}
-		reset();
 	}
 	function lassoLarsAdd() {
 		let i = 0; 
@@ -353,12 +411,14 @@
 		methods = methods.filter(function (item) {
         	return item.id != id;
     	});
+		Reset();
 	}
 	function boostedDecisionTreeRegressionDelite( id ){
 		boostedDecisionTreeRegressionJudge = false;
 		methods = methods.filter(function (item) {
         	return item.id != id;
     	});
+		Reset();
 	}
 
 	//需要参数方法的删除
@@ -366,6 +426,7 @@
 		methods = methods.filter(function (item) {
         	return item.id != id;
     	});
+		Reset();
 	}
 
 	//获取部分方法所需要的参数
@@ -392,6 +453,7 @@
 
 <div>
 	<h1 class = "mb-5 text-center">Supervised Learning (监督学习)</h1>
+	<!-- 对于监督学习的介绍 -->
 	<p class = "mb-5 indent-8">
 		从给定的训练数据集中学习出一个函数(模型参数),当新的数据到来时,可以根据这个函数预测结果。
 		监督学习的训练集要求包括输入输出,也可以说是特征和目标。训练集中
@@ -404,6 +466,7 @@
 		系,在面对只有特征没有标签的数据时,可以判断出标签。通俗一点,可以把机器学习理解为我们教机器如何做事情。
 	</p>
 	<div>
+		<!-- 操作按钮 -->
 		<div class = "flex mb-10 flex-wrap">
 			<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
 			
@@ -426,11 +489,18 @@
 			{:else}
 				<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
 			{/if}
-
 		</div>
-		<div class = "flex mb-10 justify-center">
+		<!-- 文件提交按钮 -->
+		<div class = "flex mb-5 justify-center">
 			<input bind:value={filename} type="file" enctype="multipart/form-data" size="16" />
 		</div>
+		<!-- 训练集占比的选择 -->
+		<div class = "flex justify-center mb-5">
+			<p>Choose the percentage of the test data:</p>
+			<input class="text-center" bind:value={percentOfTestData} />
+			<p>(0~1)</p>
+		</div>
+		<!-- 参数选择 -->
 		<div>
 			{#if alphaCheck == 'ridgeRegression'}
 				<div class = "flex justify-center mb-4">
@@ -469,6 +539,7 @@
 	</div>
 </div>
 <div>
+	<!-- 方法加载提示框 -->
 	<div class = "mb-5">the methods you have chosen:</div>
 	<div class="flex flex-col">
 		{#each methods as method, i}
@@ -508,40 +579,136 @@
 				</div>
 			{/if}
 		{/each}
+		<Button kind="danger" class = "w-36" on:click={allClear}>Clear all</Button>
 	</div>
 </div>
 <div>
-	<div class = "flex justify-center">
+	<div class = "flex justify-center mb-10">
 		{#if !judgeReset }
 			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
 		{:else}
 			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
-			<Button type="submit" on:click={reset}>Reset</Button>
+			<Button type="submit" on:click={Reset}>Reset</Button>
 		{/if}
 	</div>
+	<!-- 最终得到的答案展示 -->
 	<div>
 		{#if judge }
-			{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept} }
-				<p class = "mb-5 text-center">系数分别为:{coef}</p>
-				<p class = "mb-5 text-center">常数项为:{intercept}</p>
-			{/each}
-			{#each ridgeRegressionAnswerSheet as ans }
-				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
-			{/each}
-			{#each lassoAnswerSheet as ans }
-				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
-			{/each}
-			{#each lassoLarsAnswerSheet as ans }
-				<p class = "mb-5 text-center">系数分别为:{ans.coef}</p>
-				<p class = "mb-5 text-center">常数项为:{ans.intercept}</p>
-			{/each}
-			{#each boostedDecisionTreeRegressionAnswerSheet as ans }
-				<div class = "flex mb-10 justify-center">
-					<img src={ans.picAdd} alt="the result" />
-				</div>
-			{/each}
+			{#if ordinaryLeastSquaresAppearance }
+				<Accordion>
+					<AccordionItem title="Ordinary Least Squares">
+							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData} }
+								<DataTable class="w-11/12"
+									headers={[
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+										{ key: "test", value: "accuracy of test-data" },
+										{ key: "train", value: "accuracy of train-data" },
+									]}
+									rows={[
+										{
+											coefficient: coef,
+											intercept: intercept,
+											test: accuracyOfTestData,
+											train: accuracyOfTrainData,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
+			{/if}
+			{#if ridgeRegressionAppearance }
+				<Accordion>
+					<AccordionItem title="Ridge regression">
+							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData } }
+								<DataTable class="w-11/12"
+									headers={[
+										{ key:"alpha", value: "alpha" },
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+										{ key: "test", value: "accuracy of test-data" },
+										{ key: "train", value: "accuracy of train-data" },
+									]}
+									rows={[
+										{
+											alpha: alpha,
+											coefficient: coef,
+											intercept: intercept,
+											test: accuracyOfTestData,
+											train: accuracyOfTrainData,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
+			{/if}
+			{#if lassoAppearance }
+				<Accordion>
+					<AccordionItem title="Lasso">
+							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData } }
+								<DataTable class="w-11/12"
+									headers={[
+										{ key:"alpha", value: "alpha" },
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+										{ key: "test", value: "accuracy of test-data" },
+										{ key: "train", value: "accuracy of train-data" },
+									]}
+									rows={[
+										{
+											alpha: alpha,
+											coefficient: coef,
+											intercept: intercept,
+											test: accuracyOfTestData,
+											train: accuracyOfTrainData,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
+			{/if}
+			{#if lassoLarsAppearance }
+				<Accordion>
+					<AccordionItem title="LARS Lasso">
+							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, accuracyOfTrainData } }
+								<DataTable class="w-11/12"
+									headers={[
+										{ key: "alpha", value: "alpha" },
+										{ key: "normalize", value: "normalize"},
+										{ key: "coefficient", value: "coefficient" },
+										{ key: "intercept", value: "intercept" },
+										{ key: "test", value: "accuracy of test-data" },
+										{ key: "train", value: "accuracy of train-data" },
+									]}
+									rows={[
+										{
+											alpha: alpha,
+											normalize: normalize,
+											coefficient: coef,
+											intercept: intercept,
+											test: accuracyOfTestData,
+											train: accuracyOfTrainData,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
+			{/if}	
+			{#if boostedDecisionTreeRegressionAppearance }
+				<Accordion>
+					<AccordionItem title="Decision Tree Regression with AdaBoost">
+							{#each boostedDecisionTreeRegressionAnswerSheet as ans }
+								<div class = "flex mb-10 justify-center">
+									<img src={ans.picAdd} alt="the result" />
+								</div>
+							{/each}
+					</AccordionItem>
+				</Accordion>
+			{/if}			
 		{/if}
 	</div>
 </div>
