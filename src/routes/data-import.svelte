@@ -77,7 +77,6 @@
 	function receiveData() {
 		analyzeUploadFileContentApi(localStorage.filename).then((response) => {
 			selectedFeatures = [];
-			
 			if (response.status == 200) {
 				// console.log('response_data:', response.data)
 				rawData.content = response.data.content;
@@ -140,7 +139,7 @@
 			bind:this={pond}
 			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
 			{name}
-			server="http://localhost:8123/api/v1/files/upload"
+			server="https://wudao-backend.herokuapp.com/api/v1/files/upload"
 			allowMultiple={true}
 			oninit={handleInit}
 			onaddfile={handleAddFile}
