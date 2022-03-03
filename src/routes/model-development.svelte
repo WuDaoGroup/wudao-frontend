@@ -7,6 +7,7 @@
 		lassoData,
 		lassoLarsData,
 		SVCData,
+		xgboostData,
 	} from '../api/modelApi';
 	import {
 		Accordion, AccordionItem, Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton,
@@ -28,6 +29,7 @@
 	let SVCJudge = false;
 	let ordinaryLeastSquaresJudge = false;
 	let boostedDecisionTreeRegressionJudge = false;
+	let xgboostJudge = false;
 
 	//答案列表
 	let ordinaryLeastSquaresAnswerSheet = [];
@@ -35,7 +37,8 @@
 	let ridgeRegressionAnswerSheet = [];
 	let lassoAnswerSheet = [];
 	let lassoLarsAnswerSheet = [];
-	let SVCAnswerSheet = [];
+	let SVCAnswerSheet = []; 
+	let xgboostAnswerSheet = [];
 
 	let judge = false; // 判断此时是否显示得到的答案
 	let judgeReset = false; // 判断此时是否需要显示reset
@@ -53,8 +56,21 @@
 	let lassoAppearance = false;
 	let lassoLarsAppearance = false;
 	let SVCAppearance = false;
+	let xgboostAppearance = false;
 	
 	//答案处理方法
+	function xgboost( percentOfTestData ){
+		judge = '';
+		xgboostData( localStorage.filename + '_zscore.csv', percentOfTestData ).then((response) => {
+			accuracyOfTestData = response.data['result_accuracyOfTestData'];
+			console.log( "!!!!!!!", accuracyOfTestData )
+			let theNewAns = {
+				accuracyOfTestData: accuracyOfTestData,
+			}
+			xgboostAnswerSheet.push(theNewAns);
+			xgboostAnswerSheet = xgboostAnswerSheet;
+		});
+	}
 	function SVC( percentOfTestData ){
 		judge = '';
 		SVCData( localStorage.filename + '_zscore.csv', percentOfTestData ).then((response) => {
@@ -154,7 +170,7 @@
 	function boostedDecisionTreeRegression() {
 		judge = '';
 		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv').then((response) => {
-			picAdd = 'http://localhost:8123/api/v1/static/images/' + response.data['pic_addr'];
+			picAdd = 'https://wudao-backend.herokuapp.com/static/images/' + response.data['pic_addr'];
 			let theNewAns = {
 				picAdd:picAdd,
 			}
@@ -172,6 +188,7 @@
 			let lassoAns = [];
 			let lassoLarsAns = [];
 			let SVCAns = [];
+			let xgboostAns = [];
 			alphaCheck = '';
 			for (var i = 0; i < methods.length; i++ ){
 				let newAns = methods[i];
@@ -206,6 +223,11 @@
 					SVCAns = SVCAns;
 					SVCAppearance = true;
 				}
+				else if( methods[i].name == "xgboost"){
+					xgboostAns.push(newAns);
+					xgboostAns = xgboostAns;
+					xgboostAppearance = true;
+				}
 			}
 			for( var i = 0; i < ordinaryLeastSquaresAns.length; i++ ){
 				ordinaryLeastSquares( percentOfTestData );
@@ -226,6 +248,9 @@
 			for( var i = 0; i < SVCAns.length; i++ ){
 				SVC( percentOfTestData );
 			}
+			for( var i = 0; i < xgboostAns.length; i++ ){
+				xgboost( percentOfTestData );
+			}
 			judge = true;
 			judgeReset = true;
 		}
@@ -234,38 +259,100 @@
 	//重设数据
 	function Reset() {
 		judgeReset = false;
+
 		ordinaryLeastSquaresAnswerSheet = [];
 		boostedDecisionTreeRegressionAnswerSheet = [];
 	 	ridgeRegressionAnswerSheet = [];
 		lassoAnswerSheet = [];
 		lassoLarsAnswerSheet = [];
+		xgboostAnswerSheet = [];
+
 		ordinaryLeastSquaresAppearance = false;
 	    boostedDecisionTreeRegressionAppearance = false;
 	    ridgeRegressionAppearance = false;
 	    lassoAppearance = false;
 	    lassoLarsAppearance = false;
 		SVCAppearance = false;
+		xgboostAppearance = false;
 	}
 	function reset() {
 		judgeReset = false;
+
 		ordinaryLeastSquaresAnswerSheet = [];
 		boostedDecisionTreeRegressionAnswerSheet = [];
 	 	ridgeRegressionAnswerSheet = [];
 		lassoAnswerSheet = [];
 		lassoLarsAnswerSheet = [];
 		SVCAnswerSheet = [];
+		xgboostAnswerSheet = [];
 	}
 	function allClear(){
 		reset();
+
+		SVCJudge = false;
+		ordinaryLeastSquaresJudge = false;
+		boostedDecisionTreeRegressionJudge = false;
+		xgboostJudge = false;
+
 		ordinaryLeastSquaresAppearance = false;
 	    boostedDecisionTreeRegressionAppearance = false;
 	    ridgeRegressionAppearance = false;
 	    lassoAppearance = false;
 	    lassoLarsAppearance = false;
 		SVCAppearance = false;
+		xgboostAppearance = false;
+
 		methods = [];
 	}
-	//增添选择的方法
+	//无参数增添选择的方法
+	function boostedDecisionTreeRegressionAdd() {
+		alphaCheck = ''
+		if( !boostedDecisionTreeRegressionJudge ){
+			boostedDecisionTreeRegressionJudge = true;
+			let newMthod = { 
+				name:"Decision Tree Regression with AdaBoost",
+				id:theNumberOfMethod
+			}
+			theNumberOfMethod ++;
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+			reset();
+			judge = '';
+		}
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+	}
+	function xgboostAdd(){
+		alphaCheck = ''
+		if( !xgboostJudge ){
+			xgboostJudge = true;
+			let newMthod = { 
+				name:"xgboost",
+				id:theNumberOfMethod
+			}
+			theNumberOfMethod ++;
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+			judge = ''
+			reset();
+		}
+		else{
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+	}
 	function SVCAdd(){
 		alphaCheck = ''
 		if( !SVCJudge ){
@@ -314,6 +401,8 @@
 			});
 		}
 	}
+
+	//有参数增添选择的方法
 	function ridgeRegressionAdd() {
 		let i = 0; 
 		let status = true;
@@ -380,30 +469,6 @@
 			});
 		}
 	}
-	function boostedDecisionTreeRegressionAdd() {
-		alphaCheck = ''
-		if( !boostedDecisionTreeRegressionJudge ){
-			boostedDecisionTreeRegressionJudge = true;
-			let newMthod = { 
-				name:"Decision Tree Regression with AdaBoost",
-				id:theNumberOfMethod
-			}
-			theNumberOfMethod ++;
-			methods.push(newMthod);
-			methods = methods;
-			toast.push('您成功添加了该种方法');
-			reset();
-			judge = '';
-		}
-		else{
-			toast.push('您已经添加了该种方法', {
-				theme: {
-					'--toastBackground': '#F56565',
-					'--toastBarBackground': '#C53030'
-				}
-			});
-		}
-	}
 	function lassoLarsAdd() {
 		let i = 0; 
 		let status = true;
@@ -439,6 +504,22 @@
 	}
 
 	//部分方法的删除(针对于不需要增添参数的方法)
+	function xgboostDelite( id ){
+		xgboostJudge = false;
+		methods = methods.filter(function (item) {
+        	return item.id != id;
+    	});
+		Reset();
+	}
+
+	function SVCDelite( id ){
+		SVCJudge = false;
+		methods = methods.filter(function (item) {
+        	return item.id != id;
+    	});
+		Reset();
+	}
+
 	function ordinaryLeastSquaresDelite( id ){
 		ordinaryLeastSquaresJudge = false;
 		methods = methods.filter(function (item) {
@@ -446,6 +527,7 @@
     	});
 		Reset();
 	}
+
 	function boostedDecisionTreeRegressionDelite( id ){
 		boostedDecisionTreeRegressionJudge = false;
 		methods = methods.filter(function (item) {
@@ -524,7 +606,8 @@
 				{:else}
 					<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
 				{/if}
-				<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
+
+				<div class="m-2"><Button  class="h-14" type="submit" on:click={xgboostAdd}>xgboost</Button></div>
 			</div>
 		</div>
 		<!-- 操作按钮(classification) -->
@@ -534,10 +617,6 @@
 				<div class="m-2"><Button  class="h-14" type="submit" on:click={SVCAdd}>SVC</Button></div>
 			</div>
 		</div>
-		<!-- 文件提交按钮 -->
-		<!-- <div class = "flex mb-5 justify-center">
-			<input bind:value={newFilename} type="file" enctype="multipart/form-data" size="16" />
-		</div> -->
 		<!-- 训练集占比的选择 -->
 		<div class = "flex justify-center mb-5">
 			<p>Choose the percentage of the test data:</p>
@@ -615,17 +694,23 @@
 				</div>
 			{:else if method.name == 'LARS Lasso'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-pink-300 text-white py-3 text-center w-10 mb-5">{i+1}</div>
-					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-36 mb-5">{method.name}</div>
-					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-28 mb-5">alpha:{method.alpha}</div>
-					<div class="rounded-full bg-pink-300 text-white py-3 px-6 w-40 mb-5">normalize:{method.normalize}</div>
+					<div class="rounded-full bg-pink-300 text-black py-3 text-center w-10 mb-5">{i+1}</div>
+					<div class="rounded-full bg-pink-300 text-black py-3 px-6 w-36 mb-5">{method.name}</div>
+					<div class="rounded-full bg-pink-300 text-black py-3 px-6 w-28 mb-5">alpha:{method.alpha}</div>
+					<div class="rounded-full bg-pink-300 text-black py-3 px-6 w-40 mb-5">normalize:{method.normalize}</div>
 					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
 				</div>
 			{:else if method.name == 'SVC'}
 				<div class="flex flex-wrap">
 					<div class="rounded-full bg-yellow-900 text-white py-3 text-center w-10 mb-5">{i+1}</div>
 					<div class="rounded-full bg-yellow-900 text-white py-3 px-6 w-20 mb-5" >{method.name}</div>
-					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={ordinaryDelite(method.id)}>X</button>
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={SVCDelite(method.id)}>X</button>
+				</div>
+			{:else if method.name == 'xgboost'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-purple-900 text-white py-3 text-center w-10 mb-5">{i+1}</div>
+					<div class="rounded-full bg-purple-900 text-white py-3 px-6 w-28 mb-5" >{method.name}</div>
+					<button class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold" on:click={xgboostDelite(method.id)}>X</button>
 				</div>
 			{/if}
 		{/each}
@@ -753,6 +838,24 @@
 				<Accordion>
 					<AccordionItem title="SVC">
 							{#each SVCAnswerSheet as { accuracyOfTestData } }
+								<DataTable class="w-11/12"
+									headers={[
+										{ key: "test", value: "accuracy of test-data" },
+									]}
+									rows={[
+										{
+											test: accuracyOfTestData,
+										},
+									]}
+								/>
+							{/each}
+					</AccordionItem>
+				</Accordion>
+			{/if}
+			{#if xgboostAppearance }
+				<Accordion>
+					<AccordionItem title="xgboost">
+							{#each xgboostAnswerSheet as {accuracyOfTestData} }
 								<DataTable class="w-11/12"
 									headers={[
 										{ key: "test", value: "accuracy of test-data" },

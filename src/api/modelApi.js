@@ -1,13 +1,24 @@
 // AI模型相关的API接口
 import api from '../services/api.js';
-
+export const xgboostData = async ( filename, percent ) => {
+	try{
+		let form = new FormData()
+		form.append('filename', filename)
+		form.append('percent', percent)
+		const response = await api.post(`/models/predict/xgboost`, form)
+		console.log(response)
+		return response
+	}catch (err){
+		console.error(err)
+	}
+}
 export const SVCData = async ( filename, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
 		form.append('percent', percent)
 		console.log("SVC!!!!!", form)
-		const response = await api.post(`/models/predict/SVC`, form)
+		const response = await api.post(`/models/predict/svc`, form)
 		console.log(response)
 		return response
 	}catch (err){
@@ -29,7 +40,6 @@ export const lassoLarsData = async ( filename, alpha, normalize, percent ) => {
 		console.error(err)
 	}
 }
-
 export const lassoData = async ( filename, alpha, percent ) => {
 	try{
 		let form = new FormData()
@@ -42,7 +52,6 @@ export const lassoData = async ( filename, alpha, percent ) => {
 		console.error(err)
 	}
 }
-
 export const ridgeRegressionData = async ( filename, alpha, percent ) => {
 	try{
 		let form = new FormData()
@@ -55,7 +64,6 @@ export const ridgeRegressionData = async ( filename, alpha, percent ) => {
 		console.error(err)
 	}
 }
-
 export const ordinaryLeastSquaresData = async ( filename, percent ) => {
 	try{
 		let form = new FormData()
@@ -68,7 +76,6 @@ export const ordinaryLeastSquaresData = async ( filename, percent ) => {
 		console.error(err)
 	}
 }
-
 export const boostedDecisionTreeRegressionData = async ( filename ) => {
 	try{
 		let form = new FormData()
