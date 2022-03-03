@@ -524,7 +524,6 @@
 				{:else}
 					<div class="m-2"><Button  class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button></div>
 				{/if}
-				<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
 			</div>
 		</div>
 		<!-- 操作按钮(classification) -->
