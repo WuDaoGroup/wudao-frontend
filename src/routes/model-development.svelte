@@ -71,7 +71,13 @@
 	let xgboostAppearance = false;
 
 	//判断某种方法是否发生错误
-	let errorSVC = false;
+	let errorOrdinaryLeastSquares = true;
+	let errorBoostedDecisionTreeRegression = true;
+	let errorRidgeRegression = true;
+	let errorLasso = true;
+	let errorLassoLars = true;
+	let errorSVC = true; 
+	let errorXgboost = true;
 
 	//答案处理方法
 	function xgboost( percentOfTestData ){
@@ -84,6 +90,9 @@
 			}
 			xgboostAnswerSheet.push(theNewAns);
 			xgboostAnswerSheet = xgboostAnswerSheet;
+			errorXgboost = true;
+		}).catch(()=> {
+			errorXgboost = false;
 		});
 	}
 	function SVC( percentOfTestData ){
@@ -121,6 +130,9 @@
 			console.log("lassoLars:", theNewAns);
 			lassoLarsAnswerSheet.push(theNewAns);
 			lassoLarsAnswerSheet = lassoLarsAnswerSheet;
+			errorLassoLars = true;
+		}).catch(()=> {
+			errorLassoLars = false;
 		});
 	}
 
@@ -142,6 +154,9 @@
 			}
 			lassoAnswerSheet.push(theNewAns);
 			lassoAnswerSheet = lassoAnswerSheet;
+			errorLasso = true;
+		}).catch(()=> {
+			errorLasso = false;
 		});
 	}
 
@@ -163,6 +178,9 @@
 			}
 			ridgeRegressionAnswerSheet.push(theNewAns);
 			ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
+			errorRidgeRegression = true;
+		}).catch(()=> {
+			errorRidgeRegression = false;
 		});
 	}
 
@@ -182,18 +200,24 @@
 			console.log("the accuracyOfTrainData:-------", accuracyOfTrainData);
 			ordinaryLeastSquaresAnswerSheet.push(theNewAns);
 			ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
+			errorOrdinaryLeastSquares = true;
+		}).catch(()=> {
+			errorOrdinaryLeastSquares = false;
 		});
 	}
 	
 	function boostedDecisionTreeRegression() {
 		judge = '';
 		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv').then((response) => {
-			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+			picAdd = 'https://wudao-backend.herokuapp.com/static/images/' + response.data['pic_addr'];
 			let theNewAns = {
 				picAdd:picAdd,
 			}
 			boostedDecisionTreeRegressionAnswerSheet.push(theNewAns);
 			boostedDecisionTreeRegressionAnswerSheet = boostedDecisionTreeRegressionAnswerSheet;
+			errorBoostedDecisionTreeRegression = true;
+		}).catch(()=> {
+			errorBoostedDecisionTreeRegression = false;
 		});
 	}
 
@@ -276,14 +300,7 @@
 
 	//重设数据
 	function Reset() {
-		judgeReset = false;
-
-		ordinaryLeastSquaresAnswerSheet = [];
-		boostedDecisionTreeRegressionAnswerSheet = [];
-	 	ridgeRegressionAnswerSheet = [];
-		lassoAnswerSheet = [];
-		lassoLarsAnswerSheet = [];
-		xgboostAnswerSheet = [];
+		reset();
 
 		ordinaryLeastSquaresAppearance = false;
 	    boostedDecisionTreeRegressionAppearance = false;
@@ -303,22 +320,22 @@
 		lassoLarsAnswerSheet = [];
 		SVCAnswerSheet = [];
 		xgboostAnswerSheet = [];
+
+		errorOrdinaryLeastSquares = true;
+		errorBoostedDecisionTreeRegression = true;
+		errorRidgeRegression = true;
+		errorLasso = true;
+		errorLassoLars = true;
+		errorSVC = true; 
+		errorXgboost = true;
 	}
 	function allClear(){
-		reset();
+		Reset();
 
 		SVCJudge = false;
 		ordinaryLeastSquaresJudge = false;
 		boostedDecisionTreeRegressionJudge = false;
 		xgboostJudge = false;
-
-		ordinaryLeastSquaresAppearance = false;
-	    boostedDecisionTreeRegressionAppearance = false;
-	    ridgeRegressionAppearance = false;
-	    lassoAppearance = false;
-	    lassoLarsAppearance = false;
-		SVCAppearance = false;
-		xgboostAppearance = false;
 
 		methods = [];
 	}
@@ -751,6 +768,7 @@
 			{#if ordinaryLeastSquaresAppearance }
 				<Accordion>
 					<AccordionItem title="Ordinary Least Squares">
+						{#if errorOrdinaryLeastSquares }
 							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData} }
 								<DataTable class="w-11/12"
 									headers={[
@@ -769,12 +787,26 @@
 									]}
 								/>
 							{/each}
+						{:else}
+							<div class = "flex flex-nowrap justify-start" > 
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
+									<p id="tooltip-body">
+										Make sure that every value that is a feature is of numeric type.
+									</p>
+								</Tooltip>
+							</div>
+						{/if}
 					</AccordionItem>
 				</Accordion>
 			{/if}
 			{#if ridgeRegressionAppearance }
 				<Accordion>
 					<AccordionItem title="Ridge regression">
+						{#if errorRidgeRegression }
 							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData } }
 								<DataTable class="w-11/12"
 									headers={[
@@ -795,12 +827,26 @@
 									]}
 								/>
 							{/each}
+						{:else}
+							<div class = "flex flex-nowrap justify-start" > 
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
+									<p id="tooltip-body">
+										Make sure that every value that is a feature is of numeric type.
+									</p>
+								</Tooltip>
+							</div>
+						{/if}
 					</AccordionItem>
 				</Accordion>
 			{/if}
 			{#if lassoAppearance }
 				<Accordion>
 					<AccordionItem title="Lasso">
+						{#if errorLasso }
 							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData } }
 								<DataTable class="w-11/12"
 									headers={[
@@ -821,12 +867,26 @@
 									]}
 								/>
 							{/each}
+						{:else}
+							<div class = "flex flex-nowrap justify-start" > 
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
+									<p id="tooltip-body">
+										Make sure that every value that is a feature is of numeric type.
+									</p>
+								</Tooltip>
+							</div>
+						{/if}
 					</AccordionItem>
 				</Accordion>
 			{/if}
 			{#if lassoLarsAppearance }
 				<Accordion>
 					<AccordionItem title="LARS Lasso">
+						{#if errorLassoLars }
 							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, accuracyOfTrainData } }
 								<DataTable class="w-11/12"
 									headers={[
@@ -849,6 +909,19 @@
 									]}
 								/>
 							{/each}
+						{:else}
+							<div class = "flex flex-nowrap justify-start" > 
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
+									<p id="tooltip-body">
+										Make sure that every value that is a feature is of numeric type.
+									</p>
+								</Tooltip>
+							</div>
+						{/if}	
 					</AccordionItem>
 				</Accordion>
 			{/if}
@@ -876,7 +949,7 @@
 								/>
 								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
 									<p id="tooltip-body">
-										ValueError: Unknown label type: 'continuous' or we got 1 class but the number of classes has to be greater than one
+										ValueError: Unknown label type: 'continuous' or we got 1 class but the number of classes has to be greater than one.
 									</p>
 								</Tooltip>
 							</div>
@@ -887,6 +960,7 @@
 			{#if xgboostAppearance }
 				<Accordion>
 					<AccordionItem title="xgboost">
+						{#if errorXgboost }
 							{#each xgboostAnswerSheet as {accuracyOfTestData} }
 								<DataTable class="w-11/12"
 									headers={[
@@ -899,17 +973,44 @@
 									]}
 								/>
 							{/each}
+						{:else}
+							<div class = "flex flex-nowrap justify-start" > 
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
+									<p id="tooltip-body">
+										Make sure that every value that is a feature is of numeric type.
+									</p>
+								</Tooltip>
+							</div>
+						{/if}
 					</AccordionItem>
 				</Accordion>
 			{/if}
 			{#if boostedDecisionTreeRegressionAppearance }
 				<Accordion>
 					<AccordionItem title="Decision Tree Regression with AdaBoost">
+						{#if errorBoostedDecisionTreeRegression }
 							{#each boostedDecisionTreeRegressionAnswerSheet as ans }
 								<div class = "flex mb-10 justify-center">
 									<img src={ans.picAdd} alt="the result" />
 								</div>
 							{/each}
+						{:else}
+							<div class = "flex flex-nowrap justify-start" > 
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
+									<p id="tooltip-body">
+										Make sure that every value that is a feature is of numeric type.
+									</p>
+								</Tooltip>
+							</div>
+						{/if}
 					</AccordionItem>
 				</Accordion>
 			{/if}			
