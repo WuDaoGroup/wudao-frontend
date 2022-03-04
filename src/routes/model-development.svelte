@@ -10,8 +10,20 @@
 		xgboostData,
 	} from '../api/modelApi';
 	import {
-		Accordion, AccordionItem, Form, FormGroup, Checkbox, RadioButtonGroup, RadioButton,
-		Select, SelectItem, Button, DataTable
+		Accordion, 
+		AccordionItem, 
+		Form, 
+		FormGroup, 
+		Checkbox, 
+		RadioButtonGroup, 
+		RadioButton,
+		Select, 
+		SelectItem, 
+		Button, 
+		DataTable, 
+		InlineNotification,
+		TextInput,
+		Tooltip,
 	} from 'carbon-components-svelte';
 	import TrashCan16 from "carbon-icons-svelte/lib/TrashCan16";
 	import { toast } from '@zerodevx/svelte-toast';
@@ -57,7 +69,10 @@
 	let lassoLarsAppearance = false;
 	let SVCAppearance = false;
 	let xgboostAppearance = false;
-	
+
+	//判断某种方法是否发生错误
+	let errorSVC = false;
+
 	//答案处理方法
 	function xgboost( percentOfTestData ){
 		judge = '';
@@ -81,6 +96,9 @@
 			}
 			SVCAnswerSheet.push(theNewAns);
 			SVCAnswerSheet = SVCAnswerSheet;
+			errorSVC = true;
+		}).catch(()=> {
+			errorSVC = false;
 		});
 	}
 	function lassoLars( alpha, normalize, percentOfTestData ) {
@@ -170,7 +188,7 @@
 	function boostedDecisionTreeRegression() {
 		judge = '';
 		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv').then((response) => {
-			picAdd = 'https://wudao-backend.herokuapp.com/static/images/' + response.data['pic_addr'];
+			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
 			let theNewAns = {
 				picAdd:picAdd,
 			}
@@ -583,7 +601,7 @@
 	<div>
 		<!-- 操作按钮(regression) -->
 		<div class = "mb-10">
-			<p class = "text-center mb-7 text-3xl">回归分析</p>
+			<p class = "text-center mb-7 text-3xl">Regression</p>
 			<div class = "flex flex-wrap">
 				<div class="m-2"><Button  class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</Button></div>
 				
@@ -612,7 +630,7 @@
 		</div>
 		<!-- 操作按钮(classification) -->
 		<div class = "mb-10">
-			<p class = "text-center mb-7 text-3xl">分类处理</p>
+			<p class = "text-center mb-7 text-3xl">Classification</p>
 			<div class = "flex flex-wrap">
 				<div class="m-2"><Button  class="h-14" type="submit" on:click={SVCAdd}>SVC</Button></div>
 			</div>
@@ -837,6 +855,7 @@
 			{#if SVCAppearance }
 				<Accordion>
 					<AccordionItem title="SVC">
+						{#if errorSVC }
 							{#each SVCAnswerSheet as { accuracyOfTestData } }
 								<DataTable class="w-11/12"
 									headers={[
@@ -849,6 +868,19 @@
 									]}
 								/>
 							{/each}
+						{:else}
+							<div class = "flex flex-nowrap justify-start" > 
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class = "self-center">
+									<p id="tooltip-body">
+										ValueError: Unknown label type: 'continuous' or we got 1 class but the number of classes has to be greater than one
+									</p>
+								</Tooltip>
+							</div>
+						{/if}
 					</AccordionItem>
 				</Accordion>
 			{/if}
