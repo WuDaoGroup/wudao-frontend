@@ -9,3 +9,6 @@ node_modules
 .idea
 test.svelte
 package-lock.json
+
+build
+functions
