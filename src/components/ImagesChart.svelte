@@ -15,7 +15,7 @@
 				if (images.length == 0) {
 					for (let i = 1; i <= length; i++) {
 						let str =
-							`https://wudao-backend.herokuapp.com/static/images/${localStorage.filename}_selected_features_` +
+							`http://localhost:8123/static/images/${localStorage.filename}_selected_features_` +
 							i +
 							'.png';
 						console.log(str);

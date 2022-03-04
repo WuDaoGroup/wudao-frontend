@@ -209,7 +209,7 @@
 	function boostedDecisionTreeRegression() {
 		judge = '';
 		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv').then((response) => {
-			picAdd = 'https://wudao-backend.herokuapp.com/static/images/' + response.data['pic_addr'];
+			picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
 			let theNewAns = {
 				picAdd:picAdd,
 			}

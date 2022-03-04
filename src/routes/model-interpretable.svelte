@@ -1,8 +1,7 @@
 <script>
     import { ComboBox } from "carbon-components-svelte";
     import { browser } from '$app/env';
-    import { ContentSwitcher, Switch, Button } from "carbon-components-svelte";
-    import { Select, SelectItem } from "carbon-components-svelte";
+    import { ContentSwitcher, Switch, Button, TextInput, Select, SelectItem, SelectableTile } from "carbon-components-svelte";
     import "../app.css";
     import { dimensionReductionApi, featureCorrApi, objectMatrixApi, pairwiseFeatureCorrApi } from '../api/explanationApi';
     import { toast } from '@zerodevx/svelte-toast';
@@ -74,9 +73,17 @@
             <SelectItem value="2" text="2" />
             <SelectItem value="3" text="3" />
         </Select>
-        <Button on:click={dimensionReduction}  kind='primary'>生成降维图像</Button>
+        <Select labelText="降维维数选择" bind:selected={explanationFeatures.target}>
+            {#each JSON.parse(localStorage.target) as p}
+                <SelectItem value={p} text={p} />
+			{/each}
+        </Select>
+        <br/>
+        <TextInput class="py-10" inline labelText="筛选数据" type="Number" placeholder="请填写筛选范围" bind:value={explanationFeatures.learningrate} />
+        <br/>
+        <Button  on:click={dimensionReduction}  kind='primary'>生成降维图像</Button>
         {#if showReduction == true}
-            <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_dimension_reduction_img.png">
+            <img src="http://localhost:8123/static/images/{localStorage.filename}_dimension_reduction_img.png">
         {/if}   
     </div>
     
@@ -90,19 +97,20 @@
             </Select>
             <Button on:click={featureCorr}  kind='primary'>生成特征关联图</Button>
             {#if showCorr == true}
-                <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_feature_corr_img.png">
+                <img src="http://localhost:8123/static/images/{localStorage.filename}_feature_corr_img.png">
             {/if} 
         </div>
         <div class="py-6">
             <Button on:click={objectMatrix}  kind='primary'>生成目标相关矩阵</Button>
             {#if showMatrix == true}
-                <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_object_matrix_img.png">
+                <img src="http://localhost:8123/static/images/{localStorage.filename}_object_matrix_img.png">
             {/if} 
         </div>
         <div class="py-6">
+            
             <Button on:click={pairwiseFeatureCorr}  kind='primary'>生成特征相关具体分布</Button>
             {#if showPair == true}
-                <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_pairwise_feature_corr_img.png">
+                <img src="http://localhost:8123/static/images/test.xlsx_pairwise_feature_corr_img.png">
             {/if} 
         </div>
     </div>
