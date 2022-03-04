@@ -7,7 +7,11 @@
     import { toast } from '@zerodevx/svelte-toast';
     let explainationTypeIndex = 1;
     let explainationDimmensionIndex = 1;
-    let explanationFeatures = {'dimmension':'2','type':'TSNE','learningrate':'100','target':'评分'};
+    $: explanationFeatures = {'dimmension':'2','type':'TSNE','learningrate':'100','target':'评分'};
+    $:{
+        explanationFeatures = {'dimmension':'2','type':'TSNE','learningrate':'100','target':'评分'};
+        showReduction=false;
+    }
     $:console.log(explanationFeatures);
     let method="pearson";
     let showReduction = false;
@@ -56,7 +60,9 @@
              }
         });
      }
-
+     function changeShow(){
+        showReduction = false;
+     }
     
 </script>
 
@@ -65,9 +71,9 @@
     <div class="container w-1/2 px-4 py-6 " >
         <h2>降维模型</h2>
         <h1>{localStorage.filename}</h1>
-        <Select labelText="降维模型选择" bind:selected={explanationFeatures.type} >
-            <SelectItem value="PCA" text="PCA" />
-            <SelectItem value="TSNE" text="TSNE" />
+        <Select labelText="降维模型选择" bind:selected={explanationFeatures.type}>
+            <SelectItem value="PCA" text="PCA" on:click={changeShow} />
+            <SelectItem value="TSNE" text="TSNE" on:click={changeShow} />
         </Select>
         <Select labelText="降维维数选择" bind:selected={explanationFeatures.dimmension}>
             <SelectItem value="2" text="2" />
@@ -101,13 +107,22 @@
             {/if} 
         </div>
         <div class="py-6">
+            <Select labelText="降维维数选择" bind:selected={featureCorrFeatures.object}>
+                {#each JSON.parse(localStorage.target) as p}
+                    <SelectItem value={p} text={p} />
+                {/each}
+            </Select>
             <Button on:click={objectMatrix}  kind='primary'>生成目标相关矩阵</Button>
             {#if showMatrix == true}
                 <img src="http://localhost:8123/static/images/{localStorage.filename}_object_matrix_img.png">
             {/if} 
         </div>
         <div class="py-6">
-            
+            <div role="group" aria-label="selectable tiles" >
+                {#each JSON.parse(localStorage.target) as p}
+                <SelectableTile>{p}</SelectableTile>
+			    {/each}
+              </div>
             <Button on:click={pairwiseFeatureCorr}  kind='primary'>生成特征相关具体分布</Button>
             {#if showPair == true}
                 <img src="http://localhost:8123/static/images/test.xlsx_pairwise_feature_corr_img.png">
