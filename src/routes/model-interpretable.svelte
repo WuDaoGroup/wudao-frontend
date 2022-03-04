@@ -1,5 +1,6 @@
 <script>
     import { ComboBox } from "carbon-components-svelte";
+    import { browser } from '$app/env';
     import { ContentSwitcher, Switch, Button } from "carbon-components-svelte";
     import { Select, SelectItem } from "carbon-components-svelte";
     import "../app.css";
@@ -9,7 +10,6 @@
     let explainationDimmensionIndex = 1;
     let explanationFeatures = {'dimmension':'2','type':'TSNE','learningrate':'100','target':'评分'};
     $:console.log(explanationFeatures);
-    let filename='test.xlsx';
     let method="pearson";
     let showReduction = false;
     let showCorr =false;
@@ -19,7 +19,7 @@
     let cols=['评分','投票人数','时长']
 
     function dimensionReduction(){
-        dimensionReductionApi(filename, explanationFeatures).then((response)=>{
+        dimensionReductionApi(localStorage.filename, explanationFeatures).then((response)=>{
             if(response.status == 200){
                 toast.push('降维过程完成');
                 console.log('dimensionReductionImgAddr:',response.pic_addr);
@@ -29,7 +29,7 @@
     }
     
     function featureCorr(){
-        featureCorrApi(filename, method).then((response)=>{
+        featureCorrApi(localStorage.filename, method).then((response)=>{
             if(response.status == 200){
                 toast.push('关联过程完成');
                 console.log(response.pic_addr);
@@ -39,7 +39,7 @@
     }
 
      function objectMatrix(){
-         objectMatrixApi(filename, featureCorrFeatures).then((response)=>{
+         objectMatrixApi(localStorage.filename, featureCorrFeatures).then((response)=>{
              if(response.status == 200){
                  toast.push('目标矩阵生成过程完成');
                  console.log(response.pic_addr);
@@ -49,7 +49,7 @@
      }
      
      function pairwiseFeatureCorr(){
-        pairwiseFeatureCorrApi(filename, cols).then((response)=>{
+        pairwiseFeatureCorrApi(localStorage.filename, cols).then((response)=>{
              if(response.status == 200){
                  toast.push('特征相关具体分布生成过程完成');
                  console.log(response.pic_addr);
@@ -65,6 +65,7 @@
 <div class="flex flex-row px-4">
     <div class="container w-1/2 px-4 py-6 " >
         <h2>降维模型</h2>
+        <h1>{localStorage.filename}</h1>
         <Select labelText="降维模型选择" bind:selected={explanationFeatures.type} >
             <SelectItem value="PCA" text="PCA" />
             <SelectItem value="TSNE" text="TSNE" />
@@ -75,7 +76,7 @@
         </Select>
         <Button on:click={dimensionReduction}  kind='primary'>生成降维图像</Button>
         {#if showReduction == true}
-            <img src="http://localhost:8123/static/images/test.xlsx_dimension_reduction_img.png">
+            <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_dimension_reduction_img.png">
         {/if}   
     </div>
     
@@ -89,19 +90,19 @@
             </Select>
             <Button on:click={featureCorr}  kind='primary'>生成特征关联图</Button>
             {#if showCorr == true}
-                <img src="http://localhost:8123/static/images/test.xlsx_feature_corr_img.png">
+                <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_feature_corr_img.png">
             {/if} 
         </div>
         <div class="py-6">
             <Button on:click={objectMatrix}  kind='primary'>生成目标相关矩阵</Button>
             {#if showMatrix == true}
-                <img src="http://localhost:8123/static/images/test.xlsx_object_matrix_img.png">
+                <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_object_matrix_img.png">
             {/if} 
         </div>
         <div class="py-6">
             <Button on:click={pairwiseFeatureCorr}  kind='primary'>生成特征相关具体分布</Button>
             {#if showPair == true}
-                <img src="http://localhost:8123/static/images/test.xlsx_pairwise_feature_corr_img.png">
+                <img src="https://wudao-backend.herokuapp.com/static/images/test.xlsx_pairwise_feature_corr_img.png">
             {/if} 
         </div>
     </div>
