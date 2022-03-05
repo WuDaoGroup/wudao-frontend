@@ -1,7 +1,7 @@
 <script>
     import { toast } from '@zerodevx/svelte-toast';
     import { receiveBasicFileInfoApi, zscoreFilterInfoApi, originZscoreApi, confirmOriginZscoreApi } from '../api/fileApi'
-
+    import * as showdown from 'showdown';
     import {
 		Button,
         DataTable,
@@ -13,9 +13,10 @@
 		ProgressStep,
         TextInput
 	} from 'carbon-components-svelte';
-
+    import { CodeSnippet } from "carbon-components-svelte";
     let showTable = false;
-
+    let hasSelected = false;
+    let hasFilled = false;
     let basicData = {
         content:[],
         header:[]
@@ -31,11 +32,12 @@
     const zscorechoice = ["请选择", "均值填充", "中位数填充"]
     const defaultChoice = zscorechoice[0]
     let zscoreType = {'key':defaultChoice}
-
+    let code = [];
     function receiveBasicData() {
 		receiveBasicFileInfoApi(localStorage.filename).then((response) => {
 			if (response.status == 200) {
 				console.log('response_data:', response.data)
+                code.push(response.data.code);
                 basicData.content = response.data.content
                 basicData.header = response.data.header
                 showTable = true;
@@ -65,8 +67,11 @@
                     filterData.current = false;
                     filterData.complete = true;
                     currentIndex++;
-                    toast.push("筛选成功")
-                    console.log('LLLresponse_data:', response.data)
+                    toast.push("筛选成功");
+                    console.log('LLLresponse_data:', response.data);
+                    code.push(response.data.code);
+                    console.log('code',code);
+                    hasSelected = !hasSelected;
                 } else {
                     
                     console.log('error!');
@@ -81,15 +86,15 @@
         confirmOriginZscoreApi(localStorage.filename, zscoreType.key).then((response) => {
                 if (response.status == 200) {
                     console.log('response_data:', response.data)
+                    code.push(response.data.code);
                     chooseZscoreMethod.invalid = false;
                     chooseZscoreMethod.current = false;
                     chooseZscoreMethod.complete = true;
                     currentIndex++;
                     filterData.disabled = false;
                     filterData.current = true;
-
-
                     toast.push('选择成功');
+                    hasFilled = !hasFilled;
                 } else {
                     chooseZscoreMethod.invalid = true;
                     toast.push("请选择类型", {
@@ -103,7 +108,6 @@
             });
 
     }
-
 
     let pagination = {
 		pageSize: 10,
@@ -165,7 +169,8 @@
         pageSizeInputDisabled
     />
 </div>
-
+<br/>
+<CodeSnippet class="m-auto" code={code[0]} type="multi" />
 {/if}
 
 <div class="grid grid-col-5">
@@ -181,7 +186,13 @@
     <Button on:click={confirmOriginZscore} kind="tertiary">确定</Button>
 </div>
 </div>
-
+<br/>
+{#if hasFilled == true}
+<CodeSnippet class="m-auto" code={code[1]} type="multi" />
+{/if}
 
 <TextInput inline labelText="筛选数据" type="Number" placeholder="请填写筛选范围" bind:value={bar} />
 <Button on:click={zscoreFilter} kind="tertiary">数据筛选</Button>
+{#if hasSelected == true}
+<CodeSnippet class="m-auto" code={code[2]} type="multi" />
+{/if}
