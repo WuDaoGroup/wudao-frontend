@@ -88,7 +88,7 @@
 	//答案处理方法
 	function xgboost(percentOfTestData) {
 		judge = '';
-		xgboostData(localStorage.filename + '_zscore.csv', percentOfTestData)
+		xgboostData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				code = response.data['code']
@@ -107,7 +107,7 @@
 	}
 	function SVC(percentOfTestData) {
 		judge = '';
-		SVCData(localStorage.filename + '_zscore.csv', percentOfTestData)
+		SVCData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				code = response.data['code'];
@@ -127,7 +127,7 @@
 		judge = '';
 		coef = [];
 		intercept = [];
-		lassoLarsData(localStorage.filename + '_zscore.csv', alpha, normalize, percentOfTestData)
+		lassoLarsData(localStorage.filename + '_zscore_afterFilter.csv', alpha, normalize, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -157,7 +157,7 @@
 		judge = '';
 		coef = [];
 		intercept = [];
-		lassoData(localStorage.filename + '_zscore.csv', alpha, percentOfTestData)
+		lassoData(localStorage.filename + '_zscore_afterFilter.csv', alpha, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -185,7 +185,7 @@
 		judge = '';
 		coef = [];
 		intercept = [];
-		ridgeRegressionData(localStorage.filename + '_zscore.csv', alpha, percentOfTestData)
+		ridgeRegressionData(localStorage.filename + '_zscore_afterFilter.csv', alpha, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -211,7 +211,7 @@
 
 	function ordinaryLeastSquares(percentOfTestData) {
 		judge = '';
-		ordinaryLeastSquaresData(localStorage.filename + '_zscore.csv', percentOfTestData)
+		ordinaryLeastSquaresData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -237,7 +237,7 @@
 
 	function boostedDecisionTreeRegression() {
 		judge = '';
-		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv')
+		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore_afterFilter.csv')
 			.then((response) => {
 				picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
 				code  = response.data['code'];
