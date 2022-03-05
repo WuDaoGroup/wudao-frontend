@@ -14,7 +14,7 @@
 	import { Button } from 'carbon-components-svelte';
 	// import { dataHeader, rowData } from '../stores/dataStore';
 	import FilePond from 'svelte-filepond';
-	import { filename } from '../stores/dataStore';
+	import { filename, target} from '../stores/dataStore';
 	import { goto } from '$app/navigation';
 
 	// 接收到的结构化数据 (原始数据)
@@ -29,6 +29,7 @@
 	const featureTypes = ['target', 'feature', 'useless'];
 	const defaultChoice = featureTypes[1];
 	let selectedFeatures = [];
+	let targetExplanation = [];
 	// let selectedFeatures = [{'value': 'Y', 'type': defaultChoice},{'value': 'm', 'type': defaultChoice},{'value': 'n', 'type': defaultChoice}]
 	$: console.log(selectedFeatures);
 	$: featureTypeTargetCount = selectedFeatures.filter((e) => e.type === 'target').length;
@@ -90,6 +91,11 @@
 					};
 					selectedFeatures.push(e);
 				}
+				for (let i = 0; i < rawData.features.length; i++) {
+					let e = rawData.features[i]['key'];
+					targetExplanation.push(e);
+				}
+				console.log(targetExplanation[0].key);
 				(analyzeDataFiles.current = false), (analyzeDataFiles.complete = true);
 				currentIndex = 2;
 				(showTable = true),
@@ -107,6 +113,11 @@
 				toast.push('上传数据的特征信息成功');
 				console.log('data feature info:', response.data);
 				(chooseFeature.current = false), (chooseFeature.complete = true), (currentIndex = 4);
+				const dataTarget = targetExplanation;
+				target.set(dataTarget);
+				if (browser) {
+					localStorage.setItem('target', JSON.stringify(dataTarget));
+				}
 				goto(`/data-preprocessing`);
 			}
 		});
@@ -139,7 +150,7 @@
 			bind:this={pond}
 			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
 			{name}
-			server="https://wudao-backend.herokuapp.com/api/v1/files/upload"
+			server="http://localhost:8123/api/v1/files/upload"
 			allowMultiple={true}
 			oninit={handleInit}
 			onaddfile={handleAddFile}

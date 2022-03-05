@@ -15,6 +15,7 @@
 		Form,
 		FormGroup,
 		Checkbox,
+		CodeSnippet,
 		RadioButtonGroup,
 		RadioButton,
 		Select,
@@ -908,7 +909,7 @@
 										}
 									]}
 								/>
-								<pre>{code}</pre>
+								<CodeSnippet class="" code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -950,7 +951,7 @@
 										}
 									]}
 								/>
-								<pre>{code}</pre>
+								<CodeSnippet class="" code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -992,7 +993,7 @@
 										}
 									]}
 								/>
-								<pre>{code}</pre>
+								<CodeSnippet class="" code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1036,7 +1037,7 @@
 										}
 									]}
 								/>
-								<pre>{code}</pre>
+								<CodeSnippet class="" code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1068,7 +1069,7 @@
 										}
 									]}
 								/>
-								<pre>{code}</pre>
+								<CodeSnippet class="" code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1101,7 +1102,7 @@
 										}
 									]}
 								/>
-								<pre>{code}</pre>
+								<CodeSnippet class="" code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1127,7 +1128,7 @@
 								<div class="flex mb-10 justify-center">
 									<img src={ans.picAdd} alt="the result" />
 								</div>
-								<pre>{ans.code}</pre>
+								<CodeSnippet class="" code={ans.code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">

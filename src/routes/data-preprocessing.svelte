@@ -1,7 +1,6 @@
 <script>
     import { toast } from '@zerodevx/svelte-toast';
     import { receiveBasicFileInfoApi, zscoreFilterInfoApi, originZscoreApi, confirmOriginZscoreApi } from '../api/fileApi'
-    import * as showdown from 'showdown';
     import {
 		Button,
         DataTable,

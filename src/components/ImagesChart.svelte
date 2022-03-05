@@ -11,11 +11,11 @@
 		receiveBasicFileInfoApi(localStorage.filename).then((response) => {
 			if (response.status == 200) {
 				console.log(response);
-				let length = response.data.content.length;
+				length = response.data.content.length;
 				if (images.length == 0) {
 					for (let i = 1; i <= length; i++) {
 						let str =
-							`https://wudao-backend.herokuapp.com/static/images/${localStorage.filename}_selected_features_` +
+							`http://localhost:8123/static/images/${localStorage.filename}_selected_features_` +
 							i +
 							'.png';
 						console.log(str);
@@ -37,9 +37,9 @@
 		showImage = false;
 		showZscore = true;
 		if (zscores.length == 0) {
-			for (let i = 1; i < 6; i++) {
+			for (let i = 1; i < length; i++) {
 				let str =
-					`https://wudao-backend.herokuapp.com/static/images/${localStorage.filename}_selected_features_zscore_` +
+					`http://localhost:8123/static/images/${localStorage.filename}_selected_features_zscore_` +
 					i +
 					'.png';
 				console.log(str);
