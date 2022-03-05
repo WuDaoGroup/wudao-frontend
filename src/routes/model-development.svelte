@@ -39,7 +39,7 @@
 	let alpha = '';
 	let methods = [];
 	let theNumberOfMethod = 1;
-	let percentOfTestData = '';
+	let percentOfTestData = 0.3;
 
 	//对没有参数的方法是否进行添加的判断
 	let SVCJudge = false;
@@ -64,6 +64,7 @@
 	let intercept = [];
 	let accuracyOfTestData = 0;
 	let accuracyOfTrainData = 0;
+	let code = '';
 
 	//判断是否存在某方法的出现
 	let ordinaryLeastSquaresAppearance = false;
@@ -89,9 +90,11 @@
 		xgboostData(localStorage.filename + '_zscore.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
+				code = response.data['code']
 				console.log('!!!!!!!', accuracyOfTestData);
 				let theNewAns = {
-					accuracyOfTestData: accuracyOfTestData
+					accuracyOfTestData: accuracyOfTestData,
+					code: code,
 				};
 				xgboostAnswerSheet.push(theNewAns);
 				xgboostAnswerSheet = xgboostAnswerSheet;
@@ -106,9 +109,10 @@
 		SVCData(localStorage.filename + '_zscore.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
-				console.log('!!!!!!!', accuracyOfTestData);
+				code = response.data['code'];
 				let theNewAns = {
-					accuracyOfTestData: accuracyOfTestData
+					accuracyOfTestData: accuracyOfTestData,
+					code: code,
 				};
 				SVCAnswerSheet.push(theNewAns);
 				SVCAnswerSheet = SVCAnswerSheet;
@@ -128,13 +132,15 @@
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
+				code  = response.data['code'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
 					alpha: alpha,
 					normalize: normalize,
 					accuracyOfTestData: accuracyOfTestData,
-					accuracyOfTrainData: accuracyOfTrainData
+					accuracyOfTrainData: accuracyOfTrainData,
+					code: code,
 				};
 				console.log('lassoLars:', theNewAns);
 				lassoLarsAnswerSheet.push(theNewAns);
@@ -156,12 +162,14 @@
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
+				code  = response.data['code'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
 					alpha: alpha,
 					accuracyOfTestData: accuracyOfTestData,
-					accuracyOfTrainData: accuracyOfTrainData
+					accuracyOfTrainData: accuracyOfTrainData,
+					code: code,
 				};
 				lassoAnswerSheet.push(theNewAns);
 				lassoAnswerSheet = lassoAnswerSheet;
@@ -182,12 +190,14 @@
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
+				code  = response.data['code'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
 					alpha: alpha,
 					accuracyOfTestData: accuracyOfTestData,
-					accuracyOfTrainData: accuracyOfTrainData
+					accuracyOfTrainData: accuracyOfTrainData,
+					code: code,
 				};
 				ridgeRegressionAnswerSheet.push(theNewAns);
 				ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
@@ -206,11 +216,13 @@
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
+				code  = response.data['code'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
 					accuracyOfTestData: accuracyOfTestData,
-					accuracyOfTrainData: accuracyOfTrainData
+					accuracyOfTrainData: accuracyOfTrainData,
+					code: code,
 				};
 				console.log('the accuracyOfTrainData:-------', accuracyOfTrainData);
 				ordinaryLeastSquaresAnswerSheet.push(theNewAns);
@@ -226,9 +238,11 @@
 		judge = '';
 		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv')
 			.then((response) => {
-				picAdd = 'https://wudao-backend.herokuapp.com/static/images/' + response.data['pic_addr'];
+				picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+				code  = response.data['code'];
 				let theNewAns = {
-					picAdd: picAdd
+					picAdd: picAdd,
+					code: code,
 				};
 				boostedDecisionTreeRegressionAnswerSheet.push(theNewAns);
 				boostedDecisionTreeRegressionAnswerSheet = boostedDecisionTreeRegressionAnswerSheet;
@@ -593,19 +607,19 @@
 	//获取部分方法所需要的参数
 	function getInAlphaRidgeRegression() {
 		alphaCheck = 'ridgeRegression';
-		alpha = '';
+		alpha = 0.5;
 		judge = '';
 		reset();
 	}
 	function getInAlphaLasso() {
 		alphaCheck = 'lasso';
-		alpha = '';
+		alpha = 0.5;
 		judge = '';
 		reset();
 	}
 	function getInAlphaLassoLars() {
 		alphaCheck = 'lassoLars';
-		alpha = '';
+		alpha = 0.5;
 		normalize = 'False';
 		judge = '';
 		reset();
@@ -876,7 +890,7 @@
 				<Accordion>
 					<AccordionItem title="Ordinary Least Squares">
 						{#if errorOrdinaryLeastSquares}
-							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData }}
+							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData, code }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -894,6 +908,7 @@
 										}
 									]}
 								/>
+								<pre>{code}</pre>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -915,7 +930,7 @@
 				<Accordion>
 					<AccordionItem title="Ridge regression">
 						{#if errorRidgeRegression}
-							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData }}
+							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData, code }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -935,6 +950,7 @@
 										}
 									]}
 								/>
+								<pre>{code}</pre>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -956,7 +972,7 @@
 				<Accordion>
 					<AccordionItem title="Lasso">
 						{#if errorLasso}
-							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData }}
+							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData,code }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -976,6 +992,7 @@
 										}
 									]}
 								/>
+								<pre>{code}</pre>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -997,7 +1014,7 @@
 				<Accordion>
 					<AccordionItem title="LARS Lasso">
 						{#if errorLassoLars}
-							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, accuracyOfTrainData }}
+							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, accuracyOfTrainData, code }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -1019,6 +1036,7 @@
 										}
 									]}
 								/>
+								<pre>{code}</pre>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1040,7 +1058,7 @@
 				<Accordion>
 					<AccordionItem title="SVC">
 						{#if errorSVC}
-							{#each SVCAnswerSheet as { accuracyOfTestData }}
+							{#each SVCAnswerSheet as { accuracyOfTestData, code }}
 								<DataTable
 									class="w-11/12"
 									headers={[{ key: 'test', value: 'accuracy of test-data' }]}
@@ -1050,6 +1068,7 @@
 										}
 									]}
 								/>
+								<pre>{code}</pre>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1072,7 +1091,7 @@
 				<Accordion>
 					<AccordionItem title="xgboost">
 						{#if errorXgboost}
-							{#each xgboostAnswerSheet as { accuracyOfTestData }}
+							{#each xgboostAnswerSheet as { accuracyOfTestData, code }}
 								<DataTable
 									class="w-11/12"
 									headers={[{ key: 'test', value: 'accuracy of test-data' }]}
@@ -1082,6 +1101,7 @@
 										}
 									]}
 								/>
+								<pre>{code}</pre>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1107,6 +1127,7 @@
 								<div class="flex mb-10 justify-center">
 									<img src={ans.picAdd} alt="the result" />
 								</div>
+								<pre>{ans.code}</pre>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
