@@ -36,14 +36,19 @@
 
 	let picAdd = '';
 	let alphaCheck = ''; // 是否显示针对于alpha参数的修改
-	let normalize = '';
-	let alpha = '';
 	let methods = [];
 	let theNumberOfMethod = 1;
 	let percentOfTestData = 0.3;
 
+	//不同方法所需要的参数
+	let penalty = '';
+	let loss = '';
+	let normalize = '';
+	let alpha = '';
+
 	//对没有参数的方法是否进行添加的判断
 	let SVCJudge = false;
+	let SGDClassifierJudge = false;
 	let ordinaryLeastSquaresJudge = false;
 	let boostedDecisionTreeRegressionJudge = false;
 	let xgboostJudge = false;
@@ -55,6 +60,7 @@
 	let lassoAnswerSheet = [];
 	let lassoLarsAnswerSheet = [];
 	let SVCAnswerSheet = [];
+	let SGDClassifierAnswerSheet = [];
 	let xgboostAnswerSheet = [];
 
 	let judge = false; // 判断此时是否显示得到的答案
@@ -74,6 +80,7 @@
 	let lassoAppearance = false;
 	let lassoLarsAppearance = false;
 	let SVCAppearance = false;
+	let SGDClassifierAppearance = false;
 	let xgboostAppearance = false;
 
 	//判断某种方法是否发生错误
@@ -83,6 +90,7 @@
 	let errorLasso = true;
 	let errorLassoLars = true;
 	let errorSVC = true;
+	let errorSGDClassifier = true;
 	let errorXgboost = true;
 
 	//答案处理方法
@@ -103,6 +111,24 @@
 			})
 			.catch(() => {
 				errorXgboost = false;
+			});
+	}
+	function SGDClassifier( loss, penalty, percentOfTestData) {
+		judge = '';
+		SGDClassifierData(localStorage.filename + '_zscore_afterFilter.csv', loss, penalty, percentOfTestData)
+			.then((response) => {
+				accuracyOfTestData = response.data['result_accuracyOfTestData'];
+				code = response.data['code'];
+				let theNewAns = {
+					accuracyOfTestData: accuracyOfTestData,
+					code: code,
+				};
+				SGDClassifierAnswerSheet.push(theNewAns);
+				SGDClassifierAnswerSheet = SGDClassifierAnswerSheet;
+				errorSGDClassifier = true;
+			})
+			.catch(() => {
+				errorSGDClassifier = false;
 			});
 	}
 	function SVC(percentOfTestData) {
@@ -263,6 +289,7 @@
 			let lassoAns = [];
 			let lassoLarsAns = [];
 			let SVCAns = [];
+			let SGDClassifierAns = [];
 			let xgboostAns = [];
 			alphaCheck = '';
 			for (var i = 0; i < methods.length; i++) {
@@ -296,6 +323,10 @@
 					xgboostAns.push(newAns);
 					xgboostAns = xgboostAns;
 					xgboostAppearance = true;
+				}else if (methods[i].name == 'SGDClassifier') {
+					SGDClassifierAns.push(newAns);
+					SGDClassifierAns = SGDClassifierAns;
+					SGDClassifierAppearance = true;
 				}
 			}
 			for (var i = 0; i < ordinaryLeastSquaresAns.length; i++) {
@@ -317,6 +348,9 @@
 			for (var i = 0; i < SVCAns.length; i++) {
 				SVC(percentOfTestData);
 			}
+			for (var i = 0; i < SGDClassifierAns.length; i++) {
+				SGDClassifier(percentOfTestData);
+			}
 			for (var i = 0; i < xgboostAns.length; i++) {
 				xgboost(percentOfTestData);
 			}
@@ -335,6 +369,7 @@
 		lassoAppearance = false;
 		lassoLarsAppearance = false;
 		SVCAppearance = false;
+		SGDClassifierAppearance = false;
 		xgboostAppearance = false;
 	}
 	function reset() {
@@ -346,6 +381,7 @@
 		lassoAnswerSheet = [];
 		lassoLarsAnswerSheet = [];
 		SVCAnswerSheet = [];
+		SGDClassifierAnswerSheet = [];
 		xgboostAnswerSheet = [];
 
 		errorOrdinaryLeastSquares = true;
@@ -354,12 +390,14 @@
 		errorLasso = true;
 		errorLassoLars = true;
 		errorSVC = true;
+		errorSGDClassifier = true;
 		errorXgboost = true;
 	}
 	function allClear() {
 		Reset();
 
 		SVCJudge = false;
+		SGDClassifierJudge = false;
 		ordinaryLeastSquaresJudge = false;
 		boostedDecisionTreeRegressionJudge = false;
 		xgboostJudge = false;
@@ -420,6 +458,31 @@
 			let newMthod = {
 				name: 'SVC',
 				id: theNumberOfMethod
+			};
+			theNumberOfMethod++;
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+			judge = '';
+			reset();
+		} else {
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+	}
+	function SGDClassifierAdd() {
+		alphaCheck = '';
+		if (!SGDClassifierJudge) {
+			SGDClassifierJudge = true;
+			let newMthod = {
+				name: 'SGDClassifier',
+				loss: loss,
+				penalty: penalty,
+				id: theNumberOfMethod,
 			};
 			theNumberOfMethod++;
 			methods.push(newMthod);
@@ -625,6 +688,13 @@
 		judge = '';
 		reset();
 	}
+	function getInAlphaSGDClassifier() {
+		alphaCheck = 'SGDClassifier';
+		loss= 'hinge';
+		penalty= 'l2';
+		judge = '';
+		reset();
+	}
 </script>
 
 <div>
@@ -712,6 +782,19 @@
 			<p class="text-center mb-7 text-3xl">Classification</p>
 			<div class="flex flex-wrap">
 				<div class="m-2"><Button class="h-14" type="submit" on:click={SVCAdd}>SVC</Button></div>
+				{#if alphaCheck == 'SGDClassifier'}
+					<div class="m-2">
+						<button
+							class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16"
+							type="submit"
+							on:click={getInAlphaSGDClassifier}>SGD Classifier</button
+						>
+					</div>
+				{:else}
+					<div class="m-2">
+						<Button class="h-14" type="submit" on:click={getInAlphaSGDClassifier}>SGD Classifier</Button>
+					</div>
+				{/if}
 			</div>
 		</div>
 		<!-- 训练集占比的选择 -->
@@ -778,6 +861,32 @@
 				</div>
 				<div class="flex mb-10 justify-center">
 					<Button kind="tertiary" on:click={lassoLarsAdd}>Confirm</Button>
+				</div>
+			{:else if alphaCheck == 'SGDClassifier'}
+				<div class="flex justify-center mb-4">
+					<ComboBox
+					    titleText="Select the mode of loss"
+						items={[
+							{ id: "hinge", text: "hinge" },
+							{ id: "modified_huber", text: "modified_huber" },
+							{ id: "log", text: "log" },
+						]}
+						bind:selectedId={loss} 
+					/>
+				</div>
+				<div class="flex justify-center mb-4">
+					<ComboBox
+					    titleText="Select the mode of penalty"
+						items={[
+							{ id: "l1", text: "l1" },
+							{ id: "l2", text: "l2" },
+							{ id: "elasticnet", text: "elasticnet" },
+						]}
+						bind:selectedId={penalty} 
+					/>
+				</div>
+				<div class="flex mb-10 justify-center">
+					<Button kind="tertiary" on:click={SGDClassifierAdd}>Confirm</Button>
 				</div>
 			{/if}
 		</div>
@@ -869,6 +978,23 @@
 						on:click={xgboostDelite(method.id)}>X</button
 					>
 				</div>
+			{:else if method.name == 'SGDClassifier'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full bg-blue-300 text-black py-3 text-center w-10 mb-5">
+						{i + 1}
+					</div>
+					<div class="rounded-full bg-blue-300 text-black py-3 px-6 w-36 mb-5">{method.name}</div>
+					<div class="rounded-full bg-blue-300 text-black py-3 px-6 w-28 mb-5">
+						loss:{method.loss}
+					</div>
+					<div class="rounded-full bg-blue-300 text-black py-3 px-6 w-32 mb-5">
+						penalty:{method.penalty}
+					</div>
+					<button
+						class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold"
+						on:click={ordinaryDelite(method.id)}>X</button
+					>
+				</div>
 			{/if}
 		{/each}
 		<Button kind="danger" class="w-36" on:click={allClear}>Clear all</Button>
@@ -909,7 +1035,7 @@
 										}
 									]}
 								/>
-								<CodeSnippet class="" code={code} type="multi" />
+								<CodeSnippet code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -951,7 +1077,7 @@
 										}
 									]}
 								/>
-								<CodeSnippet class="" code={code} type="multi" />
+								<CodeSnippet code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -993,7 +1119,7 @@
 										}
 									]}
 								/>
-								<CodeSnippet class="" code={code} type="multi" />
+								<CodeSnippet code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1037,7 +1163,7 @@
 										}
 									]}
 								/>
-								<CodeSnippet class="" code={code} type="multi" />
+								<CodeSnippet code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1069,7 +1195,7 @@
 										}
 									]}
 								/>
-								<CodeSnippet class="" code={code} type="multi" />
+								<CodeSnippet code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1102,7 +1228,7 @@
 										}
 									]}
 								/>
-								<CodeSnippet class="" code={code} type="multi" />
+								<CodeSnippet code={code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1128,7 +1254,7 @@
 								<div class="flex mb-10 justify-center">
 									<img src={ans.picAdd} alt="the result" />
 								</div>
-								<CodeSnippet class="" code={ans.code} type="multi" />
+								<CodeSnippet code={ans.code} type="multi" />
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1139,6 +1265,45 @@
 								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
 									<p id="tooltip-body">
 										Make sure that every value that is a feature is of numeric type.
+									</p>
+								</Tooltip>
+							</div>
+						{/if}
+					</AccordionItem>
+				</Accordion>
+			{/if}
+			{#if SGDClassifierAppearance}
+				<Accordion>
+					<AccordionItem title="SGD Classifier">
+						{#if errorSGDClassifier}
+							{#each SGDClassifierAnswerSheet as { loss, penalty, accuracyOfTestData, code }}
+								<DataTable
+									class="w-11/12"
+									headers={[
+										{ key: 'loss', value: 'loss' },
+										{ key: 'penalty', value: 'penalty' },
+										{ key: 'test', value: 'accuracy of test-data' },
+									]}
+									rows={[
+										{
+											loss: loss,
+											penalty: penalty,
+											test: accuracyOfTestData,
+										}
+									]}
+								/>
+								<CodeSnippet code={code} type="multi" />
+							{/each}
+						{:else}
+							<div class="flex flex-nowrap justify-start">
+								<InlineNotification
+									title="Error:"
+									subtitle="The file you selected is not suitable for this method."
+								/>
+								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
+									<p id="tooltip-body">
+										ValueError: Unknown label type: 'continuous' or we got 1 class but the number of
+										classes has to be greater than one.
 									</p>
 								</Tooltip>
 							</div>
