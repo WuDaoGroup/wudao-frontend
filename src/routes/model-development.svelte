@@ -122,6 +122,8 @@
 				let theNewAns = {
 					accuracyOfTestData: accuracyOfTestData,
 					code: code,
+					loss: loss,
+					penalty: penalty,
 				};
 				SGDClassifierAnswerSheet.push(theNewAns);
 				SGDClassifierAnswerSheet = SGDClassifierAnswerSheet;
@@ -349,7 +351,7 @@
 				SVC(percentOfTestData);
 			}
 			for (var i = 0; i < SGDClassifierAns.length; i++) {
-				SGDClassifier(percentOfTestData);
+				SGDClassifier(SGDClassifierAns[i].loss, SGDClassifierAns[i].penalty, percentOfTestData);
 			}
 			for (var i = 0; i < xgboostAns.length; i++) {
 				xgboost(percentOfTestData);

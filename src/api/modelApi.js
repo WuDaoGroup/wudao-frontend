@@ -25,6 +25,20 @@ export const SVCData = async ( filename, percent ) => {
 		console.error(err)
 	}
 }
+export const SGDClassifierData = async ( filename, loss, penalty, percent ) => {
+	try{
+		let form = new FormData()
+		form.append('filename', filename)
+		form.append('percent', percent)
+		form.append('loss', loss)
+		form.append('penalty', penalty)
+		const response = await api.post(`/models/predict/SGDClassifierData`, form)
+		console.log(response)
+		return response
+	}catch (err){
+		console.error(err)
+	}
+}
 export const lassoLarsData = async ( filename, alpha, normalize, percent ) => {
 	try{
 		let form = new FormData()
