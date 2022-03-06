@@ -72,6 +72,9 @@
 	let accuracyOfTestData = 0;
 	let accuracyOfTrainData = 0;
 	let code = '';
+	let mae = '';
+	let mse = '';
+	let r2 = '';
 
 	//判断是否存在某方法的出现
 	let ordinaryLeastSquaresAppearance = false;
@@ -100,11 +103,18 @@
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				code = response.data['code']
-				console.log('!!!!!!!', accuracyOfTestData);
+				mae = response.data['mae']
+				mse = response.data['mse']
+				r2 = response.data['r2']
+
 				let theNewAns = {
 					accuracyOfTestData: accuracyOfTestData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
+
 				xgboostAnswerSheet.push(theNewAns);
 				xgboostAnswerSheet = xgboostAnswerSheet;
 				errorXgboost = true;
@@ -162,6 +172,9 @@
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
@@ -170,6 +183,9 @@
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
 				console.log('lassoLars:', theNewAns);
 				lassoLarsAnswerSheet.push(theNewAns);
@@ -192,6 +208,9 @@
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
@@ -199,6 +218,9 @@
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
 				lassoAnswerSheet.push(theNewAns);
 				lassoAnswerSheet = lassoAnswerSheet;
@@ -220,6 +242,9 @@
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
@@ -227,6 +252,9 @@
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
 				ridgeRegressionAnswerSheet.push(theNewAns);
 				ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
@@ -246,12 +274,18 @@
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
 				console.log('the accuracyOfTrainData:-------', accuracyOfTrainData);
 				ordinaryLeastSquaresAnswerSheet.push(theNewAns);
@@ -1019,7 +1053,7 @@
 				<Accordion>
 					<AccordionItem title="Ordinary Least Squares">
 						{#if errorOrdinaryLeastSquares}
-							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData, code }}
+							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData, code, mae, mse, r2 }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -1034,6 +1068,21 @@
 											intercept: intercept,
 											test: accuracyOfTestData,
 											train: accuracyOfTrainData
+										}
+									]}
+								/>
+								<DataTable
+									class="w-11/12"
+									headers={[
+										{ key: 'MAE', value: 'MAE' },
+										{ key: 'MSE', value: 'MSE' },
+										{ key: 'R2', value: 'R2' },
+									]}
+									rows={[
+										{
+											MAE: mae,
+											MSE: mse,
+											R2: r2,
 										}
 									]}
 								/>
@@ -1059,7 +1108,7 @@
 				<Accordion>
 					<AccordionItem title="Ridge regression">
 						{#if errorRidgeRegression}
-							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData, code }}
+							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData, code, mae, mse, r2  }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -1079,7 +1128,23 @@
 										}
 									]}
 								/>
+								<DataTable
+									class="w-11/12"
+									headers={[
+										{ key: 'MAE', value: 'MAE' },
+										{ key: 'MSE', value: 'MSE' },
+										{ key: 'R2', value: 'R2' },
+									]}
+									rows={[
+										{
+											MAE: mae,
+											MSE: mse,
+											R2: r2,
+										}
+									]}
+								/>
 								<CodeSnippet code={code} type="multi" />
+								<div class="divider"></div>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1101,7 +1166,7 @@
 				<Accordion>
 					<AccordionItem title="Lasso">
 						{#if errorLasso}
-							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData,code }}
+							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData, code, mae, mse, r2  }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -1121,7 +1186,23 @@
 										}
 									]}
 								/>
+								<DataTable
+									class="w-11/12"
+									headers={[
+										{ key: 'MAE', value: 'MAE' },
+										{ key: 'MSE', value: 'MSE' },
+										{ key: 'R2', value: 'R2' },
+									]}
+									rows={[
+										{
+											MAE: mae,
+											MSE: mse,
+											R2: r2,
+										}
+									]}
+								/>
 								<CodeSnippet code={code} type="multi" />
+								<div class="divider"></div>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1143,7 +1224,7 @@
 				<Accordion>
 					<AccordionItem title="LARS Lasso">
 						{#if errorLassoLars}
-							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, accuracyOfTrainData, code }}
+							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, accuracyOfTrainData, code, mae, mse, r2  }}
 								<DataTable
 									class="w-11/12"
 									headers={[
@@ -1165,7 +1246,23 @@
 										}
 									]}
 								/>
+								<DataTable
+									class="w-11/12"
+									headers={[
+										{ key: 'MAE', value: 'MAE' },
+										{ key: 'MSE', value: 'MSE' },
+										{ key: 'R2', value: 'R2' },
+									]}
+									rows={[
+										{
+											MAE: mae,
+											MSE: mse,
+											R2: r2,
+										}
+									]}
+								/>
 								<CodeSnippet code={code} type="multi" />
+								<div class="divider"></div>
 							{/each}
 						{:else}
 							<div class="flex flex-nowrap justify-start">
@@ -1220,13 +1317,28 @@
 				<Accordion>
 					<AccordionItem title="xgboost">
 						{#if errorXgboost}
-							{#each xgboostAnswerSheet as { accuracyOfTestData, code }}
+							{#each xgboostAnswerSheet as { accuracyOfTestData, code, mae, mse, r2  }}
 								<DataTable
 									class="w-11/12"
 									headers={[{ key: 'test', value: 'accuracy of test-data' }]}
 									rows={[
 										{
 											test: accuracyOfTestData
+										}
+									]}
+								/>
+								<DataTable
+									class="w-11/12"
+									headers={[
+										{ key: 'MAE', value: 'MAE' },
+										{ key: 'MSE', value: 'MSE' },
+										{ key: 'R2', value: 'R2' },
+									]}
+									rows={[
+										{
+											MAE: mae,
+											MSE: mse,
+											R2: r2,
 										}
 									]}
 								/>
