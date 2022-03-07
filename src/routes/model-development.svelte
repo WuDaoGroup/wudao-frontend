@@ -1,5 +1,6 @@
 <script>
 	import { base } from '$app/paths';
+	import {baseLink} from '../services/api.js'
 	import {
 		ordinaryLeastSquaresData,
 		boostedDecisionTreeRegressionData,
@@ -267,7 +268,7 @@
 		judge = '';
 		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore_afterFilter.csv')
 			.then((response) => {
-				picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+				picAdd = `${baseLink}/static/images/${response.data['pic_addr']}`;
 				code  = response.data['code'];
 				let theNewAns = {
 					picAdd: picAdd,
