@@ -12,12 +12,11 @@ export const xgboostData = async ( filename, percent ) => {
 		console.error(err)
 	}
 }
-export const SVCData = async ( filename, percent ) => {
+export const svcData = async ( filename, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
 		form.append('percent', percent)
-		console.log("SVC!!!!!", form)
 		const response = await api.post(`/models/predict/svc`, form)
 		console.log(response)
 		return response
@@ -25,7 +24,7 @@ export const SVCData = async ( filename, percent ) => {
 		console.error(err)
 	}
 }
-export const SGDClassifierData = async ( filename, loss, penalty, percent ) => {
+export const sgdClassifierData = async ( filename, loss, penalty, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
