@@ -1,4 +1,5 @@
 <script>
+	import {baseLink} from '../services/api.js'
 	import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/fileApi';
 	import {
 		DataTable,
@@ -17,6 +18,7 @@
 	import { filename, target} from '../stores/dataStore';
 	import { goto } from '$app/navigation';
 
+	let uploadApiLink = `${baseLink}/api/v1/files/upload`;
 	// 接收到的结构化数据 (原始数据)
 	let rawData = {
 		features: [],
@@ -150,7 +152,7 @@
 			bind:this={pond}
 			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
 			{name}
-			server="http://localhost:8123/api/v1/files/upload"
+			server={uploadApiLink}
 			allowMultiple={true}
 			oninit={handleInit}
 			onaddfile={handleAddFile}

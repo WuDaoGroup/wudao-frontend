@@ -1,6 +1,7 @@
 <script>
 	import { toast } from '@zerodevx/svelte-toast';
-	import { axios } from 'axios';
+	import {baseLink} from '../services/api.js'
+
 	import {
 		receiveBasicFileInfoApi,
 		zscoreFilterInfoApi,
@@ -109,7 +110,7 @@
 	}
 
 	function downloadFile() {
-		const url = `http://localhost:8123/static/data/${localStorage.filename}_download_code.ipynb`;
+		const url = `${baseLink}/static/data/${localStorage.filename}_download_code.ipynb`;
 		const options = {
 			method: 'GET',
 			headers: {

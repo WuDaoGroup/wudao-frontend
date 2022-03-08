@@ -1,6 +1,7 @@
 
 
 <script>
+    import {baseLink} from '../services/api.js'
     import { ComboBox } from "carbon-components-svelte";
     import { browser } from '$app/env';
     import { ContentSwitcher, Switch, Button, TextInput, Select, SelectItem, SelectableTile, Checkbox } from "carbon-components-svelte";
@@ -94,7 +95,7 @@
         <br/>
         <Button  on:click={dimensionReduction}  kind='primary'>生成降维图像</Button>
         {#if showReduction == true}
-            <img src="http://localhost:8123/static/images/{localStorage.filename}_dimension_reduction_img.png">
+            <img src="{baseLink}/static/images/{localStorage.filename}_dimension_reduction_img.png">
         {/if}   
     </div>
     
@@ -108,7 +109,7 @@
             </Select>
             <Button on:click={featureCorr}  kind='primary'>生成特征关联图</Button>
             {#if showCorr == true}
-                <img src="http://localhost:8123/static/images/{localStorage.filename}_feature_corr_img.png">
+                <img src="{baseLink}/static/images/{localStorage.filename}_feature_corr_img.png">
             {/if} 
         </div>
         <div class="py-6">
@@ -119,7 +120,7 @@
             </Select>
             <Button on:click={objectMatrix}  kind='primary'>生成目标相关矩阵</Button>
             {#if showMatrix == true}
-                <img src="http://localhost:8123/static/images/{localStorage.filename}_object_matrix_img.png">
+                <img src="{baseLink}/static/images/{localStorage.filename}_object_matrix_img.png">
             {/if} 
         </div>
         <div class="py-6">
@@ -133,7 +134,7 @@
             <br/>
             <Button on:click={pairwiseFeatureCorr}  kind='primary'>生成特征相关具体分布</Button>
             {#if showPair == true}
-                <img src="http://localhost:8123/static/images/{localStorage.filename}_pairwise_feature_corr_img.png">
+                <img src="{baseLink}/static/images/{localStorage.filename}_pairwise_feature_corr_img.png">
             {/if} 
         </div>
     </div>

@@ -1,4 +1,6 @@
 <script>
+	import {baseLink} from '../services/api.js'
+
 	let images = [];
 	let zscores = [];
 	import { Button } from 'carbon-components-svelte';
@@ -14,10 +16,7 @@
 				length = response.data.content.length;
 				if (images.length == 0) {
 					for (let i = 1; i <= length; i++) {
-						let str =
-							`http://localhost:8123/static/images/${localStorage.filename}_selected_features_` +
-							i +
-							'.png';
+						let str = `${baseLink}/static/images/${localStorage.filename}_selected_features_${i}.png`;
 						console.log(str);
 						let image = {
 							key: i,
@@ -38,10 +37,7 @@
 		showZscore = true;
 		if (zscores.length == 0) {
 			for (let i = 1; i < length; i++) {
-				let str =
-					`http://localhost:8123/static/images/${localStorage.filename}_selected_features_zscore_` +
-					i +
-					'.png';
+				let str = `${baseLink}/static/images/${localStorage.filename}_selected_features_zscore_${i}.png`;
 				console.log(str);
 				let zscore = {
 					key: i,
