@@ -1,5 +1,6 @@
 <script>
 	import { base } from '$app/paths';
+	import AnswerShow from '../components/Model/AnswerShow.svelte'
 	import {baseLink} from '../services/api.js'
 	import {
 		ordinaryLeastSquaresData,
@@ -12,25 +13,38 @@
 		sgdClassifierData,
 	} from '../api/modelApi';
 	import {
-		Accordion,
-		AccordionItem,
-		Form,
-		FormGroup,
-		Checkbox,
-		CodeSnippet,
-		RadioButtonGroup,
-		RadioButton,
-		Select,
-		SelectItem,
+        ordinaryLeastSquaresAnswerSheetS,
+        boostedDecisionTreeRegressionAnswerSheetS,
+        ridgeRegressionAnswerSheetS,
+        lassoAnswerSheetS,
+        lassoLarsAnswerSheetS,
+        SVCAnswerSheetS,
+        SGDClassifierAnswerSheetS,
+        xgboostAnswerSheetS,
+
+        ordinaryLeastSquaresAppearance,
+        boostedDecisionTreeRegressionAppearance,
+        ridgeRegressionAppearance,
+        lassoAppearance,
+        lassoLarsAppearance,
+        SVCAppearance,
+        SGDClassifierAppearance,
+        xgboostAppearance,
+
+        errorOrdinaryLeastSquares,
+        errorBoostedDecisionTreeRegression,
+        errorRidgeRegression,
+        errorLasso,
+        errorLassoLars,
+        errorSVC,
+        errorSGDClassifier,
+        errorXgboost,
+        judge,
+    } from '../stores/ansStore.js'
+	import {
 		Button,
-		DataTable,
-		InlineNotification,
 		TextInput,
-		Tooltip,
 		ComboBox,
-		Pagination,
-		ProgressIndicator,
-		ProgressStep,
 	} from 'carbon-components-svelte';
 	import TrashCan16 from 'carbon-icons-svelte/lib/TrashCan16';
 	import { toast } from '@zerodevx/svelte-toast';
@@ -55,17 +69,6 @@
 	let boostedDecisionTreeRegressionJudge = false;
 	let xgboostJudge = false;
 
-	//答案列表
-	let ordinaryLeastSquaresAnswerSheet = [];
-	let boostedDecisionTreeRegressionAnswerSheet = [];
-	let ridgeRegressionAnswerSheet = [];
-	let lassoAnswerSheet = [];
-	let lassoLarsAnswerSheet = [];
-	let SVCAnswerSheet = [];
-	let SGDClassifierAnswerSheet = [];
-	let xgboostAnswerSheet = [];
-
-	let judge = false; // 判断此时是否显示得到的答案
 	let judgeReset = false; // 判断此时是否需要显示reset
 
 	//返回的答案
@@ -85,29 +88,9 @@
 	let precision = '';
 	let thresholds = ''; 
 
-	//判断是否存在某方法的出现
-	let ordinaryLeastSquaresAppearance = false;
-	let boostedDecisionTreeRegressionAppearance = false;
-	let ridgeRegressionAppearance = false;
-	let lassoAppearance = false;
-	let lassoLarsAppearance = false;
-	let SVCAppearance = false;
-	let SGDClassifierAppearance = false;
-	let xgboostAppearance = false;
-
-	//判断某种方法是否发生错误
-	let errorOrdinaryLeastSquares = true;
-	let errorBoostedDecisionTreeRegression = true;
-	let errorRidgeRegression = true;
-	let errorLasso = true;
-	let errorLassoLars = true;
-	let errorSVC = true;
-	let errorSGDClassifier = true;
-	let errorXgboost = true;
-
 	//答案处理方法
 	function xgboost(percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		xgboostData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
@@ -115,7 +98,6 @@
 				mae = response.data['mae']
 				mse = response.data['mse']
 				r2 = response.data['r2']
-
 				let theNewAns = {
 					accuracyOfTestData: accuracyOfTestData,
 					code: code,
@@ -123,17 +105,17 @@
 					mse: mse,
 					r2: r2,
 				};
-
-				xgboostAnswerSheet.push(theNewAns);
-				xgboostAnswerSheet = xgboostAnswerSheet;
-				errorXgboost = true;
+				xgboostAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorXgboost.set(true);
 			})
 			.catch(() => {
-				errorXgboost = false;
+				errorXgboost.set(false);
 			});
 	}
 	function sgdClassifier( loss, penalty, percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		sgdClassifierData(localStorage.filename + '_zscore_afterFilter.csv', loss, penalty, percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracy_of_test_data'];
@@ -148,16 +130,17 @@
 					Accuracy:acc,
 					AUROC:auroc,
 				};
-				SGDClassifierAnswerSheet.push(theNewAns);
-				SGDClassifierAnswerSheet = SGDClassifierAnswerSheet;
-				errorSGDClassifier = true;
+				SGDClassifierAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorSGDClassifier.set(true);
 			})
 			.catch(() => {
-				errorSGDClassifier = false;
+				errorSGDClassifier.set(false);
 			});
 	}
 	function svc(percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		svcData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracy_of_test_data'];
@@ -183,16 +166,17 @@
 					recall: recall,
 					thresholds: thresholds,
 				};
-				SVCAnswerSheet.push(theNewAns);
-				SVCAnswerSheet = SVCAnswerSheet;
-				errorSVC = true;
+				SVCAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorSVC.set(true);
 			})
 			.catch(() => {
-				errorSVC = false;
+				errorSVC.set(false);
 			});
 	}
 	function lassoLars(alpha, normalize, percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		coef = [];
 		intercept = [];
 		lassoLarsData(localStorage.filename + '_zscore_afterFilter.csv', alpha, normalize, percentOfTestData)
@@ -218,17 +202,18 @@
 					r2: r2,
 				};
 				console.log('lassoLars:', theNewAns);
-				lassoLarsAnswerSheet.push(theNewAns);
-				lassoLarsAnswerSheet = lassoLarsAnswerSheet;
-				errorLassoLars = true;
+				lassoLarsAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorLassoLars.set(true);
 			})
 			.catch(() => {
-				errorLassoLars = false;
+				errorLassoLars.set(false);
 			});
 	}
 
 	function lasso(alpha, percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		coef = [];
 		intercept = [];
 		lassoData(localStorage.filename + '_zscore_afterFilter.csv', alpha, percentOfTestData)
@@ -252,17 +237,18 @@
 					mse: mse,
 					r2: r2,
 				};
-				lassoAnswerSheet.push(theNewAns);
-				lassoAnswerSheet = lassoAnswerSheet;
-				errorLasso = true;
+				lassoAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorLasso.set(true);
 			})
 			.catch(() => {
-				errorLasso = false;
+				errorLasso.set(false);
 			});
 	}
 
 	function ridgeRegression(alpha, percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		coef = [];
 		intercept = [];
 		ridgeRegressionData(localStorage.filename + '_zscore_afterFilter.csv', alpha, percentOfTestData)
@@ -286,17 +272,18 @@
 					mse: mse,
 					r2: r2,
 				};
-				ridgeRegressionAnswerSheet.push(theNewAns);
-				ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
-				errorRidgeRegression = true;
+				ridgeRegressionAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorRidgeRegression.set(true);
 			})
 			.catch(() => {
-				errorRidgeRegression = false;
+				errorRidgeRegression.set(false);
 			});
 	}
 
 	function ordinaryLeastSquares(percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		ordinaryLeastSquaresData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
@@ -317,18 +304,18 @@
 					mse: mse,
 					r2: r2,
 				};
-				console.log('the accuracyOfTrainData:-------', accuracyOfTrainData);
-				ordinaryLeastSquaresAnswerSheet.push(theNewAns);
-				ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
-				errorOrdinaryLeastSquares = true;
+				ordinaryLeastSquaresAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorOrdinaryLeastSquares.set(true);
 			})
 			.catch(() => {
-				errorOrdinaryLeastSquares = false;
+				errorOrdinaryLeastSquares.set(false);
 			});
 	}
 
 	function boostedDecisionTreeRegression() {
-		judge = '';
+		judge.set(false);
 		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore_afterFilter.csv')
 			.then((response) => {
 				picAdd = `${baseLink}/static/images/${response.data['pic_addr']}`;
@@ -337,12 +324,13 @@
 					picAdd: picAdd,
 					code: code,
 				};
-				boostedDecisionTreeRegressionAnswerSheet.push(theNewAns);
-				boostedDecisionTreeRegressionAnswerSheet = boostedDecisionTreeRegressionAnswerSheet;
-				errorBoostedDecisionTreeRegression = true;
+				boostedDecisionTreeRegressionAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorBoostedDecisionTreeRegression.set(true);
 			})
 			.catch(() => {
-				errorBoostedDecisionTreeRegression = false;
+				errorBoostedDecisionTreeRegression.set(false);
 			});
 	}
 
@@ -364,35 +352,35 @@
 				if (methods[i].name == 'Ordinary Least Squares') {
 					ordinaryLeastSquaresAns.push(newAns);
 					ordinaryLeastSquaresAns = ordinaryLeastSquaresAns;
-					ordinaryLeastSquaresAppearance = true;
+					ordinaryLeastSquaresAppearance.set(true);
 				} else if (methods[i].name == 'Ridge regression') {
 					ridgeRegressionAns.push(newAns);
 					ridgeRegressionAns = ridgeRegressionAns;
-					ridgeRegressionAppearance = true;
+					ridgeRegressionAppearance.set(true);
 				} else if (methods[i].name == 'Lasso') {
 					lassoAns.push(newAns);
 					lassoAns = lassoAns;
-					lassoAppearance = true;
+					lassoAppearance.set(true);
 				} else if (methods[i].name == 'LARS Lasso') {
 					lassoLarsAns.push(newAns);
 					lassoLarsAns = lassoLarsAns;
-					lassoLarsAppearance = true;
+					lassoLarsAppearance.set(true);
 				} else if (methods[i].name == 'Decision Tree Regression with AdaBoost') {
 					boostedDecisionTreeAns.push(newAns);
 					boostedDecisionTreeAns = boostedDecisionTreeAns;
-					boostedDecisionTreeRegressionAppearance = true;
+					boostedDecisionTreeRegressionAppearance.set(true);
 				} else if (methods[i].name == 'SVC') {
 					SVCAns.push(newAns);
 					SVCAns = SVCAns;
-					SVCAppearance = true;
+					SVCAppearance.set(true);
 				} else if (methods[i].name == 'xgboost') {
 					xgboostAns.push(newAns);
 					xgboostAns = xgboostAns;
-					xgboostAppearance = true;
+					xgboostAppearance.set(true);
 				}else if (methods[i].name == 'SGDClassifier') {
 					SGDClassifierAns.push(newAns);
 					SGDClassifierAns = SGDClassifierAns;
-					SGDClassifierAppearance = true;
+					SGDClassifierAppearance.set(true);
 				}
 			}
 			for (var i = 0; i < ordinaryLeastSquaresAns.length; i++) {
@@ -420,7 +408,7 @@
 			for (var i = 0; i < xgboostAns.length; i++) {
 				xgboost(percentOfTestData);
 			}
-			judge = true;
+			judge.set(true);
 			judgeReset = true;
 		}
 	}
@@ -429,35 +417,35 @@
 	function reset_() {
 		reset();
 
-		ordinaryLeastSquaresAppearance = false;
-		boostedDecisionTreeRegressionAppearance = false;
-		ridgeRegressionAppearance = false;
-		lassoAppearance = false;
-		lassoLarsAppearance = false;
-		SVCAppearance = false;
-		SGDClassifierAppearance = false;
-		xgboostAppearance = false;
+		ordinaryLeastSquaresAppearance.set(false);
+		boostedDecisionTreeRegressionAppearance.set(false);
+		ridgeRegressionAppearance.set(false);
+		lassoAppearance.set(false);
+		lassoLarsAppearance.set(false);
+		SVCAppearance.set(false);
+		SGDClassifierAppearance.set(false);
+		xgboostAppearance.set(false);
 	}
 	function reset() {
 		judgeReset = false;
 
-		ordinaryLeastSquaresAnswerSheet = [];
-		boostedDecisionTreeRegressionAnswerSheet = [];
-		ridgeRegressionAnswerSheet = [];
-		lassoAnswerSheet = [];
-		lassoLarsAnswerSheet = [];
-		SVCAnswerSheet = [];
-		SGDClassifierAnswerSheet = [];
-		xgboostAnswerSheet = [];
+		ordinaryLeastSquaresAnswerSheetS.set([]);
+		boostedDecisionTreeRegressionAnswerSheetS.set([]);
+		ridgeRegressionAnswerSheetS.set([]);
+		lassoAnswerSheetS.set([]);
+		lassoLarsAnswerSheetS.set([]);
+		SVCAnswerSheetS.set([]);
+		SGDClassifierAnswerSheetS.set([]);
+		xgboostAnswerSheetS.set([]);
 
-		errorOrdinaryLeastSquares = true;
-		errorBoostedDecisionTreeRegression = true;
-		errorRidgeRegression = true;
-		errorLasso = true;
-		errorLassoLars = true;
-		errorSVC = true;
-		errorSGDClassifier = true;
-		errorXgboost = true;
+		errorOrdinaryLeastSquares.set(true);
+		errorBoostedDecisionTreeRegression.set(true);
+		errorRidgeRegression.set(true);
+		errorLasso.set(true);
+		errorLassoLars.set(true);
+		errorSVC.set(true);
+		errorSGDClassifier.set(true);
+		errorXgboost.set(true);
 	}
 	function allClear() {
 		reset_();
@@ -484,7 +472,7 @@
 			methods = methods;
 			toast.push('您成功添加了该种方法');
 			reset();
-			judge = '';
+			judge.set(false);
 		} else {
 			toast.push('您已经添加了该种方法', {
 				theme: {
@@ -506,7 +494,7 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
-			judge = '';
+			judge.set(false);
 			reset();
 		} else {
 			toast.push('您已经添加了该种方法', {
@@ -529,7 +517,7 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
-			judge = '';
+			judge.set(false);
 			reset();
 		} else {
 			toast.push('您已经添加了该种方法', {
@@ -554,7 +542,7 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
-			judge = '';
+			judge.set(false);
 			reset();
 		} else {
 			toast.push('您已经添加了该种方法', {
@@ -577,7 +565,7 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
-			judge = '';
+			judge.set(false);
 			reset();
 		} else {
 			toast.push('您已经添加了该种方法', {
@@ -738,29 +726,31 @@
 	function getInAlphaRidgeRegression() {
 		alphaCheck = 'ridgeRegression';
 		alpha = 0.5;
-		judge = '';
+		judge.set(false);
 		reset();
 	}
 	function getInAlphaLasso() {
 		alphaCheck = 'lasso';
 		alpha = 0.5;
-		judge = '';
+		judge.set(false);
 		reset();
 	}
 	function getInAlphaLassoLars() {
 		alphaCheck = 'lassoLars';
 		alpha = 0.5;
 		normalize = 'False';
-		judge = '';
+		judge.set(false);
 		reset();
 	}
 	function getInAlphaSGDClassifier() {
 		alphaCheck = 'SGDClassifier';
 		loss= 'hinge';
 		penalty= 'l2';
-		judge = '';
+		judge.set(false);
 		reset();
 	}
+
+	$: console.log(judge)
 </script>
 
 <div>
@@ -1001,7 +991,7 @@
 	<div class="flex flex-col">
 		{#each methods as method, i}
 			{#if method.name == 'Ordinary Least Squares'}
-				<div class="flex flex-wrap">
+				<div class="flex flex-wrap items-center">
 					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">{i + 1}</div>
 					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-60 mb-5">{method.name}</div>
 					<button
@@ -1135,425 +1125,5 @@
 		{/if}
 	</div>
 	<!-- 最终得到的答案展示 -->
-	<div>
-		{#if judge}
-			{#if ordinaryLeastSquaresAppearance}
-				<Accordion>
-					<AccordionItem title="Ordinary Least Squares">
-						{#if errorOrdinaryLeastSquares}
-							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData, code, mae, mse, r2 }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'MAE', value: 'MAE' },
-										{ key: 'MSE', value: 'MSE' },
-										{ key: 'R2', value: 'R2' },
-									]}
-									rows={[
-										{
-											MAE: mae,
-											MSE: mse,
-											R2: r2,
-										}
-									]}
-								/>
-								<CodeSnippet code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if ridgeRegressionAppearance}
-				<Accordion>
-					<AccordionItem title="Ridge regression">
-						{#if errorRidgeRegression}
-							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData, code, mae, mse, r2  }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'alpha', value: 'alpha' },
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											alpha: alpha,
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'MAE', value: 'MAE' },
-										{ key: 'MSE', value: 'MSE' },
-										{ key: 'R2', value: 'R2' },
-									]}
-									rows={[
-										{
-											MAE: mae,
-											MSE: mse,
-											R2: r2,
-										}
-									]}
-								/>
-								<CodeSnippet code={code} type="multi" />
-								<div class="divider"></div>
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if lassoAppearance}
-				<Accordion>
-					<AccordionItem title="Lasso">
-						{#if errorLasso}
-							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData, code, mae, mse, r2  }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'alpha', value: 'alpha' },
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											alpha: alpha,
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'MAE', value: 'MAE' },
-										{ key: 'MSE', value: 'MSE' },
-										{ key: 'R2', value: 'R2' },
-									]}
-									rows={[
-										{
-											MAE: mae,
-											MSE: mse,
-											R2: r2,
-										}
-									]}
-								/>
-								<CodeSnippet code={code} type="multi" />
-								<div class="divider"></div>
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if lassoLarsAppearance}
-				<Accordion>
-					<AccordionItem title="LARS Lasso">
-						{#if errorLassoLars}
-							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, 
-								accuracyOfTrainData, code, mae, mse, r2  }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'alpha', value: 'alpha' },
-										{ key: 'normalize', value: 'normalize' },
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											alpha: alpha,
-											normalize: normalize,
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'MAE', value: 'MAE' },
-										{ key: 'MSE', value: 'MSE' },
-										{ key: 'R2', value: 'R2' },
-									]}
-									rows={[
-										{
-											MAE: mae,
-											MSE: mse,
-											R2: r2,
-										}
-									]}
-								/>
-								<CodeSnippet code={code} type="multi" />
-								<div class="divider"></div>
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if SVCAppearance}
-				<Accordion>
-					<AccordionItem title="SVC">
-						{#if  errorSVC }
-							{#each SVCAnswerSheet as { accuracyOfTestData, code, recall,
-								Accuracy, AUROC, auprc, precision, thresholds }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'Accuracy', value: 'Accuracy' },
-										{ key: 'AUROC', value: 'AUROC'},
-									]}
-									rows={[
-										{
-											test: accuracyOfTestData,
-											Accuracy: Accuracy,
-											AUROC: AUROC,
-										}
-									]}
-								/>
-								{#if auprc }
-									<DataTable
-										class="w-11/12"
-										headers={[
-											{ key: 'recall', value: 'recall' },
-											{ key: 'precision', value: 'precision' },
-											{ key: 'thresholds', value: 'thresholds'},
-										]}
-										rows={[
-											{
-												recall: recall,
-												precision: precision,
-												thresholds: thresholds,
-											}
-										]}
-									/>
-								{:else}
-									<div class="flex flex-nowrap justify-start">
-										<InlineNotification
-											title="Error:"
-											subtitle="The file you selected is not suitable for AUPRC."
-										/>
-										<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-											<p id="tooltip-body">
-												This implementation is restricted to the binary classification task.
-											</p>
-										</Tooltip>
-									</div>
-								{/if}
-								<CodeSnippet code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										ValueError: Unknown label type: 'continuous' or we got 1 class but the number of
-										classes has to be greater than one.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if xgboostAppearance}
-				<Accordion>
-					<AccordionItem title="xgboost">
-						{#if errorXgboost}
-							{#each xgboostAnswerSheet as { accuracyOfTestData, code, mae, mse, r2  }}
-								<DataTable
-									class="w-11/12"
-									headers={[{ key: 'test', value: 'accuracy of test-data' }]}
-									rows={[
-										{
-											test: accuracyOfTestData
-										}
-									]}
-								/>
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'MAE', value: 'MAE' },
-										{ key: 'MSE', value: 'MSE' },
-										{ key: 'R2', value: 'R2' },
-									]}
-									rows={[
-										{
-											MAE: mae,
-											MSE: mse,
-											R2: r2,
-										}
-									]}
-								/>
-								<CodeSnippet code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if boostedDecisionTreeRegressionAppearance}
-				<Accordion>
-					<AccordionItem title="Decision Tree Regression with AdaBoost">
-						{#if errorBoostedDecisionTreeRegression}
-							{#each boostedDecisionTreeRegressionAnswerSheet as ans}
-								<div class="flex mb-10 justify-center">
-									<img src={ans.picAdd} alt="the result" />
-								</div>
-								<CodeSnippet code={ans.code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if SGDClassifierAppearance}
-				<Accordion>
-					<AccordionItem title="SGD Classifier">
-						{#if errorSGDClassifier}
-							{#each SGDClassifierAnswerSheet as { loss, penalty, accuracyOfTestData, code, Accuracy, AUROC }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'loss', value: 'loss' },
-										{ key: 'penalty', value: 'penalty' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'Accuracy', value: 'Accuracy' },
-										{ key: 'AUROC', value: 'AUROC'},
-									]}
-									rows={[
-										{
-											loss: loss,
-											penalty: penalty,
-											test: accuracyOfTestData,
-											Accuracy: Accuracy,
-											AUROC: AUROC,
-										}
-									]}
-								/>
-								<CodeSnippet code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										ValueError: Unknown label type: 'continuous' or we got 1 class but the number of
-										classes has to be greater than one.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-		{/if}
-	</div>
+	<AnswerShow />
 </div>
