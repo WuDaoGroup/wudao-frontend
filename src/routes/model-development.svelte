@@ -1,6 +1,6 @@
 <script>
 	import { base } from '$app/paths';
-	import AnswerShow from '../components/Model/AnswerShow.svelte'
+	import AnswerShow from '../components/model/AnswerShow.svelte'
 	import {baseLink} from '../services/api.js'
 	import {
 		ordinaryLeastSquaresData,
