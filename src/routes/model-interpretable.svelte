@@ -1,5 +1,3 @@
-
-
 <script>
     import {baseLink} from '../services/api.js'
     import { ComboBox } from "carbon-components-svelte";
@@ -85,7 +83,7 @@
             <SelectItem value="2" text="2" />
             <SelectItem value="3" text="3" />
         </Select>
-        <Select labelText="降维维数选择" bind:selected={explanationFeatures.target}>
+        <Select labelText="降维目标选择" bind:selected={explanationFeatures.target}>
             {#each JSON.parse(localStorage.target) as p}
                 <SelectItem value={p} text={p} />
 			{/each}

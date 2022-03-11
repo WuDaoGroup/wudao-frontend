@@ -64,6 +64,7 @@
 		<SideNavLink text="数据预处理" href="{base}/data-preprocessing" />
 		<SideNavLink text="模型构建" href="{base}/model-development" />
 		<SideNavLink text="可解释性" href="{base}/model-interpretable" />
+		<SideNavLink text="因果推断" href="{base}/causal" />
 	</SideNavItems>
 </SideNav>
 
