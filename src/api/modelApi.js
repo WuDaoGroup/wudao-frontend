@@ -1,5 +1,19 @@
 // AI模型相关的API接口
 import api from '../services/api.js';
+
+export const xgboostRegressionData = async ( filename, percent ) => {
+	try{
+		let form = new FormData()
+		form.append('filename', filename)
+		form.append('percent', percent)
+		const response = await api.post(`/api/v1/models/predict/xgboost-regression`, form)
+		console.log(response)
+		return response
+	}catch (err){
+		console.error(err)
+	}
+}
+
 export const xgboostData = async ( filename, percent ) => {
 	try{
 		let form = new FormData()
