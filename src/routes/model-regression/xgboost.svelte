@@ -78,29 +78,30 @@
                         {#each xgboostAnswerSheet as { perTestData, perTrainData, code, mae, mse, r2  }}
                             <DataTable
                                 class="w-11/12"
-                                headers={[
-                                    { key: 'test', value: 'accuracy of test data' },
-                                    { key: 'train', value: 'accuracy of train data' },
-                                ]}
-                                rows={[{
-                                    test: perTestData,
-                                    train: perTrainData,
-                                }]}
+                                headers={[{ key: 'test', value: 'accuracy of test data' }]}
+                                rows={[{ test: perTestData }]}
                             />
                             <DataTable
                                 class="w-11/12"
-                                headers={[
-                                    { key: 'MAE', value: 'MAE' },
-                                    { key: 'MSE', value: 'MSE' },
-                                    { key: 'R2', value: 'R2' },
-                                ]}
-                                rows={[{
-                                    MAE: mae,
-                                    MSE: mse,
-                                    R2: r2,
-                                }]}
+                                headers={[ { key: 'train', value: 'accuracy of train data' } ]}
+                                rows={[{ train: perTrainData }]}
                             />
-                            <CodeSnippet code={code} type="multi" />
+                            <DataTable
+                                class="w-11/12"
+                                headers={[ { key: 'MAE', value: 'MAE' } ]}
+                                rows={[{MAE: mae}]}
+                            />
+                            <DataTable
+                                class="w-11/12"
+                                headers={[{ key: 'MSE', value: 'MSE' }]}
+                                rows={[{MSE: mse}]}
+                            />
+                            <DataTable
+                                class="w-11/12"
+                                headers={[{ key: 'R2', value: 'R2' }]}
+                                rows={[{R2: r2}]}
+                            />
+                            <CodeSnippet class="w-40" code={code} type="multi" />
                         {/each}
                     {:else}
                         <div class="flex flex-nowrap justify-start">
