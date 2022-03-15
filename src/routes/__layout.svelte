@@ -17,6 +17,8 @@
 		HeaderPanelLink,
 		SideNav,
 		SideNavItems,
+		SideNavMenu,
+    	SideNavMenuItem,
 		SideNavLink,
 		Content
 	} from 'carbon-components-svelte';
@@ -62,7 +64,16 @@
 		<SideNavLink text="数据导入" href="{base}/data-import" />
 		<SideNavLink text="数据观察" href="{base}/data-observation" />
 		<SideNavLink text="数据预处理" href="{base}/data-preprocessing" />
-		<SideNavLink text="模型构建" href="{base}/model-development" />
+		<SideNavMenu text="分类预测">
+			<!-- <SideNavMenuItem href="/" text="Link 1" /> -->
+			<!-- <SideNavMenuItem href="/" text="Link 2" />
+			<SideNavMenuItem href="/" text="Link 3" /> -->
+		</SideNavMenu>
+		<SideNavMenu text="回归预测">
+			<SideNavMenuItem href="{base}/model-regression/xgboost" text="XGBoost" />
+			<!-- <SideNavMenuItem href="/" text="Link 2" />
+			<SideNavMenuItem href="/" text="Link 3" /> -->
+		</SideNavMenu>
 		<SideNavLink text="可解释性" href="{base}/model-interpretable" />
 		<SideNavLink text="因果推断" href="{base}/causal" />
 	</SideNavItems>
