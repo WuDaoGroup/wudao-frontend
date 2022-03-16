@@ -14,12 +14,12 @@ export const xgboostRegressionData = async ( filename, percent ) => {
 	}
 }
 
-export const xgboostData = async ( filename, percent ) => {
+export const xgboostClassificationData = async ( filename, percent ) => {
 	try{
 		let form = new FormData()
 		form.append('filename', filename)
 		form.append('percent', percent)
-		const response = await api.post(`/api/v1/models/predict/xgboost`, form)
+		const response = await api.post(`/api/v1/models/predict/xgboost-classification`, form)
 		console.log(response)
 		return response
 	}catch (err){
