@@ -62,8 +62,10 @@
 <SideNav bind:isOpen={isSideNavOpen}>
 	<SideNavItems>
 		<SideNavLink text="数据导入" href="{base}/data-import" />
-		<SideNavLink text="数据观察" href="{base}/data-observation" />
+		<SideNavLink text="目标选择" href="{base}/data-target" />
 		<SideNavLink text="数据预处理" href="{base}/data-preprocessing" />
+		<SideNavLink text="数据观察" href="{base}/data-observation" />
+		
 		<SideNavMenu text="分类预测">
 			<SideNavMenuItem href="{base}/model-classification/svc" text="SVC" />
 			<SideNavMenuItem href="{base}/model-classification/xgboostClassification" text="XGBoost" />
