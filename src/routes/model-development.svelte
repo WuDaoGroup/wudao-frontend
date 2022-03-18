@@ -91,7 +91,7 @@
 	//答案处理方法
 	function xgboost(percentOfTestData) {
 		judge.set(false);
-		xgboostData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
+		xgboostData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				code = response.data['code']
@@ -116,7 +116,7 @@
 	}
 	function sgdClassifier( loss, penalty, percentOfTestData) {
 		judge.set(false);
-		sgdClassifierData(localStorage.filename + '_zscore_afterFilter.csv', loss, penalty, percentOfTestData)
+		sgdClassifierData(localStorage.filename + '_zscore_fill_filter.csv', loss, penalty, percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracy_of_test_data'];
 				code = response.data['code'];
@@ -141,7 +141,7 @@
 	}
 	function svc(percentOfTestData) {
 		judge.set(false);
-		svcData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
+		svcData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracy_of_test_data'];
 				code = response.data['code'];
@@ -179,7 +179,7 @@
 		judge.set(false);
 		coef = [];
 		intercept = [];
-		lassoLarsData(localStorage.filename + '_zscore_afterFilter.csv', alpha, normalize, percentOfTestData)
+		lassoLarsData(localStorage.filename + '_zscore_fill_filter.csv', alpha, normalize, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -216,7 +216,7 @@
 		judge.set(false);
 		coef = [];
 		intercept = [];
-		lassoData(localStorage.filename + '_zscore_afterFilter.csv', alpha, percentOfTestData)
+		lassoData(localStorage.filename + '_zscore_fill_filter.csv', alpha, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -251,7 +251,7 @@
 		judge.set(false);
 		coef = [];
 		intercept = [];
-		ridgeRegressionData(localStorage.filename + '_zscore_afterFilter.csv', alpha, percentOfTestData)
+		ridgeRegressionData(localStorage.filename + '_zscore_fill_filter.csv', alpha, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -284,7 +284,7 @@
 
 	function ordinaryLeastSquares(percentOfTestData) {
 		judge.set(false);
-		ordinaryLeastSquaresData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
+		ordinaryLeastSquaresData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
@@ -316,7 +316,7 @@
 
 	function boostedDecisionTreeRegression() {
 		judge.set(false);
-		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore_afterFilter.csv')
+		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore_fill_filter.csv')
 			.then((response) => {
 				picAdd = `${baseLink}/static/images/${response.data['pic_addr']}`;
 				code  = response.data['code'];

@@ -16,7 +16,7 @@
     let errorXgboost = true
 
     function xgboost(percentOfTestData) {
-        xgboostClassificationData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
+        xgboostClassificationData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
             .then((response) => {
                 let auprc = true
                 let code = response.data['code']

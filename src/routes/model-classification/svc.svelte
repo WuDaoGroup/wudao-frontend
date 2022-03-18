@@ -17,7 +17,7 @@
     let errorSVC = true
 
     function svc(percentOfTestData) {
-        svcData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
+        svcData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
             .then((response) => {
                 let accuracyOfTestData = response.data['result_accuracy_of_test_data'];
                 let code = response.data['code'];

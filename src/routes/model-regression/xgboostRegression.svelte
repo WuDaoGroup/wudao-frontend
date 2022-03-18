@@ -27,7 +27,7 @@
 
     function xgboostRegression( percentOfTestData ) {
         console.log(percentOfTestData)
-		xgboostRegressionData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
+		xgboostRegressionData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
 			.then((response) => {
             perTestData = response.data['result_accuracy_of_test_data'];
             perTrainData = response.data['result_accuracy_of_train_data']

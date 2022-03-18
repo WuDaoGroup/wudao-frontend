@@ -18,7 +18,7 @@
 
     function ordinaryLeastSquares( percentOfTestData ) {
         console.log(percentOfTestData)
-		ordinaryLeastSquaresData(localStorage.filename + '_zscore_afterFilter.csv', percentOfTestData)
+		ordinaryLeastSquaresData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
 			.then((response) => {
                 let coef = response.data['result_coef']
                 let intercept = response.data['result_intercept']
