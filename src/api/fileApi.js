@@ -22,7 +22,7 @@ export const uploadFileFeatureInfoApi = async (uploadFilename, selectedFeatures)
 
 export const receiveBasicFileInfoApi = async (uploadFilename) => {
 	try {
-		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_feature.csv/features/info`);
+		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_features.csv/features/info`);
 		return response;
 	} catch (err) {
 		console.error(err);
@@ -32,7 +32,7 @@ export const receiveBasicFileInfoApi = async (uploadFilename) => {
 
 export const zscoreFilterInfoApi = async (uploadFilename, barNum) => {
 	try {
-		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_feature.csv/zscore/filter?bar=${barNum}`);
+		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_features.csv/zscore/filter?bar=${barNum}`);
 		return response;
 	} catch (err) {
 		console.error(err);
@@ -41,7 +41,7 @@ export const zscoreFilterInfoApi = async (uploadFilename, barNum) => {
 
 export const originZscoreApi = async (uploadFilename) => {
 	try {
-		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_feature.csv/zscore`);
+		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_features.csv/zscore`);
 		return response;
 	} catch (err) {
 		console.error(err);
@@ -50,7 +50,7 @@ export const originZscoreApi = async (uploadFilename) => {
 
 export const confirmOriginZscoreApi = async (uploadFilename, selectType) => {
 	try {
-		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_feature.csv/zscore/type?selectType=${selectType}`);
+		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_features.csv/zscore/type?selectType=${selectType}`);
 		return response;
 	} catch (err) {
 		console.error(err);
