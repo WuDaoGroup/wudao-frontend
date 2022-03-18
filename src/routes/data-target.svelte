@@ -44,20 +44,24 @@
 	}
 </script>
 
+<h1>选择预测目标和特征</h1>
+
+<div class="divider"></div>
+
 <div class="flex flex-col items-center justify-center">
     {#if !(featureTypeTargetCount == 1)}
         <InlineNotification
             hideCloseButton
             kind="warning"
             title="提示: "
-            subtitle="请选择预测目标, 注意预测目标只能有1个"
+            subtitle="请选择预测目标和特征信息, 注意预测目标只能有1个"
         />
     {/if}
-    <div class="flex flex-row items-center justify-center">
+    <div class="flex flex-col items-center justify-center">
         {#each selectedFeatures as f}
             <RadioButtonGroup
                 legendText={f.value}
-                orientation="vertical"
+                orientation="horizontal"
                 labelPosition="right"
                 bind:selected={f.type}
             >
@@ -68,6 +72,9 @@
         {/each}
     </div>
     {#if featureTypeTargetCount == 1}
-        <Button on:click={uploadFeatureInfo} kind="tertiary" class="mt-4">上传数据</Button>
+        <div class="mt-4">
+            <Button on:click={uploadFeatureInfo} kind="tertiary" class="mt-4">上传特征标注</Button>
+        </div>
+        
     {/if}
 </div>
