@@ -9,7 +9,7 @@
 		lassoData,
 		lassoLarsData,
 		svcData,
-		xgboostData,
+		// xgboostData,
 		sgdClassifierData,
 	} from '../api/modelApi';
 	import {
