@@ -14,10 +14,10 @@ if (browser) {
 	filename.set(
 		localStorage.getItem('filename') == null ? defaultFilename : localStorage.getItem('filename')
 	);
-	filename.set(
-		localStorage.getItem('target') == null ? defaultFilename : localStorage.getItem('target')
+	target.set(
+		localStorage.getItem('target') == null ? defaultTarget : localStorage.getItem('target')
 	);
-	filename.set(
-		localStorage.getItem('features') == null ? defaultFilename : localStorage.getItem('features')
+	features.set(
+		localStorage.getItem('features') == null ? defaultFeatures : localStorage.getItem('features')
 	);
 }
