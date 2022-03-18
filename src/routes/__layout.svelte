@@ -66,11 +66,12 @@
 		<SideNavLink text="数据预处理" href="{base}/data-preprocessing" />
 		<SideNavMenu text="分类预测">
 			<SideNavMenuItem href="{base}/model-classification/svc" text="SVC" />
+			<SideNavMenuItem href="{base}/model-classification/xgboostClassification" text="XGBoost" />
 			<!-- <SideNavMenuItem href="/" text="Link 2" />
 			<SideNavMenuItem href="/" text="Link 3" /> -->
 		</SideNavMenu>
 		<SideNavMenu text="回归预测">
-			<SideNavMenuItem href="{base}/model-regression/xgboost" text="XGBoost" />
+			<SideNavMenuItem href="{base}/model-regression/xgboostRegression" text="XGBoost" />
 			<SideNavMenuItem href="{base}/model-regression/ordinaryLeastSquares" text="Ordinary Least Squares" />
 			<!-- <SideNavMenuItem href="/" text="Link 2" />
 			<SideNavMenuItem href="/" text="Link 3" /> -->
