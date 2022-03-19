@@ -38,6 +38,15 @@ export const fillDataApi = async (username, selectedFillOption) => {
 	}
 };
 
+export const filterDataApi = async (username, filterBar) => {
+	try {
+		const response = await api.get(`/api/v1/data/filter?username=${username}&bar=${filterBar}`);
+		return response;
+	} catch (err) {
+		console.error(err);
+	}
+};
+
 // export const receiveBasicFileInfoApi = async (uploadFilename) => {
 // 	try {
 // 		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_features.csv/features/info`);

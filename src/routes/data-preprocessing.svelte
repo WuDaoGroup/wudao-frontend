@@ -13,7 +13,7 @@
     import { toast } from '@zerodevx/svelte-toast';
     import { Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { user } from '../stores/userStore';
-    import {zscoreDataApi, fillDataApi} from '../api/fileApi.js';
+    import {zscoreDataApi, fillDataApi, filterDataApi} from '../api/fileApi.js';
 
     let username;
     user.subscribe((value) => {
@@ -57,6 +57,28 @@
 
           console.log('error!');
           toast.push('数据填充失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
+    }
+
+
+    // 数据筛选部分
+    let filterBar = 3.5
+    $: console.log('bar', filterBar)
+    function handleFilterData(){
+      filterDataApi(username, filterBar).then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          toast.push('数据筛选成功');
+        } else {
+
+          console.log('error!');
+          toast.push('数据筛选失败', {
             theme: {
               '--toastBackground': '#F56565',
               '--toastBarBackground': '#C53030'
@@ -124,7 +146,13 @@
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">数据筛选</h2>
                         <p class="mb-5">很多时候，数据中会出现异常分布，极大或极小，这通常是因为错误输入等原因导致。我们可根据Z-Score值的大小作筛选。</p>
-                        <button class="btn btn-primary">确定筛选方法</button>
+                        
+                        <div class="flex items-end justify-between px-4 pt-4 items-center">
+                          <input type="number" placeholder="输入阈值" class="input input-bordered input-primary text-zinc-900" bind:value={filterBar}>
+                          <button class="btn btn-primary" on:click={handleFilterData}>确定筛选阈值</button>
+                        </div>
+
+                        
                       </div>
                     </div>
                   </div>
