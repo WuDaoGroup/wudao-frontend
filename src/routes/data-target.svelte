@@ -14,6 +14,11 @@
     import {target, features} from '../stores/dataStore';
     import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/fileApi';
     import { toast } from '@zerodevx/svelte-toast';
+	import { user } from '../stores/userStore';
+	let username;
+	user.subscribe((value) => {
+		username = value.username;
+	});
 
     let selectedFeatures = []
     features.subscribe((value) => {
@@ -23,20 +28,23 @@
     console.log('features:', features)
     $: console.log(selectedFeatures)
     const featureTypes = ['target', 'feature', 'useless'];
-	let targetExplanation = [];
+	// let targetExplanation = [];
 
 	$: featureTypeTargetCount = selectedFeatures.filter((e) => e.type === 'target').length;
 
 	function uploadFeatureInfo() {
-		uploadFileFeatureInfoApi(localStorage.filename, selectedFeatures).then((response) => {
+		uploadFileFeatureInfoApi(username, selectedFeatures).then((response) => {
 			if (response.status == 200) {
 				toast.push('上传数据的特征信息成功');
 				console.log('data feature info:', response.data);
+				const dataTarget = response.data.target;
+                const dataFeatures = response.data.features;
 
-				const dataTarget = targetExplanation;
 				target.set(dataTarget);
+                features.set(dataFeatures);
 				if (browser) {
 					localStorage.setItem('target', JSON.stringify(dataTarget));
+                    localStorage.setItem('features', JSON.stringify(dataFeatures));
 				}
 				goto(`/data-preprocessing`);
 			}
