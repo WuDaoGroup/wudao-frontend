@@ -1,8 +1,19 @@
 <script>
+  	import {
+      Button,
+      DataTable,
+      Pagination,
+      Select,
+      SelectItem,
+      InlineNotification,
+      ProgressIndicator,
+      ProgressStep,
+      TextInput
+    } from 'carbon-components-svelte';
     import { toast } from '@zerodevx/svelte-toast';
     import { Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { user } from '../stores/userStore';
-    import {zscoreDataApi} from '../api/fileApi.js';
+    import {zscoreDataApi, fillDataApi} from '../api/fileApi.js';
 
     let username;
     user.subscribe((value) => {
@@ -10,9 +21,9 @@
       console.log('username:', username)
     });
 
-    console.log('username2:', username)
+
+    // zscore 数据标准化部分
     function handleZscoreData(){
-      console.log('username3:', username)
       zscoreDataApi(username).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
@@ -30,6 +41,30 @@
       });
     }
 
+    // 数据填充部分
+    
+    const fillDataOptions = ['均值填充', '中位数填充'];
+    // const defaultChoice = fillDataOptions[0];
+    let selectedFillOption
+    $: console.log('option:', selectedFillOption)
+
+    function handleFillData(){
+      fillDataApi(username, selectedFillOption).then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          toast.push('数据填充成功');
+        } else {
+
+          console.log('error!');
+          toast.push('数据填充失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
+    }
 
 </script>
 
@@ -68,7 +103,16 @@
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">缺失值填充</h2>
                         <p class="mb-5">对于机器学习模型而言，我们必须为每一个特征赋上值，因此需要作补全处理。常用的补全方式有：均值填充以及中位数填充。</p>
-                        <button class="btn btn-primary">开始填充缺失数据</button>
+                        <div class="flex items-end justify-between px-4 pt-4 items-center">
+                          <select class="select select-bordered w-30 text-zinc-900" bind:value={selectedFillOption}>
+                            {#each fillDataOptions as opt}
+                            <option value={opt} class="font-mono">
+                              {opt}
+                              </option>
+                            {/each}
+                          </select>
+                          <button class="btn btn-primary" on:click={handleFillData}>开始填充缺失数据</button>
+                        </div>
                       </div>
                     </div>
                   </div>

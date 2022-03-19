@@ -29,6 +29,15 @@ export const zscoreDataApi = async (username) => {
 	}
 };
 
+export const fillDataApi = async (username, selectedFillOption) => {
+	try {
+		const response = await api.get(`/api/v1/data/fill?username=${username}&fill_type=${selectedFillOption}`);
+		return response;
+	} catch (err) {
+		console.error(err);
+	}
+};
+
 // export const receiveBasicFileInfoApi = async (uploadFilename) => {
 // 	try {
 // 		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_features.csv/features/info`);
