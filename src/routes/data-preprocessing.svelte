@@ -15,6 +15,7 @@
     import { toast } from '@zerodevx/svelte-toast';
     import { user } from '../stores/userStore';
     import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfoApi} from '../api/dataApi.js';
+    import { code } from '../services/codeGen.js';
 
     let username;
     user.subscribe((value) => {
@@ -203,6 +204,24 @@
       });
     });
 
+
+    // 下载代码
+    
+    let codeFile
+    code.subscribe((value) => {
+      codeFile = value;
+      console.log('username:', codeFile)
+    });
+
+    function handleDownload(){
+      const url = window.URL.createObjectURL(new Blob([JSON.stringify(codeFile)]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'code.ipynb'); //or any other extension
+      document.body.appendChild(link);
+      link.click();
+    }
+
 </script>
 
 
@@ -280,7 +299,7 @@
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">代码下载</h2>
                         <p class="mb-5">我们为您提供了当前位置所有数据处理部分的代码，以Python Jupyter Notebook的形式呈现，便于您的调试。</p>
-                        <button class="btn btn-primary">下载Jupyter代码</button>
+                        <button class="btn btn-primary" on:click={handleDownload}>下载Jupyter代码</button>
                       </div>
                     </div>
                   </div>
