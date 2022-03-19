@@ -1,5 +1,6 @@
 <script>
 	// import ImagesChart from '../components/ImagesChart.svelte';
+	import {baseLink} from '../services/api.js'
 	import { onMount } from 'svelte';
 	import {
 		Button,
@@ -34,7 +35,7 @@
 
 	let selectedFeatures = []
     features.subscribe((value) => {
-		selectedFeatures = value;
+		selectedFeatures = JSON.parse(value);
         console.log(selectedFeatures)
 	});
 
@@ -57,6 +58,33 @@
 	let curData = {
 		content: [],
 		header: []
+	};
+
+	let images = {
+		'raw': [],
+		'processed': []
+	}
+
+	function prepareImages(){
+		for(let i=0; i<selectedFeatures.length; i++){
+			let featureName = selectedFeatures[i]
+			let rawImageInfo = {
+				name: featureName,
+				link: `${baseLink}/static/data/${username}/images/data_target_confirmed/histogram_${featureName}.png`
+			}
+			let processedImageInfo = {
+				name: featureName,
+				link: `${baseLink}/static/data/${username}/images/data_zscore_fill_filter/histogram_${featureName}.png`
+			}
+			images.raw.push(rawImageInfo);
+			images.processed.push(processedImageInfo);
+			images = images;
+		}
+		return new Promise(resolve => {
+			setTimeout(() => {
+			resolve(x);
+			}, 2000);
+		});
 	};
 
 	// 在页面刚进入的时候，就展示所有的东西
@@ -117,15 +145,20 @@
 				toast.push('（处理数据）绘制频次统计直方图成功');
 			} else {
 				console.log('error!');
-				toast.push('（处理数据）绘制频次统计直方图失败', {
-					theme: {
-						'--toastBackground': '#F56565',
-						'--toastBarBackground': '#C53030'
-					}
-				});
+				// toast.push('（处理数据）绘制频次统计直方图失败', {
+				// 	theme: {
+				// 		'--toastBackground': '#F56565',
+				// 		'--toastBarBackground': '#C53030'
+				// 	}
+				// });
 			}
 		});
+
+		await prepareImages();
+
 	});
+
+	console.log(images)
 </script>
 
 <h1>数据观察</h1>
@@ -156,6 +189,11 @@
 					totalItems={rawData.content.length}
 					pageSizeInputDisabled
 				/>
+				<div class="grid grid-cols-3 gap-4">
+					{#each images.raw as image}
+						<img src={image.link} alt={image.name}/>
+					{/each}
+				</div>
 			</TabContent>
 
 			<TabContent>
@@ -175,6 +213,12 @@
 					totalItems={curData.content.length}
 					pageSizeInputDisabled
 				/>
+
+				<div class="grid grid-cols-3 gap-4">
+					{#each images.processed as image}
+						<img src={image.link} alt={image.name}/>
+					{/each}
+				</div>
 			</TabContent>
 		</svelte:fragment>
 	</Tabs>
