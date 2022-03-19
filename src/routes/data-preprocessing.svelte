@@ -1,5 +1,36 @@
 <script>
+    import { toast } from '@zerodevx/svelte-toast';
     import { Tabs, Tab, TabContent } from "carbon-components-svelte";
+    import { user } from '../stores/userStore';
+    import {zscoreDataApi} from '../api/fileApi.js';
+
+    let username;
+    user.subscribe((value) => {
+      username = value.username;
+      console.log('username:', username)
+    });
+
+    console.log('username2:', username)
+    function handleZscoreData(){
+      console.log('username3:', username)
+      zscoreDataApi(username).then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          toast.push('归一化成功');
+        } else {
+
+          console.log('error!');
+          toast.push('归一化失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
+    }
+
+
 </script>
 
 
@@ -24,7 +55,7 @@
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">数据标准化</h2>
                         <p class="mb-5">由于不同特征的数据的尺度、范围不同，为了消除特征的不齐性，我们需要将数据作标准化处理，使其scale到均值为0，方差为1的分布。</p>
-                        <button class="btn btn-primary">使用Z-Score标准化</button>
+                        <button class="btn btn-primary" on:click={handleZscoreData}>使用Z-Score标准化</button>
                       </div>
                     </div>
                   </div>
@@ -72,48 +103,28 @@
         </Tabs>
     </div>
     <div class="divider divider-horizontal"></div>
-    <div class="grid flex-grow card rounded-box place-items-center">
-        <h2>
-            经过处理后的数据统计信息
-        </h2>
-        
-        <div class="overflow-x-auto">
-            <table class="table table-zebra w-full">
-              <!-- head -->
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>统计量</th>
-                  <th>值</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- row 1 -->
-                <tr>
-                  <th>1</th>
-                  <td>min</td>
-                  <td>m</td>
-                </tr>
-                <!-- row 2 -->
-                <tr>
-                  <th>2</th>
-                  <td>max</td>
-                  <td>Desktop Support Technician</td>
+    <div class="grid flex-grow card rounded-box">
 
-                </tr>
-                <!-- row 3 -->
-                <tr>
-                  <th>3</th>
-                  <td>std</td>
-                  <td>Tax Accountant</td>
-                </tr>
-                <tr>
-                    <th>4</th>
-                    <td>std</td>
-                    <td>Tax Accountant</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <Tabs>
+        <Tab label="初始态" />
+        <Tab label="处理后" />
+        <svelte:fragment slot="content">
+          <TabContent>
+
+            <h2>
+              初始状态的数据统计信息
+            </h2>
+
+          </TabContent>
+          <TabContent>
+            <h2>
+              处理后的数据的统计信息
+            </h2>
+          </TabContent>
+
+        </svelte:fragment>
+    </Tabs>
+
     </div>
+ 
   </div>
