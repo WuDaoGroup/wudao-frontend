@@ -18,7 +18,7 @@
 	} from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../stores/userStore';
-	import {target, features} from '../stores/dataStore';
+	import {target, features, allFeatures} from '../stores/dataStore';
 	import {
 		zscoreDataApi,
 		fillDataApi,
@@ -34,8 +34,8 @@
 	});
 
 	let selectedFeatures = []
-    features.subscribe((value) => {
-		selectedFeatures = JSON.parse(value);
+    allFeatures.subscribe((value) => {
+		selectedFeatures = value;
         console.log(selectedFeatures)
 	});
 
@@ -67,7 +67,7 @@
 
 	function prepareImages(){
 		for(let i=0; i<selectedFeatures.length; i++){
-			let featureName = selectedFeatures[i]
+			let featureName = selectedFeatures[i].value
 			let rawImageInfo = {
 				name: featureName,
 				link: `${baseLink}/static/data/${username}/images/data_target_confirmed/histogram_${featureName}.png`
@@ -82,7 +82,7 @@
 		}
 		return new Promise(resolve => {
 			setTimeout(() => {
-			resolve(x);
+			resolve();
 			}, 2000);
 		});
 	};

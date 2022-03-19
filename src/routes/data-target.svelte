@@ -11,7 +11,7 @@
 		ProgressIndicator,
 		ProgressStep
 	} from 'carbon-components-svelte';
-    import {target, features} from '../stores/dataStore';
+    import {target, features, allFeatures} from '../stores/dataStore';
     import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/dataApi';
     import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../stores/userStore';
@@ -21,7 +21,7 @@
 	});
 
     let selectedFeatures = []
-    features.subscribe((value) => {
+    allFeatures.subscribe((value) => {
 		selectedFeatures = value;
         console.log(selectedFeatures)
 	});
@@ -39,12 +39,15 @@
 				console.log('data feature info:', response.data);
 				const dataTarget = response.data.target;
                 const dataFeatures = response.data.features;
+                const dataAllFeatures = selectedFeatures;
 
 				target.set(dataTarget);
                 features.set(dataFeatures);
+                allFeatures.set(dataAllFeatures);
 				if (browser) {
 					localStorage.setItem('target', JSON.stringify(dataTarget));
                     localStorage.setItem('features', JSON.stringify(dataFeatures));
+                    localStorage.setItem('all_features', JSON.stringify(dataAllFeatures));
 				}
 				goto(`/data-preprocessing`);
 			}

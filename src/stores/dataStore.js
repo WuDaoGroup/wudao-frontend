@@ -1,13 +1,17 @@
 import { writable } from 'svelte/store';
 import { browser } from '$app/env';
 
-let defaultFilename;
-let defaultTarget;
-let defaultFeatures;
+const defaultFilename = "data.csv";
+const defaultTarget = "y";
+const defaultFeatures = ["x"];
+const defaultAllFeatures = [
+	{key: "y", name: "y", type: "target"},
+	{key: "x", name: "x", type: "feature"}];
 
-export const filename = writable(defaultFilename);
-export const target = writable(defaultTarget);
-export const features = writable(defaultFeatures);
+export const filename = writable("");
+export const target = writable([]);
+export const features = writable([]);
+export const allFeatures = writable([]);
 
 
 if (browser) {
@@ -18,6 +22,9 @@ if (browser) {
 		localStorage.getItem('target') == null ? defaultTarget : localStorage.getItem('target')
 	);
 	features.set(
-		localStorage.getItem('features') == null ? defaultFeatures : localStorage.getItem('features')
+		localStorage.getItem('features') == null ? defaultFeatures : JSON.parse(localStorage.getItem('features'))
 	);
+	allFeatures.set(
+		localStorage.getItem('all_features') == null ? defaultAllFeatures : JSON.parse(localStorage.getItem('all_features'))
+	)
 }

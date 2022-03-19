@@ -17,7 +17,7 @@
 	import FilePond from 'svelte-filepond';
 	
 
-	import { filename, target, features } from '../stores/dataStore';
+	import { filename, target, features, allFeatures } from '../stores/dataStore';
 	import { goto } from '$app/navigation';
 
 	import { user } from '../stores/userStore';
@@ -98,9 +98,9 @@
 					};
 					selectedFeatures.push(e);
 				}
-				features.set(selectedFeatures)
+				allFeatures.set(selectedFeatures)
 				if (browser) {
-					localStorage.setItem('features', JSON.stringify(selectedFeatures));
+					localStorage.setItem('all_features', JSON.stringify(selectedFeatures));
 				}
 				(analyzeDataFiles.current = false), (analyzeDataFiles.complete = true);
 				currentIndex = 2;
