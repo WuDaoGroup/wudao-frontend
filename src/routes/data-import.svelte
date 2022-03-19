@@ -15,10 +15,17 @@
 	import { toast } from '@zerodevx/svelte-toast';
 	// import { dataHeader, rowData } from '../stores/dataStore';
 	import FilePond from 'svelte-filepond';
+	
+
 	import { filename, target, features } from '../stores/dataStore';
 	import { goto } from '$app/navigation';
 
-	let uploadApiLink = `${baseLink}/api/v1/files/upload`;
+	import { user } from '../stores/userStore';
+	let username;
+	user.subscribe((value) => {
+		username = value.username;
+	});
+	let uploadApiLink = `${baseLink}/api/v1/files/upload?username=${username}`;
 	// 接收到的结构化数据 (原始数据)
 	let rawData = {
 		features: [],
@@ -55,14 +62,14 @@
 			fileItem.abortLoad();
 			fileItem.abortProcessing();
 		} else {
-			const dataFilename = fileItem.filename;
-			filename.set(dataFilename);
-			if (browser) {
-				localStorage.setItem('filename', JSON.stringify(dataFilename));
-			}
+			// const dataFilename = fileItem.filename;
+			// filename.set(dataFilename);
+			// if (browser) {
+			// 	localStorage.setItem('filename', JSON.stringify(dataFilename));
+			// }
 			toast.push('点击上传');
-			localStorage.filename= localStorage.filename.replace("\"", "").replace("\"","")
-			console.log(dataFilename, localStorage.filename)
+			// localStorage.filename= localStorage.filename.replace("\"", "").replace("\"","")
+			// console.log(dataFilename, localStorage.filename)
 			currentIndex = 1;
 			(checkUploadFiles.current = false), (checkUploadFiles.complete = true), (checkUploadFiles.invalid = false);
 			(analyzeDataFiles.disabled = false), (analyzeDataFiles.current = true);
@@ -76,7 +83,7 @@
 	};
 
 	function receiveData() {
-		analyzeUploadFileContentApi(localStorage.filename).then((response) => {
+		analyzeUploadFileContentApi(username).then((response) => {
 			selectedFeatures = [];
 			if (response.status == 200) {
 				// console.log('response_data:', response.data)
