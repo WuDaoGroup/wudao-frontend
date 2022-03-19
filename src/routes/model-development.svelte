@@ -1,34 +1,50 @@
 <script>
 	import { base } from '$app/paths';
+	import AnswerShow from '../components/model/AnswerShow.svelte'
+	import {baseLink} from '../services/api.js'
 	import {
 		ordinaryLeastSquaresData,
 		boostedDecisionTreeRegressionData,
 		ridgeRegressionData,
 		lassoData,
 		lassoLarsData,
-		SVCData,
-		xgboostData
+		svcData,
+		// xgboostData,
+		sgdClassifierData,
 	} from '../api/modelApi';
 	import {
-		Accordion,
-		AccordionItem,
-		Form,
-		FormGroup,
-		Checkbox,
-		CodeSnippet,
-		RadioButtonGroup,
-		RadioButton,
-		Select,
-		SelectItem,
+        ordinaryLeastSquaresAnswerSheetS,
+        boostedDecisionTreeRegressionAnswerSheetS,
+        ridgeRegressionAnswerSheetS,
+        lassoAnswerSheetS,
+        lassoLarsAnswerSheetS,
+        SVCAnswerSheetS,
+        SGDClassifierAnswerSheetS,
+        xgboostAnswerSheetS,
+
+        ordinaryLeastSquaresAppearance,
+        boostedDecisionTreeRegressionAppearance,
+        ridgeRegressionAppearance,
+        lassoAppearance,
+        lassoLarsAppearance,
+        SVCAppearance,
+        SGDClassifierAppearance,
+        xgboostAppearance,
+
+        errorOrdinaryLeastSquares,
+        errorBoostedDecisionTreeRegression,
+        errorRidgeRegression,
+        errorLasso,
+        errorLassoLars,
+        errorSVC,
+        errorSGDClassifier,
+        errorXgboost,
+        judge,
+    } from '../stores/ansStore.js'
+	import {
 		Button,
-		DataTable,
-		InlineNotification,
 		TextInput,
-		Tooltip,
 		ComboBox,
-		Pagination,
-		ProgressIndicator,
-		ProgressStep,
 	} from 'carbon-components-svelte';
 	import TrashCan16 from 'carbon-icons-svelte/lib/TrashCan16';
 	import { toast } from '@zerodevx/svelte-toast';
@@ -36,28 +52,23 @@
 
 	let picAdd = '';
 	let alphaCheck = ''; // 是否显示针对于alpha参数的修改
-	let normalize = '';
-	let alpha = '';
 	let methods = [];
 	let theNumberOfMethod = 1;
 	let percentOfTestData = 0.3;
 
+	//不同方法所需要的参数
+	let penalty = '';
+	let loss = '';
+	let normalize = '';
+	let alpha = '';
+
 	//对没有参数的方法是否进行添加的判断
 	let SVCJudge = false;
+	let SGDClassifierJudge = false;
 	let ordinaryLeastSquaresJudge = false;
 	let boostedDecisionTreeRegressionJudge = false;
 	let xgboostJudge = false;
 
-	//答案列表
-	let ordinaryLeastSquaresAnswerSheet = [];
-	let boostedDecisionTreeRegressionAnswerSheet = [];
-	let ridgeRegressionAnswerSheet = [];
-	let lassoAnswerSheet = [];
-	let lassoLarsAnswerSheet = [];
-	let SVCAnswerSheet = [];
-	let xgboostAnswerSheet = [];
-
-	let judge = false; // 判断此时是否显示得到的答案
 	let judgeReset = false; // 判断此时是否需要显示reset
 
 	//返回的答案
@@ -65,75 +76,119 @@
 	let intercept = [];
 	let accuracyOfTestData = 0;
 	let accuracyOfTrainData = 0;
+	let accuracy_of_test_data = 0;
 	let code = '';
-
-	//判断是否存在某方法的出现
-	let ordinaryLeastSquaresAppearance = false;
-	let boostedDecisionTreeRegressionAppearance = false;
-	let ridgeRegressionAppearance = false;
-	let lassoAppearance = false;
-	let lassoLarsAppearance = false;
-	let SVCAppearance = false;
-	let xgboostAppearance = false;
-
-	//判断某种方法是否发生错误
-	let errorOrdinaryLeastSquares = true;
-	let errorBoostedDecisionTreeRegression = true;
-	let errorRidgeRegression = true;
-	let errorLasso = true;
-	let errorLassoLars = true;
-	let errorSVC = true;
-	let errorXgboost = true;
+	let mae = '';
+	let mse = '';
+	let r2 = '';
+	let acc = '';
+	let auroc = '';
+	let auprc = false;
+	let recall = '';
+	let precision = '';
+	let thresholds = ''; 
 
 	//答案处理方法
 	function xgboost(percentOfTestData) {
-		judge = '';
-		xgboostData(localStorage.filename + '_zscore.csv', percentOfTestData)
+		judge.set(false);
+		xgboostData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
 			.then((response) => {
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				code = response.data['code']
-				console.log('!!!!!!!', accuracyOfTestData);
+				mae = response.data['mae']
+				mse = response.data['mse']
+				r2 = response.data['r2']
 				let theNewAns = {
 					accuracyOfTestData: accuracyOfTestData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
-				xgboostAnswerSheet.push(theNewAns);
-				xgboostAnswerSheet = xgboostAnswerSheet;
-				errorXgboost = true;
+				xgboostAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorXgboost.set(true);
 			})
 			.catch(() => {
-				errorXgboost = false;
+				errorXgboost.set(false);
 			});
 	}
-	function SVC(percentOfTestData) {
-		judge = '';
-		SVCData(localStorage.filename + '_zscore.csv', percentOfTestData)
+	function sgdClassifier( loss, penalty, percentOfTestData) {
+		judge.set(false);
+		sgdClassifierData(localStorage.filename + '_zscore_fill_filter.csv', loss, penalty, percentOfTestData)
 			.then((response) => {
-				accuracyOfTestData = response.data['result_accuracyOfTestData'];
+				accuracyOfTestData = response.data['result_accuracy_of_test_data'];
 				code = response.data['code'];
+				acc = response.data['accuracy'];
+				auroc = response.data['auroc'];
 				let theNewAns = {
 					accuracyOfTestData: accuracyOfTestData,
 					code: code,
+					loss: loss,
+					penalty: penalty,
+					Accuracy:acc,
+					AUROC:auroc,
 				};
-				SVCAnswerSheet.push(theNewAns);
-				SVCAnswerSheet = SVCAnswerSheet;
-				errorSVC = true;
+				SGDClassifierAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorSGDClassifier.set(true);
 			})
 			.catch(() => {
-				errorSVC = false;
+				errorSGDClassifier.set(false);
+			});
+	}
+	function svc(percentOfTestData) {
+		judge.set(false);
+		svcData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
+			.then((response) => {
+				accuracyOfTestData = response.data['result_accuracy_of_test_data'];
+				code = response.data['code'];
+				acc = response.data['accuracy'];
+				auroc = response.data['auroc'];
+				precision = response.data['precision']
+				recall = response.data['recall']
+				thresholds = response.data['thresholds'] 
+				
+				if( response.data['auprc'] == 1 )
+					auprc = true;
+				else
+					auprc = false;
+				
+				let theNewAns = {
+					accuracyOfTestData: accuracyOfTestData,
+					code: code,
+					Accuracy: acc,
+					AUROC: auroc,
+					auprc: auprc,
+					precision: precision,
+					recall: recall,
+					thresholds: thresholds,
+				};
+				SVCAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorSVC.set(true);
+			})
+			.catch(() => {
+				errorSVC.set(false);
 			});
 	}
 	function lassoLars(alpha, normalize, percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		coef = [];
 		intercept = [];
-		lassoLarsData(localStorage.filename + '_zscore.csv', alpha, normalize, percentOfTestData)
+		lassoLarsData(localStorage.filename + '_zscore_fill_filter.csv', alpha, normalize, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
@@ -142,28 +197,35 @@
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
 				console.log('lassoLars:', theNewAns);
-				lassoLarsAnswerSheet.push(theNewAns);
-				lassoLarsAnswerSheet = lassoLarsAnswerSheet;
-				errorLassoLars = true;
+				lassoLarsAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorLassoLars.set(true);
 			})
 			.catch(() => {
-				errorLassoLars = false;
+				errorLassoLars.set(false);
 			});
 	}
 
 	function lasso(alpha, percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		coef = [];
 		intercept = [];
-		lassoData(localStorage.filename + '_zscore.csv', alpha, percentOfTestData)
+		lassoData(localStorage.filename + '_zscore_fill_filter.csv', alpha, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
@@ -171,27 +233,34 @@
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
-				lassoAnswerSheet.push(theNewAns);
-				lassoAnswerSheet = lassoAnswerSheet;
-				errorLasso = true;
+				lassoAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorLasso.set(true);
 			})
 			.catch(() => {
-				errorLasso = false;
+				errorLasso.set(false);
 			});
 	}
 
 	function ridgeRegression(alpha, percentOfTestData) {
-		judge = '';
+		judge.set(false);
 		coef = [];
 		intercept = [];
-		ridgeRegressionData(localStorage.filename + '_zscore.csv', alpha, percentOfTestData)
+		ridgeRegressionData(localStorage.filename + '_zscore_fill_filter.csv', alpha, percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
@@ -199,58 +268,69 @@
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
-				ridgeRegressionAnswerSheet.push(theNewAns);
-				ridgeRegressionAnswerSheet = ridgeRegressionAnswerSheet;
-				errorRidgeRegression = true;
+				ridgeRegressionAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorRidgeRegression.set(true);
 			})
 			.catch(() => {
-				errorRidgeRegression = false;
+				errorRidgeRegression.set(false);
 			});
 	}
 
 	function ordinaryLeastSquares(percentOfTestData) {
-		judge = '';
-		ordinaryLeastSquaresData(localStorage.filename + '_zscore.csv', percentOfTestData)
+		judge.set(false);
+		ordinaryLeastSquaresData(localStorage.filename + '_zscore_fill_filter.csv', percentOfTestData)
 			.then((response) => {
 				coef = response.data['result_coef'];
 				intercept = response.data['result_intercept'];
 				accuracyOfTestData = response.data['result_accuracyOfTestData'];
 				accuracyOfTrainData = response.data['result_accuracyOfTrainData'];
 				code  = response.data['code'];
+				mae = response.data['mae'];
+				mse = response.data['mse'];
+				r2 = response.data['r2'];
 				let theNewAns = {
 					coef: coef,
 					intercept: intercept,
 					accuracyOfTestData: accuracyOfTestData,
 					accuracyOfTrainData: accuracyOfTrainData,
 					code: code,
+					mae: mae,
+					mse: mse,
+					r2: r2,
 				};
-				console.log('the accuracyOfTrainData:-------', accuracyOfTrainData);
-				ordinaryLeastSquaresAnswerSheet.push(theNewAns);
-				ordinaryLeastSquaresAnswerSheet = ordinaryLeastSquaresAnswerSheet;
-				errorOrdinaryLeastSquares = true;
+				ordinaryLeastSquaresAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorOrdinaryLeastSquares.set(true);
 			})
 			.catch(() => {
-				errorOrdinaryLeastSquares = false;
+				errorOrdinaryLeastSquares.set(false);
 			});
 	}
 
 	function boostedDecisionTreeRegression() {
-		judge = '';
-		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore.csv')
+		judge.set(false);
+		boostedDecisionTreeRegressionData(localStorage.filename + '_zscore_fill_filter.csv')
 			.then((response) => {
-				picAdd = 'http://localhost:8123/static/images/' + response.data['pic_addr'];
+				picAdd = `${baseLink}/static/images/${response.data['pic_addr']}`;
 				code  = response.data['code'];
 				let theNewAns = {
 					picAdd: picAdd,
 					code: code,
 				};
-				boostedDecisionTreeRegressionAnswerSheet.push(theNewAns);
-				boostedDecisionTreeRegressionAnswerSheet = boostedDecisionTreeRegressionAnswerSheet;
-				errorBoostedDecisionTreeRegression = true;
+				boostedDecisionTreeRegressionAnswerSheetS.update(value =>{
+					return [...value, theNewAns]
+				})
+				errorBoostedDecisionTreeRegression.set(true);
 			})
 			.catch(() => {
-				errorBoostedDecisionTreeRegression = false;
+				errorBoostedDecisionTreeRegression.set(false);
 			});
 	}
 
@@ -263,6 +343,7 @@
 			let lassoAns = [];
 			let lassoLarsAns = [];
 			let SVCAns = [];
+			let SGDClassifierAns = [];
 			let xgboostAns = [];
 			alphaCheck = '';
 			for (var i = 0; i < methods.length; i++) {
@@ -271,31 +352,35 @@
 				if (methods[i].name == 'Ordinary Least Squares') {
 					ordinaryLeastSquaresAns.push(newAns);
 					ordinaryLeastSquaresAns = ordinaryLeastSquaresAns;
-					ordinaryLeastSquaresAppearance = true;
+					ordinaryLeastSquaresAppearance.set(true);
 				} else if (methods[i].name == 'Ridge regression') {
 					ridgeRegressionAns.push(newAns);
 					ridgeRegressionAns = ridgeRegressionAns;
-					ridgeRegressionAppearance = true;
+					ridgeRegressionAppearance.set(true);
 				} else if (methods[i].name == 'Lasso') {
 					lassoAns.push(newAns);
 					lassoAns = lassoAns;
-					lassoAppearance = true;
+					lassoAppearance.set(true);
 				} else if (methods[i].name == 'LARS Lasso') {
 					lassoLarsAns.push(newAns);
 					lassoLarsAns = lassoLarsAns;
-					lassoLarsAppearance = true;
+					lassoLarsAppearance.set(true);
 				} else if (methods[i].name == 'Decision Tree Regression with AdaBoost') {
 					boostedDecisionTreeAns.push(newAns);
 					boostedDecisionTreeAns = boostedDecisionTreeAns;
-					boostedDecisionTreeRegressionAppearance = true;
+					boostedDecisionTreeRegressionAppearance.set(true);
 				} else if (methods[i].name == 'SVC') {
 					SVCAns.push(newAns);
 					SVCAns = SVCAns;
-					SVCAppearance = true;
+					SVCAppearance.set(true);
 				} else if (methods[i].name == 'xgboost') {
 					xgboostAns.push(newAns);
 					xgboostAns = xgboostAns;
-					xgboostAppearance = true;
+					xgboostAppearance.set(true);
+				}else if (methods[i].name == 'SGDClassifier') {
+					SGDClassifierAns.push(newAns);
+					SGDClassifierAns = SGDClassifierAns;
+					SGDClassifierAppearance.set(true);
 				}
 			}
 			for (var i = 0; i < ordinaryLeastSquaresAns.length; i++) {
@@ -315,51 +400,58 @@
 				boostedDecisionTreeRegression();
 			}
 			for (var i = 0; i < SVCAns.length; i++) {
-				SVC(percentOfTestData);
+				svc(percentOfTestData);
+			}
+			for (var i = 0; i < SGDClassifierAns.length; i++) {
+				sgdClassifier(SGDClassifierAns[i].loss, SGDClassifierAns[i].penalty, percentOfTestData);
 			}
 			for (var i = 0; i < xgboostAns.length; i++) {
 				xgboost(percentOfTestData);
 			}
-			judge = true;
+			judge.set(true);
 			judgeReset = true;
 		}
 	}
 
 	//重设数据
-	function Reset() {
+	function reset_() {
 		reset();
 
-		ordinaryLeastSquaresAppearance = false;
-		boostedDecisionTreeRegressionAppearance = false;
-		ridgeRegressionAppearance = false;
-		lassoAppearance = false;
-		lassoLarsAppearance = false;
-		SVCAppearance = false;
-		xgboostAppearance = false;
+		ordinaryLeastSquaresAppearance.set(false);
+		boostedDecisionTreeRegressionAppearance.set(false);
+		ridgeRegressionAppearance.set(false);
+		lassoAppearance.set(false);
+		lassoLarsAppearance.set(false);
+		SVCAppearance.set(false);
+		SGDClassifierAppearance.set(false);
+		xgboostAppearance.set(false);
 	}
 	function reset() {
 		judgeReset = false;
 
-		ordinaryLeastSquaresAnswerSheet = [];
-		boostedDecisionTreeRegressionAnswerSheet = [];
-		ridgeRegressionAnswerSheet = [];
-		lassoAnswerSheet = [];
-		lassoLarsAnswerSheet = [];
-		SVCAnswerSheet = [];
-		xgboostAnswerSheet = [];
+		ordinaryLeastSquaresAnswerSheetS.set([]);
+		boostedDecisionTreeRegressionAnswerSheetS.set([]);
+		ridgeRegressionAnswerSheetS.set([]);
+		lassoAnswerSheetS.set([]);
+		lassoLarsAnswerSheetS.set([]);
+		SVCAnswerSheetS.set([]);
+		SGDClassifierAnswerSheetS.set([]);
+		xgboostAnswerSheetS.set([]);
 
-		errorOrdinaryLeastSquares = true;
-		errorBoostedDecisionTreeRegression = true;
-		errorRidgeRegression = true;
-		errorLasso = true;
-		errorLassoLars = true;
-		errorSVC = true;
-		errorXgboost = true;
+		errorOrdinaryLeastSquares.set(true);
+		errorBoostedDecisionTreeRegression.set(true);
+		errorRidgeRegression.set(true);
+		errorLasso.set(true);
+		errorLassoLars.set(true);
+		errorSVC.set(true);
+		errorSGDClassifier.set(true);
+		errorXgboost.set(true);
 	}
 	function allClear() {
-		Reset();
+		reset_();
 
 		SVCJudge = false;
+		SGDClassifierJudge = false;
 		ordinaryLeastSquaresJudge = false;
 		boostedDecisionTreeRegressionJudge = false;
 		xgboostJudge = false;
@@ -380,7 +472,7 @@
 			methods = methods;
 			toast.push('您成功添加了该种方法');
 			reset();
-			judge = '';
+			judge.set(false);
 		} else {
 			toast.push('您已经添加了该种方法', {
 				theme: {
@@ -402,7 +494,7 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
-			judge = '';
+			judge.set(false);
 			reset();
 		} else {
 			toast.push('您已经添加了该种方法', {
@@ -413,7 +505,7 @@
 			});
 		}
 	}
-	function SVCAdd() {
+	function svcAdd() {
 		alphaCheck = '';
 		if (!SVCJudge) {
 			SVCJudge = true;
@@ -425,7 +517,32 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
-			judge = '';
+			judge.set(false);
+			reset();
+		} else {
+			toast.push('您已经添加了该种方法', {
+				theme: {
+					'--toastBackground': '#F56565',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+	}
+	function sgdClassifierAdd() {
+		alphaCheck = '';
+		if (!SGDClassifierJudge) {
+			SGDClassifierJudge = true;
+			let newMthod = {
+				name: 'SGDClassifier',
+				loss: loss,
+				penalty: penalty,
+				id: theNumberOfMethod,
+			};
+			theNumberOfMethod++;
+			methods.push(newMthod);
+			methods = methods;
+			toast.push('您成功添加了该种方法');
+			judge.set(false);
 			reset();
 		} else {
 			toast.push('您已经添加了该种方法', {
@@ -448,7 +565,7 @@
 			methods.push(newMthod);
 			methods = methods;
 			toast.push('您成功添加了该种方法');
-			judge = '';
+			judge.set(false);
 			reset();
 		} else {
 			toast.push('您已经添加了该种方法', {
@@ -570,15 +687,15 @@
 		methods = methods.filter(function (item) {
 			return item.id != id;
 		});
-		Reset();
+		reset_();
 	}
 
-	function SVCDelite(id) {
+	function svcDelite(id) {
 		SVCJudge = false;
 		methods = methods.filter(function (item) {
 			return item.id != id;
 		});
-		Reset();
+		reset_();
 	}
 
 	function ordinaryLeastSquaresDelite(id) {
@@ -586,7 +703,7 @@
 		methods = methods.filter(function (item) {
 			return item.id != id;
 		});
-		Reset();
+		reset_();
 	}
 
 	function boostedDecisionTreeRegressionDelite(id) {
@@ -594,7 +711,7 @@
 		methods = methods.filter(function (item) {
 			return item.id != id;
 		});
-		Reset();
+		reset_();
 	}
 
 	//需要参数方法的删除
@@ -602,29 +719,38 @@
 		methods = methods.filter(function (item) {
 			return item.id != id;
 		});
-		Reset();
+		reset_();
 	}
 
 	//获取部分方法所需要的参数
 	function getInAlphaRidgeRegression() {
 		alphaCheck = 'ridgeRegression';
 		alpha = 0.5;
-		judge = '';
+		judge.set(false);
 		reset();
 	}
 	function getInAlphaLasso() {
 		alphaCheck = 'lasso';
 		alpha = 0.5;
-		judge = '';
+		judge.set(false);
 		reset();
 	}
 	function getInAlphaLassoLars() {
 		alphaCheck = 'lassoLars';
 		alpha = 0.5;
 		normalize = 'False';
-		judge = '';
+		judge.set(false);
 		reset();
 	}
+	function getInAlphaSGDClassifier() {
+		alphaCheck = 'SGDClassifier';
+		loss= 'hinge';
+		penalty= 'l2';
+		judge.set(false);
+		reset();
+	}
+
+	$: console.log(judge)
 </script>
 
 <div>
@@ -647,23 +773,29 @@
 			<p class="text-center mb-7 text-3xl">Regression</p>
 			<div class="flex flex-wrap">
 				<div class="m-2">
-					<Button class="h-14" type="submit" on:click={ordinaryLeastSquaresAdd}
-						>Ordinary Least Squares</Button
+					<button
+						class="h-14 bg-white text-blue-600 border-blue-600 border-2 pl-4 pr-16 
+						hover:bg-blue-600 hover:text-white"
+						type="submit"
+						on:click={ordinaryLeastSquaresAdd}>Ordinary Least Squares</button
 					>
 				</div>
 
 				{#if alphaCheck == 'ridgeRegression'}
 					<div class="m-2">
 						<button
-							class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16"
+							class="h-14 bg-blue-600 text-white border-blue-600 border-2 pl-4 pr-16"
 							type="submit"
 							on:click={getInAlphaRidgeRegression}>Ridge regression</button
 						>
 					</div>
 				{:else}
 					<div class="m-2">
-						<Button class="h-14" type="submit" on:click={getInAlphaRidgeRegression}
-							>Ridge regression</Button
+						<button
+							class="h-14 border-blue-600 border-2 pl-4 pr-16 text-blue-600
+							hover:bg-blue-600 hover:text-white"
+							type="submit"
+							on:click={getInAlphaRidgeRegression}>Ridge regression</button
 						>
 					</div>
 				{/if}
@@ -671,39 +803,57 @@
 				{#if alphaCheck == 'lasso'}
 					<div class="m-2">
 						<button
-							class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16"
+							class="h-14 bg-blue-600 text-white border-blue-600 border-2 pl-4 pr-16"
 							type="submit"
 							on:click={getInAlphaLasso}>Lasso</button
 						>
 					</div>
 				{:else}
 					<div class="m-2">
-						<Button class="h-14" type="submit" on:click={getInAlphaLasso}>Lasso</Button>
+						<button
+							class="h-14 border-blue-600 border-2 pl-4 pr-16 text-blue-600
+							hover:bg-blue-600 hover:text-white"
+							type="submit"
+							on:click={getInAlphaLasso}>Lasso</button
+						>
 					</div>
 				{/if}
 
 				<div class="m-2">
-					<Button class="h-14" type="submit" on:click={boostedDecisionTreeRegressionAdd}
-						>Decision Tree Regression with AdaBoost</Button
+					<button
+						class="h-14 bg-white text-blue-600 border-blue-600 border-2 pl-4 pr-16 
+						hover:bg-blue-600 hover:text-white"
+						type="submit"
+						on:click={boostedDecisionTreeRegressionAdd}>Decision Tree Regression with AdaBoost</button
 					>
 				</div>
 
 				{#if alphaCheck == 'lassoLars'}
 					<div class="m-2">
 						<button
-							class="h-14 bg-white text-blue-500 border-blue-500 border-2 pl-4 pr-16"
+							class="h-14 bg-blue-600 text-white border-blue-600 border-2 pl-4 pr-16"
 							type="submit"
 							on:click={getInAlphaLassoLars}>LARS Lasso</button
 						>
 					</div>
 				{:else}
 					<div class="m-2">
-						<Button class="h-14" type="submit" on:click={getInAlphaLassoLars}>LARS Lasso</Button>
+						<button
+							class="h-14 border-blue-600 border-2 pl-4 pr-16 text-blue-600
+							hover:bg-blue-600 hover:text-white"
+							type="submit"
+							on:click={getInAlphaLassoLars}>LARS Lasso</button
+						>
 					</div>
 				{/if}
 
 				<div class="m-2">
-					<Button class="h-14" type="submit" on:click={xgboostAdd}>xgboost</Button>
+					<button
+						class="h-14 bg-white text-blue-600 border-blue-600 border-2 pl-4 pr-16 
+						hover:bg-blue-600 hover:text-white"
+						type="submit"
+						on:click={xgboostAdd}>xgboost</button
+					>
 				</div>
 			</div>
 		</div>
@@ -711,7 +861,33 @@
 		<div class="mb-10">
 			<p class="text-center mb-7 text-3xl">Classification</p>
 			<div class="flex flex-wrap">
-				<div class="m-2"><Button class="h-14" type="submit" on:click={SVCAdd}>SVC</Button></div>
+				<div class="m-2">
+					<button
+						class="h-14 bg-white text-blue-600 border-blue-600 border-2 pl-4 pr-16 
+						hover:bg-blue-600 hover:text-white"
+						type="submit"
+						on:click={svcAdd}>SVC</button
+					>
+				</div>
+				
+				{#if alphaCheck == 'SGDClassifier'}
+					<div class="m-2">
+						<button
+							class="h-14 bg-blue-600 text-white border-blue-600 border-2 pl-4 pr-16"
+							type="submit"
+							on:click={getInAlphaSGDClassifier}>SGD Classifier</button
+						>
+					</div>
+				{:else}
+					<div class="m-2">
+						<button
+							class="h-14 border-blue-600 border-2 pl-4 pr-16 text-blue-600
+							hover:bg-blue-600 hover:text-white"
+							type="submit"
+							on:click={getInAlphaSGDClassifier}>SGD Classifier</button
+						>
+					</div>
+				{/if}
 			</div>
 		</div>
 		<!-- 训练集占比的选择 -->
@@ -779,6 +955,32 @@
 				<div class="flex mb-10 justify-center">
 					<Button kind="tertiary" on:click={lassoLarsAdd}>Confirm</Button>
 				</div>
+			{:else if alphaCheck == 'SGDClassifier'}
+				<div class="flex justify-center mb-4">
+					<ComboBox
+					    titleText="Select the mode of loss"
+						items={[
+							{ id: "hinge", text: "hinge" },
+							{ id: "modified_huber", text: "modified_huber" },
+							{ id: "log", text: "log" },
+						]}
+						bind:selectedId={loss} 
+					/>
+				</div>
+				<div class="flex justify-center mb-4">
+					<ComboBox
+					    titleText="Select the mode of penalty"
+						items={[
+							{ id: "l1", text: "l1" },
+							{ id: "l2", text: "l2" },
+							{ id: "elasticnet", text: "elasticnet" },
+						]}
+						bind:selectedId={penalty} 
+					/>
+				</div>
+				<div class="flex mb-10 justify-center">
+					<Button kind="tertiary" on:click={sgdClassifierAdd}>Confirm</Button>
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -789,9 +991,9 @@
 	<div class="flex flex-col">
 		{#each methods as method, i}
 			{#if method.name == 'Ordinary Least Squares'}
-				<div class="flex flex-wrap">
-					<div class="rounded-full bg-black text-white py-3 text-center w-10 mb-5">{i + 1}</div>
-					<div class="rounded-full bg-black text-white py-3 px-6 w-60 mb-5">{method.name}</div>
+				<div class="flex flex-wrap items-center">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">{i + 1}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-60 mb-5">{method.name}</div>
 					<button
 						class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold"
 						on:click={ordinaryLeastSquaresDelite(method.id)}>X</button
@@ -799,11 +1001,11 @@
 				</div>
 			{:else if method.name == 'Ridge regression'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-yellow-300 text-black py-3 text-center w-10 mb-5">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">
 						{i + 1}
 					</div>
-					<div class="rounded-full bg-yellow-300 text-black py-3 px-6 w-44 mb-5">{method.name}</div>
-					<div class="rounded-full bg-yellow-300 text-black py-3 px-6 w-28 mb-5">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-44 mb-5">{method.name}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-28 mb-5">
 						alpha:{method.alpha}
 					</div>
 					<button
@@ -813,9 +1015,9 @@
 				</div>
 			{:else if method.name == 'Lasso'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-green-300 text-black py-3 text-center w-10 mb-5">{i + 1}</div>
-					<div class="rounded-full bg-green-300 text-black py-3 px-6 w-24 mb-5">{method.name}</div>
-					<div class="rounded-full bg-green-300 text-black py-3 px-6 w-28 mb-5">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">{i + 1}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-24 mb-5">{method.name}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-28 mb-5">
 						alpha:{method.alpha}
 					</div>
 					<button
@@ -825,8 +1027,8 @@
 				</div>
 			{:else if method.name == 'Decision Tree Regression with AdaBoost'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-blue-500 text-white py-3 text-center w-10 mb-5">{i + 1}</div>
-					<div class="rounded-full bg-blue-500 text-white py-3 px-6 w-80 mb-5">{method.name}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">{i + 1}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-80 mb-5">{method.name}</div>
 					<button
 						class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold"
 						on:click={boostedDecisionTreeRegressionDelite(method.id)}>X</button
@@ -834,12 +1036,12 @@
 				</div>
 			{:else if method.name == 'LARS Lasso'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-pink-300 text-black py-3 text-center w-10 mb-5">{i + 1}</div>
-					<div class="rounded-full bg-pink-300 text-black py-3 px-6 w-36 mb-5">{method.name}</div>
-					<div class="rounded-full bg-pink-300 text-black py-3 px-6 w-28 mb-5">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">{i + 1}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-36 mb-5">{method.name}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-28 mb-5">
 						alpha:{method.alpha}
 					</div>
-					<div class="rounded-full bg-pink-300 text-black py-3 px-6 w-40 mb-5">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-40 mb-5">
 						normalize:{method.normalize}
 					</div>
 					<button
@@ -849,24 +1051,41 @@
 				</div>
 			{:else if method.name == 'SVC'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-yellow-900 text-white py-3 text-center w-10 mb-5">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">
 						{i + 1}
 					</div>
-					<div class="rounded-full bg-yellow-900 text-white py-3 px-6 w-20 mb-5">{method.name}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-20 mb-5">{method.name}</div>
 					<button
 						class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold"
-						on:click={SVCDelite(method.id)}>X</button
+						on:click={svcDelite(method.id)}>X</button
 					>
 				</div>
 			{:else if method.name == 'xgboost'}
 				<div class="flex flex-wrap">
-					<div class="rounded-full bg-purple-900 text-white py-3 text-center w-10 mb-5">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">
 						{i + 1}
 					</div>
-					<div class="rounded-full bg-purple-900 text-white py-3 px-6 w-28 mb-5">{method.name}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-28 mb-5">{method.name}</div>
 					<button
 						class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold"
 						on:click={xgboostDelite(method.id)}>X</button
+					>
+				</div>
+			{:else if method.name == 'SGDClassifier'}
+				<div class="flex flex-wrap">
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 text-center w-10 mb-5">
+						{i + 1}
+					</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-36 mb-5">{method.name}</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-28 mb-5">
+						loss:{method.loss}
+					</div>
+					<div class="rounded-full text-blue-600 bg-blue-50 py-3 px-6 w-32 mb-5">
+						penalty:{method.penalty}
+					</div>
+					<button
+						class="rounded-full bg-white hover:bg-red-600 text-red-600  hover:text-white border-2 border-red-600 py-3 text-center w-10 mb-5 font-bold"
+						on:click={ordinaryDelite(method.id)}>X</button
 					>
 				</div>
 			{/if}
@@ -878,274 +1097,33 @@
 <div>
 	<div class="flex justify-center mb-10">
 		{#if !judgeReset}
-			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
+			<div class="m-2">
+				<button
+					class="h-14 bg-white text-blue-600 border-blue-600 border-2 pl-4 pr-16 
+					hover:bg-blue-600 hover:text-white"
+					type="submit"
+					on:click={handleAnswerSheet}>Submit</button
+				>
+			</div>
 		{:else}
-			<Button type="submit" on:click={handleAnswerSheet}>Submit</Button>
-			<Button type="submit" on:click={Reset}>Reset</Button>
+			<div class="m-2">
+				<button
+					class="h-14 bg-white text-blue-600 border-blue-600 border-2 pl-4 pr-16 
+					hover:bg-blue-600 hover:text-white"
+					type="submit"
+					on:click={handleAnswerSheet}>Submit</button
+				>
+			</div>
+			<div class="m-2">
+				<button
+					class="h-14 bg-white text-blue-600 border-blue-600 border-2 pl-4 pr-16 
+					hover:bg-blue-600 hover:text-white"
+					type="submit"
+					on:click={reset_}>Reset</button
+				>
+			</div>
 		{/if}
 	</div>
 	<!-- 最终得到的答案展示 -->
-	<div>
-		{#if judge}
-			{#if ordinaryLeastSquaresAppearance}
-				<Accordion>
-					<AccordionItem title="Ordinary Least Squares">
-						{#if errorOrdinaryLeastSquares}
-							{#each ordinaryLeastSquaresAnswerSheet as { coef, intercept, accuracyOfTestData, accuracyOfTrainData, code }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<CodeSnippet class="" code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if ridgeRegressionAppearance}
-				<Accordion>
-					<AccordionItem title="Ridge regression">
-						{#if errorRidgeRegression}
-							{#each ridgeRegressionAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData, code }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'alpha', value: 'alpha' },
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											alpha: alpha,
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<CodeSnippet class="" code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if lassoAppearance}
-				<Accordion>
-					<AccordionItem title="Lasso">
-						{#if errorLasso}
-							{#each lassoAnswerSheet as { coef, intercept, alpha, accuracyOfTestData, accuracyOfTrainData,code }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'alpha', value: 'alpha' },
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											alpha: alpha,
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<CodeSnippet class="" code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if lassoLarsAppearance}
-				<Accordion>
-					<AccordionItem title="LARS Lasso">
-						{#if errorLassoLars}
-							{#each lassoLarsAnswerSheet as { coef, intercept, alpha, normalize, accuracyOfTestData, accuracyOfTrainData, code }}
-								<DataTable
-									class="w-11/12"
-									headers={[
-										{ key: 'alpha', value: 'alpha' },
-										{ key: 'normalize', value: 'normalize' },
-										{ key: 'coefficient', value: 'coefficient' },
-										{ key: 'intercept', value: 'intercept' },
-										{ key: 'test', value: 'accuracy of test-data' },
-										{ key: 'train', value: 'accuracy of train-data' }
-									]}
-									rows={[
-										{
-											alpha: alpha,
-											normalize: normalize,
-											coefficient: coef,
-											intercept: intercept,
-											test: accuracyOfTestData,
-											train: accuracyOfTrainData
-										}
-									]}
-								/>
-								<CodeSnippet class="" code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if SVCAppearance}
-				<Accordion>
-					<AccordionItem title="SVC">
-						{#if errorSVC}
-							{#each SVCAnswerSheet as { accuracyOfTestData, code }}
-								<DataTable
-									class="w-11/12"
-									headers={[{ key: 'test', value: 'accuracy of test-data' }]}
-									rows={[
-										{
-											test: accuracyOfTestData
-										}
-									]}
-								/>
-								<CodeSnippet class="" code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										ValueError: Unknown label type: 'continuous' or we got 1 class but the number of
-										classes has to be greater than one.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if xgboostAppearance}
-				<Accordion>
-					<AccordionItem title="xgboost">
-						{#if errorXgboost}
-							{#each xgboostAnswerSheet as { accuracyOfTestData, code }}
-								<DataTable
-									class="w-11/12"
-									headers={[{ key: 'test', value: 'accuracy of test-data' }]}
-									rows={[
-										{
-											test: accuracyOfTestData
-										}
-									]}
-								/>
-								<CodeSnippet class="" code={code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-			{#if boostedDecisionTreeRegressionAppearance}
-				<Accordion>
-					<AccordionItem title="Decision Tree Regression with AdaBoost">
-						{#if errorBoostedDecisionTreeRegression}
-							{#each boostedDecisionTreeRegressionAnswerSheet as ans}
-								<div class="flex mb-10 justify-center">
-									<img src={ans.picAdd} alt="the result" />
-								</div>
-								<CodeSnippet class="" code={ans.code} type="multi" />
-							{/each}
-						{:else}
-							<div class="flex flex-nowrap justify-start">
-								<InlineNotification
-									title="Error:"
-									subtitle="The file you selected is not suitable for this method."
-								/>
-								<Tooltip tooltipBodyId="tooltip-body" class="self-center">
-									<p id="tooltip-body">
-										Make sure that every value that is a feature is of numeric type.
-									</p>
-								</Tooltip>
-							</div>
-						{/if}
-					</AccordionItem>
-				</Accordion>
-			{/if}
-		{/if}
-	</div>
+	<AnswerShow />
 </div>

@@ -1,9 +1,8 @@
-
-
 <script>
+    import {baseLink} from '../services/api.js'
     import { ComboBox } from "carbon-components-svelte";
     import { browser } from '$app/env';
-    import { ContentSwitcher, Switch, Button, TextInput, Select, SelectItem, SelectableTile } from "carbon-components-svelte";
+    import { ContentSwitcher, Switch, Button, TextInput, Select, SelectItem, SelectableTile, Checkbox } from "carbon-components-svelte";
     import "../app.css";
     import { dimensionReductionApi, featureCorrApi, objectMatrixApi, pairwiseFeatureCorrApi } from '../api/explanationApi';
     import { toast } from '@zerodevx/svelte-toast';
@@ -22,7 +21,8 @@
     let showPair =false;
     let featureCorrFeatures = {'object':'评分','k_number':'10'};
     let cols=['评分','投票人数','时长']
-    let colstrueorflase = [false]*(localStorage.target.lenth)
+    let values = JSON.parse(localStorage.target);
+    let group = values.slice(0, 2);
 
     function dimensionReduction(){
         dimensionReductionApi(localStorage.filename, explanationFeatures).then((response)=>{
@@ -55,8 +55,7 @@
      }
      
      function pairwiseFeatureCorr(){
-         console.log(colstrueorflase)
-        pairwiseFeatureCorrApi(localStorage.filename, cols).then((response)=>{
+        pairwiseFeatureCorrApi(localStorage.filename, group).then((response)=>{
              if(response.status == 200){
                  toast.push('特征相关具体分布生成过程完成');
                  console.log(response.pic_addr);
@@ -84,7 +83,7 @@
             <SelectItem value="2" text="2" />
             <SelectItem value="3" text="3" />
         </Select>
-        <Select labelText="降维维数选择" bind:selected={explanationFeatures.target}>
+        <Select labelText="降维目标选择" bind:selected={explanationFeatures.target}>
             {#each JSON.parse(localStorage.target) as p}
                 <SelectItem value={p} text={p} />
 			{/each}
@@ -94,7 +93,7 @@
         <br/>
         <Button  on:click={dimensionReduction}  kind='primary'>生成降维图像</Button>
         {#if showReduction == true}
-            <img src="http://localhost:8123/static/images/{localStorage.filename}_dimension_reduction_img.png">
+            <img src="{baseLink}/static/images/{localStorage.filename}_dimension_reduction_img.png">
         {/if}   
     </div>
     
@@ -108,7 +107,7 @@
             </Select>
             <Button on:click={featureCorr}  kind='primary'>生成特征关联图</Button>
             {#if showCorr == true}
-                <img src="http://localhost:8123/static/images/{localStorage.filename}_feature_corr_img.png">
+                <img src="{baseLink}/static/images/{localStorage.filename}_feature_corr_img.png">
             {/if} 
         </div>
         <div class="py-6">
@@ -119,18 +118,21 @@
             </Select>
             <Button on:click={objectMatrix}  kind='primary'>生成目标相关矩阵</Button>
             {#if showMatrix == true}
-                <img src="http://localhost:8123/static/images/{localStorage.filename}_object_matrix_img.png">
+                <img src="{baseLink}/static/images/{localStorage.filename}_object_matrix_img.png">
             {/if} 
         </div>
         <div class="py-6">
             <div role="group" aria-label="selectable tiles" >
-                {#each JSON.parse(localStorage.target) as p,i}
-                <SelectableTile >{p}</SelectableTile>
-			    {/each}
+                {#each values as value}
+                    <Checkbox bind:group labelText={value} {value} />
+                {/each}
               </div>
+              <strong>Selected:</strong>
+                {JSON.stringify(group)}
+            <br/>
             <Button on:click={pairwiseFeatureCorr}  kind='primary'>生成特征相关具体分布</Button>
             {#if showPair == true}
-                <img src="http://localhost:8123/static/images/{localStorage.filename}_pairwise_feature_corr_img.png">
+                <img src="{baseLink}/static/images/{localStorage.filename}_pairwise_feature_corr_img.png">
             {/if} 
         </div>
     </div>

@@ -1,6 +1,8 @@
 <script>
-	import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/fileApi';
+	import {baseLink} from '../services/api.js'
+	import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/dataApi';
 	import {
+		Button,
 		DataTable,
 		Pagination,
 		RadioButtonGroup,
@@ -11,28 +13,33 @@
 	} from 'carbon-components-svelte';
 	import { browser } from '$app/env';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { Button } from 'carbon-components-svelte';
 	// import { dataHeader, rowData } from '../stores/dataStore';
 	import FilePond from 'svelte-filepond';
-	import { filename, target} from '../stores/dataStore';
+	
+
+	import { filename, target, features, allFeatures } from '../stores/dataStore';
 	import { goto } from '$app/navigation';
 
+	import { user } from '../stores/userStore';
+	let username;
+	user.subscribe((value) => {
+		username = value.username;
+	});
+	let uploadApiLink = `${baseLink}/api/v1/files/upload?username=${username}`;
 	// 接收到的结构化数据 (原始数据)
 	let rawData = {
 		features: [],
 		content: []
 	};
+	let selectedFeatures = [];
+    const featureTypes = ['target', 'feature', 'useless'];
+	const defaultChoice = featureTypes[1];
+
 	let currentIndex = 0;
 	let checkUploadFiles = { current: true, complete: false, invalid: false };
 	let analyzeDataFiles = { current: false, complete: false, disabled: true };
-	let chooseFeature = { current: false, complete: false, disabled: true };
-	const featureTypes = ['target', 'feature', 'useless'];
-	const defaultChoice = featureTypes[1];
-	let selectedFeatures = [];
-	let targetExplanation = [];
-	// let selectedFeatures = [{'value': 'Y', 'type': defaultChoice},{'value': 'm', 'type': defaultChoice},{'value': 'n', 'type': defaultChoice}]
-	$: console.log(selectedFeatures);
-	$: featureTypeTargetCount = selectedFeatures.filter((e) => e.type === 'target').length;
+
+
 	let pond;
 	// the name to use for the internal file input
 	let name = 'upload_file'; // 这个值就对应了form-data的key
@@ -55,14 +62,14 @@
 			fileItem.abortLoad();
 			fileItem.abortProcessing();
 		} else {
-			const dataFilename = fileItem.filename;
-			filename.set(dataFilename);
-				if (browser) {
-					localStorage.setItem('filename', JSON.stringify(dataFilename));
-				}
+			// const dataFilename = fileItem.filename;
+			// filename.set(dataFilename);
+			// if (browser) {
+			// 	localStorage.setItem('filename', JSON.stringify(dataFilename));
+			// }
 			toast.push('点击上传');
-			localStorage.filename= localStorage.filename.replace("\"", "").replace("\"","")
-			console.log(dataFilename,"aaa",localStorage.filename)
+			// localStorage.filename= localStorage.filename.replace("\"", "").replace("\"","")
+			// console.log(dataFilename, localStorage.filename)
 			currentIndex = 1;
 			(checkUploadFiles.current = false), (checkUploadFiles.complete = true), (checkUploadFiles.invalid = false);
 			(analyzeDataFiles.disabled = false), (analyzeDataFiles.current = true);
@@ -76,7 +83,7 @@
 	};
 
 	function receiveData() {
-		analyzeUploadFileContentApi(localStorage.filename).then((response) => {
+		analyzeUploadFileContentApi(username).then((response) => {
 			selectedFeatures = [];
 			if (response.status == 200) {
 				// console.log('response_data:', response.data)
@@ -91,37 +98,20 @@
 					};
 					selectedFeatures.push(e);
 				}
-				for (let i = 0; i < rawData.features.length; i++) {
-					let e = rawData.features[i]['key'];
-					targetExplanation.push(e);
+				allFeatures.set(selectedFeatures)
+				if (browser) {
+					localStorage.setItem('all_features', JSON.stringify(selectedFeatures));
 				}
-				console.log(targetExplanation[0].key);
 				(analyzeDataFiles.current = false), (analyzeDataFiles.complete = true);
 				currentIndex = 2;
-				(showTable = true),
-				(chooseFeature.current = true),
-				(chooseFeature.disabled = false)
+				showTable = true
 			} else {
 				console.log('error!');
 			}
 		});
 	}
 
-	function uploadFeatureInfo() {
-		uploadFileFeatureInfoApi(localStorage.filename, selectedFeatures).then((response) => {
-			if (response.status == 200) {
-				toast.push('上传数据的特征信息成功');
-				console.log('data feature info:', response.data);
-				(chooseFeature.current = false), (chooseFeature.complete = true), (currentIndex = 4);
-				const dataTarget = targetExplanation;
-				target.set(dataTarget);
-				if (browser) {
-					localStorage.setItem('target', JSON.stringify(dataTarget));
-				}
-				goto(`/data-preprocessing`);
-			}
-		});
-	}
+
 </script>
 
 <ProgressIndicator bind:currentIndex spaceEqually preventChangeOnClick>
@@ -137,20 +127,19 @@
 		bind:complete={analyzeDataFiles.complete}
 		label="Show Table"
 	/>
-	<ProgressStep
-		bind:disabled={chooseFeature.disabled}
-		bind:current={chooseFeature.current}
-		bind:complete={chooseFeature.complete}
-		label="Upload Features"
-	/>
+
 </ProgressIndicator>
-<div class="grid grid-rows-2 grid-cols-5 gap-4">
+
+<h1 class="mt-4">数据是悟道之源</h1>
+<div class = "divider"></div>
+
+<div class="grid grid-rows-2 grid-cols-5 gap-4 mt-4">
 	<div class="row-span-2 col-span-4">
 		<FilePond
 			bind:this={pond}
 			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
 			{name}
-			server="http://localhost:8123/api/v1/files/upload"
+			server={uploadApiLink}
 			allowMultiple={true}
 			oninit={handleInit}
 			onaddfile={handleAddFile}
@@ -158,12 +147,12 @@
 		/>
 	</div>
 	<div class=" m-auto">
-		<Button on:click={receiveData} kind="tertiary">获取数据</Button>
+		<Button on:click={receiveData} kind="tertiary">上传完成后查看数据</Button>
 	</div>
 </div>
 
 {#if showTable == true}
-	<div class="container mx-auto">
+	<div class="container mx-auto w-3/4">
 		<DataTable
 			size="compact"
 			sortable
@@ -180,35 +169,14 @@
 			totalItems={rawData.content.length}
 			pageSizeInputDisabled
 		/>
-	</div>
 
-	<div class="flex flex-col items-center justify-center">
-		{#if !(featureTypeTargetCount == 1)}
-			<InlineNotification
-				hideCloseButton
-				kind="warning"
-				title="提示: "
-				subtitle="请选择预测目标, 注意预测目标只能有1个"
-			/>
-		{/if}
-		<div class="flex flex-row items-center justify-center">
-			{#each selectedFeatures as f}
-				<RadioButtonGroup
-					legendText={f.value}
-					orientation="vertical"
-					labelPosition="right"
-					bind:selected={f.type}
-				>
-					{#each featureTypes as p}
-						<RadioButton labelText={p} value={p} />
-					{/each}
-				</RadioButtonGroup>
-			{/each}
-		</div>
-		{#if featureTypeTargetCount == 1}
-			<Button on:click={uploadFeatureInfo} kind="tertiary" class="mt-4">上传数据</Button>
-		{/if}
+		<div class="mt-4"><Button on:click={()=>{goto('/data-target')}} kind="tertiary">进入下一步</Button></div>
+		
 	</div>
+{:else}
+
+	<p class="text-2xl text-center">当前数据尚未导入，导入后显示数据表格</p>
+	
 {/if}
 
 <style>
