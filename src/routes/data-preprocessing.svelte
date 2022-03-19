@@ -9,10 +9,10 @@
       InlineNotification,
       ProgressIndicator,
       ProgressStep,
-      TextInput
+      TextInput,
+      Tabs, Tab, TabContent
     } from 'carbon-components-svelte';
     import { toast } from '@zerodevx/svelte-toast';
-    import { Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { user } from '../stores/userStore';
     import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfo} from '../api/fileApi.js';
 
@@ -172,7 +172,10 @@
       header: []
     };
 
-    
+    let pagination2 = {
+      pageSize: 6,
+      page: 1
+    };
     let curData = {
       content: [],
       header: []
@@ -199,15 +202,6 @@
         }
       });
     });
-
-    console.log('len raw2', rawData.content.length)
-
-    // 显示统计信息表格
-    let pagination2 = {
-      pageSize: 6,
-      page: 1
-    };
-
 
 </script>
 
