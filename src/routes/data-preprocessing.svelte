@@ -14,7 +14,7 @@
     } from 'carbon-components-svelte';
     import { toast } from '@zerodevx/svelte-toast';
     import { user } from '../stores/userStore';
-    import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfo} from '../api/dataApi.js';
+    import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfoApi} from '../api/dataApi.js';
 
     let username;
     user.subscribe((value) => {
@@ -47,7 +47,7 @@
 
       // await sleep(1000);
 
-      await getDataStatisticsInfo(username, 'data_zscore').then((response) => {
+      await getDataStatisticsInfoApi(username, 'data_zscore').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           curData = response.data;
@@ -91,7 +91,7 @@
 
       // await sleep(1000);
 
-      await getDataStatisticsInfo(username, 'data_zscore_fill').then((response) => {
+      await getDataStatisticsInfoApi(username, 'data_zscore_fill').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           curData = response.data;
@@ -142,7 +142,7 @@
 
       // await sleep(1000);
       
-      await getDataStatisticsInfo(username, 'data_zscore_fill_filter').then((response) => {
+      await getDataStatisticsInfoApi(username, 'data_zscore_fill_filter').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           curData = response.data;
@@ -183,7 +183,7 @@
 
 
     onMount(async () => {
-      getDataStatisticsInfo(username, 'data_target_confirmed').then((response) => {
+      getDataStatisticsInfoApi(username, 'data_target_confirmed').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           rawData = response.data;

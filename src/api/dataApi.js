@@ -47,7 +47,7 @@ export const filterDataApi = async (username, filterBar) => {
 	}
 };
 
-export const getDataStatisticsInfo = async (username, step) => {
+export const getDataStatisticsInfoApi = async (username, step) => {
 	try {
 		let form = new FormData()
 		form.append('username', username)
@@ -58,6 +58,19 @@ export const getDataStatisticsInfo = async (username, step) => {
 		console.error(err);
 	}
 };
+
+export const generateHistogram = async (username, step) => {
+	try {
+		let form = new FormData()
+		form.append('username', username)
+		form.append('step', step)
+		const response = await api.post(`/api/v1/data/histogram`, form);
+		return response;
+	} catch (err) {
+		console.error(err);
+	}
+};
+
 
 // export const receiveBasicFileInfoApi = async (uploadFilename) => {
 // 	try {

@@ -21,7 +21,8 @@
 		zscoreDataApi,
 		fillDataApi,
 		filterDataApi,
-		getDataStatisticsInfo
+		getDataStatisticsInfoApi,
+		generateHistogramApi
 	} from '../api/dataApi.js';
 
 	let username;
@@ -53,7 +54,7 @@
 
 	// 在页面刚进入的时候，就展示所有的东西
 	onMount(async () => {
-		getDataStatisticsInfo(username, 'data_target_confirmed').then((response) => {
+		getDataStatisticsInfoApi(username, 'data_target_confirmed').then((response) => {
 			if (response.status == 200) {
 				console.log('response_data:', response.data);
 				rawData = response.data;
@@ -70,7 +71,7 @@
 			}
 		});
 
-		getDataStatisticsInfo(username, 'data_zscore_fill_filter').then((response) => {
+		getDataStatisticsInfoApi(username, 'data_zscore_fill_filter').then((response) => {
 			if (response.status == 200) {
 				curData = response.data;
 				//   console.log('len raw', rawData.content.length)
