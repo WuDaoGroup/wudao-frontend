@@ -23,13 +23,13 @@
     });
 
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    // function sleep(ms) {
+    //     return new Promise(resolve => setTimeout(resolve, ms));
+    // }
 
     // zscore 数据标准化部分
     async function handleZscoreData(){
-      zscoreDataApi(username).then((response) => {
+      await zscoreDataApi(username).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           toast.push('标准化成功');
@@ -45,9 +45,9 @@
         }
       });
 
-      await sleep(1000);
+      // await sleep(1000);
 
-      getDataStatisticsInfo(username, 'data_zscore').then((response) => {
+      await getDataStatisticsInfo(username, 'data_zscore').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           curData = response.data;
@@ -73,7 +73,7 @@
     $: console.log('option:', selectedFillOption)
 
     async function handleFillData(){
-      fillDataApi(username, selectedFillOption).then((response) => {
+      await fillDataApi(username, selectedFillOption).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           toast.push('数据填充成功');
@@ -89,9 +89,9 @@
         }
       });
 
-      await sleep(1000);
+      // await sleep(1000);
 
-      getDataStatisticsInfo(username, 'data_zscore_fill').then((response) => {
+      await getDataStatisticsInfo(username, 'data_zscore_fill').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           curData = response.data;
@@ -124,7 +124,7 @@
         return;
       }
 
-      filterDataApi(username, filterBar).then((response) => {
+      await filterDataApi(username, filterBar).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           toast.push('数据筛选成功');
@@ -140,9 +140,9 @@
         }
       });
 
-      await sleep(1000);
+      // await sleep(1000);
       
-      getDataStatisticsInfo(username, 'data_zscore_fill_filter').then((response) => {
+      await getDataStatisticsInfo(username, 'data_zscore_fill_filter').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           curData = response.data;
