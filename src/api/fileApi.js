@@ -47,6 +47,18 @@ export const filterDataApi = async (username, filterBar) => {
 	}
 };
 
+export const getDataStatisticsInfo = async (username, step) => {
+	try {
+		let form = new FormData()
+		form.append('username', username)
+		form.append('step', step)
+		const response = await api.post(`/api/v1/data/statistics/info`, form);
+		return response;
+	} catch (err) {
+		console.error(err);
+	}
+};
+
 // export const receiveBasicFileInfoApi = async (uploadFilename) => {
 // 	try {
 // 		const response = await api.get(`/api/v1/data/${uploadFilename}_selected_features.csv/features/info`);

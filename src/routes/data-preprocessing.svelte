@@ -1,4 +1,5 @@
 <script>
+    import { onMount } from 'svelte';
   	import {
       Button,
       DataTable,
@@ -13,7 +14,7 @@
     import { toast } from '@zerodevx/svelte-toast';
     import { Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { user } from '../stores/userStore';
-    import {zscoreDataApi, fillDataApi, filterDataApi} from '../api/fileApi.js';
+    import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfo} from '../api/fileApi.js';
 
     let username;
     user.subscribe((value) => {
@@ -22,16 +23,39 @@
     });
 
 
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     // zscore 数据标准化部分
-    function handleZscoreData(){
+    async function handleZscoreData(){
       zscoreDataApi(username).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
-          toast.push('归一化成功');
+          toast.push('标准化成功');
         } else {
 
           console.log('error!');
-          toast.push('归一化失败', {
+          toast.push('标准化失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
+
+      await sleep(1000);
+
+      getDataStatisticsInfo(username, 'data_zscore').then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          curData = response.data;
+          toast.push('统计量信息更新查询成功');
+        } else {
+
+          console.log('error!');
+          toast.push('统计量信息更新查询失败', {
             theme: {
               '--toastBackground': '#F56565',
               '--toastBarBackground': '#C53030'
@@ -48,7 +72,7 @@
     let selectedFillOption
     $: console.log('option:', selectedFillOption)
 
-    function handleFillData(){
+    async function handleFillData(){
       fillDataApi(username, selectedFillOption).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
@@ -64,13 +88,42 @@
           });
         }
       });
+
+      await sleep(1000);
+
+      getDataStatisticsInfo(username, 'data_zscore_fill').then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          curData = response.data;
+          toast.push('统计量信息更新查询成功');
+        } else {
+
+          console.log('error!');
+          toast.push('统计量信息更新查询失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
     }
 
 
     // 数据筛选部分
     let filterBar = 3.5
     $: console.log('bar', filterBar)
-    function handleFilterData(){
+    async function handleFilterData(){
+      if (filterBar < 2) {
+        toast.push('筛选阈值太小了，至少为2', {
+          theme: {
+            '--toastBackground': '#F56565',
+            '--toastBarBackground': '#C53030'
+          }
+        });
+        return;
+      }
+
       filterDataApi(username, filterBar).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
@@ -86,7 +139,75 @@
           });
         }
       });
+
+      await sleep(1000);
+      
+      getDataStatisticsInfo(username, 'data_zscore_fill_filter').then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          curData = response.data;
+          toast.push('统计量信息更新查询成功');
+        } else {
+
+          console.log('error!');
+          toast.push('统计量信息更新查询失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
     }
+
+
+    // 显示统计信息表格
+    let pagination = {
+      pageSize: 6,
+      page: 1
+    };
+
+    let rawData = {
+      content: [],
+      header: []
+    };
+
+    
+    let curData = {
+      content: [],
+      header: []
+    };
+
+
+    onMount(async () => {
+      getDataStatisticsInfo(username, 'data_target_confirmed').then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          rawData = response.data;
+          curData = rawData
+          console.log('len raw', rawData.content.length)
+          toast.push('统计量信息查询成功');
+        } else {
+
+          console.log('error!');
+          toast.push('统计量信息查询失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
+    });
+
+    console.log('len raw2', rawData.content.length)
+
+    // 显示统计信息表格
+    let pagination2 = {
+      pageSize: 6,
+      page: 1
+    };
+
 
 </script>
 
@@ -145,10 +266,10 @@
                     <div class="hero-content text-center text-neutral-content">
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">数据筛选</h2>
-                        <p class="mb-5">很多时候，数据中会出现异常分布，极大或极小，这通常是因为错误输入等原因导致。我们可根据Z-Score值的大小作筛选。</p>
+                        <p class="mb-5">很多时候，数据中会出现异常分布，极大或极小，这通常是因为错误输入等原因导致。我们可根据Z-Score值的大小作筛选。(为了筛选效果，至少为2)</p>
                         
                         <div class="flex items-end justify-between px-4 pt-4 items-center">
-                          <input type="number" placeholder="输入阈值" class="input input-bordered input-primary text-zinc-900" bind:value={filterBar}>
+                          <input type="number" min="2" placeholder="输入阈值" class="input input-bordered input-primary text-zinc-900" bind:value={filterBar}>
                           <button class="btn btn-primary" on:click={handleFilterData}>确定筛选阈值</button>
                         </div>
 
@@ -174,7 +295,7 @@
             </svelte:fragment>
         </Tabs>
     </div>
-    <div class="divider divider-horizontal"></div>
+
     <div class="grid flex-grow card rounded-box">
 
       <Tabs>
@@ -186,12 +307,57 @@
             <h2>
               初始状态的数据统计信息
             </h2>
+            <div class="divider divider-horizontal"></div>
 
+            <DataTable
+              size="compact"
+              sortable
+              headers={[
+                { key: "name", value: "name" },
+                { key: "mean", value: "mean" },
+                { key: "std", value: "std" },
+                { key: "median", value: "median" },
+                { key: "missing", value: "missing" }
+              ]}
+              pageSize={pagination.pageSize}
+              page={pagination.page}
+              rows={rawData.content}
+            />
+            <Pagination
+              bind:pageSize={pagination.pageSize}
+              bind:page={pagination.page}
+              totalItems={rawData.content.length}
+              pageSizeInputDisabled
+            />
           </TabContent>
           <TabContent>
             <h2>
               处理后的数据的统计信息
             </h2>
+            <div class="divider divider-horizontal"></div>
+
+            <DataTable
+              size="compact"
+              sortable
+              headers={[
+                { key: "name", value: "name" },
+                { key: "mean", value: "mean" },
+                { key: "std", value: "std" },
+                { key: "median", value: "median" },
+                { key: "missing", value: "missing" }
+              ]}
+              pageSize={pagination2.pageSize}
+              page={pagination2.page}
+              rows={curData.content}
+            />
+            <Pagination
+              bind:pageSize={pagination2.pageSize}
+              bind:page={pagination2.page}
+              totalItems={curData.content.length}
+              pageSizeInputDisabled
+            />
+
+
           </TabContent>
 
         </svelte:fragment>
