@@ -9,7 +9,7 @@ const defaultAllFeatures = [
 	{key: "x", name: "x", type: "feature"}];
 
 export const filename = writable("");
-export const target = writable([]);
+export const target = writable("");
 export const features = writable([]);
 export const allFeatures = writable([]);
 
