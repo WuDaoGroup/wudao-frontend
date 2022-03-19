@@ -12,7 +12,7 @@
 		ProgressStep
 	} from 'carbon-components-svelte';
     import {target, features} from '../stores/dataStore';
-    import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/fileApi';
+    import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/dataApi';
     import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../stores/userStore';
 	let username;

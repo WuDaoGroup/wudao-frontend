@@ -4,7 +4,7 @@
 	let images = [];
 	let zscores = [];
 	import { Button } from 'carbon-components-svelte';
-	import { receiveBasicFileInfoApi } from '../api/fileApi';
+	import { receiveBasicFileInfoApi } from '../api/dataApi';
 	export let showImage = false;
 	export let showZscore = false;
 	$: length = 0;

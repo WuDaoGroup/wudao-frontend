@@ -22,7 +22,7 @@
 		fillDataApi,
 		filterDataApi,
 		getDataStatisticsInfo
-	} from '../api/fileApi.js';
+	} from '../api/dataApi.js';
 
 	let username;
 	user.subscribe((value) => {

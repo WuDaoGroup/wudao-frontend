@@ -14,7 +14,7 @@
     } from 'carbon-components-svelte';
     import { toast } from '@zerodevx/svelte-toast';
     import { user } from '../stores/userStore';
-    import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfo} from '../api/fileApi.js';
+    import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfo} from '../api/dataApi.js';
 
     let username;
     user.subscribe((value) => {

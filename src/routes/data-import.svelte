@@ -1,6 +1,6 @@
 <script>
 	import {baseLink} from '../services/api.js'
-	import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/fileApi';
+	import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/dataApi';
 	import {
 		Button,
 		DataTable,

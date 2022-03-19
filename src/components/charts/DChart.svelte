@@ -2,7 +2,7 @@
 	import { Button } from 'carbon-components-svelte';
 	// Import the main module of echarts.
 	import * as echarts from 'echarts';
-	import { analyzeUploadFileContentApi } from '../../api/fileApi';
+	import { analyzeUploadFileContentApi } from '../../api/dataApi';
 	export let title = 'default title xxx';
 	// Render line chart and components.
     let rawData = {

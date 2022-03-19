@@ -7,7 +7,7 @@
 		zscoreFilterInfoApi,
 		originZscoreApi,
 		confirmOriginZscoreApi
-	} from '../api/fileApi';
+	} from '../api/dataApi';
 	import {
 		Button,
 		DataTable,
