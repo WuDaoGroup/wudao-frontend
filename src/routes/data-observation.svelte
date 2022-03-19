@@ -17,6 +17,7 @@
 	} from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../stores/userStore';
+	import {target, features} from '../stores/dataStore';
 	import {
 		zscoreDataApi,
 		fillDataApi,
@@ -29,6 +30,12 @@
 	user.subscribe((value) => {
 		username = value.username;
 		console.log('username:', username);
+	});
+
+	let selectedFeatures = []
+    features.subscribe((value) => {
+		selectedFeatures = value;
+        console.log(selectedFeatures)
 	});
 
 	// 显示统计信息表格
@@ -54,7 +61,7 @@
 
 	// 在页面刚进入的时候，就展示所有的东西
 	onMount(async () => {
-		getDataStatisticsInfoApi(username, 'data_target_confirmed').then((response) => {
+		await getDataStatisticsInfoApi(username, 'data_target_confirmed').then((response) => {
 			if (response.status == 200) {
 				console.log('response_data:', response.data);
 				rawData = response.data;
@@ -70,8 +77,24 @@
 				});
 			}
 		});
+		
+		await generateHistogramApi(username, 'data_target_confirmed').then((response) => {
+			if (response.status == 200) {
+				console.log('response_data:', response.data);
+				//   console.log('len raw', rawData.content.length)
+				toast.push('（原始数据）绘制频次统计直方图成功');
+			} else {
+				console.log('error!');
+				toast.push('（原始数据）绘制频次统计直方图失败', {
+					theme: {
+						'--toastBackground': '#F56565',
+						'--toastBarBackground': '#C53030'
+					}
+				});
+			}
+		});
 
-		getDataStatisticsInfoApi(username, 'data_zscore_fill_filter').then((response) => {
+		await getDataStatisticsInfoApi(username, 'data_zscore_fill_filter').then((response) => {
 			if (response.status == 200) {
 				curData = response.data;
 				//   console.log('len raw', rawData.content.length)
@@ -79,6 +102,22 @@
 			} else {
 				console.log('error!');
 				toast.push('处理后统计量信息查询失败', {
+					theme: {
+						'--toastBackground': '#F56565',
+						'--toastBarBackground': '#C53030'
+					}
+				});
+			}
+		});
+
+		await generateHistogramApi(username, 'data_zscore_fill_filter').then((response) => {
+			if (response.status == 200) {
+				console.log('response_data:', response.data);
+				//   console.log('len raw', rawData.content.length)
+				toast.push('（处理数据）绘制频次统计直方图成功');
+			} else {
+				console.log('error!');
+				toast.push('（处理数据）绘制频次统计直方图失败', {
 					theme: {
 						'--toastBackground': '#F56565',
 						'--toastBarBackground': '#C53030'

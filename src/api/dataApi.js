@@ -59,7 +59,7 @@ export const getDataStatisticsInfoApi = async (username, step) => {
 	}
 };
 
-export const generateHistogram = async (username, step) => {
+export const generateHistogramApi = async (username, step) => {
 	try {
 		let form = new FormData()
 		form.append('username', username)
