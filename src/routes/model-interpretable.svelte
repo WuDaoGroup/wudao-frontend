@@ -22,6 +22,7 @@
     let showPair =false;
     let featureCorrFeatures = {'object':'评分','k_number':'10'};
     let cols=['评分','投票人数','时长']
+    let colstrueorflase = [false]*(localStorage.target.lenth)
 
     function dimensionReduction(){
         dimensionReductionApi(localStorage.filename, explanationFeatures).then((response)=>{
@@ -54,6 +55,7 @@
      }
      
      function pairwiseFeatureCorr(){
+         console.log(colstrueorflase)
         pairwiseFeatureCorrApi(localStorage.filename, cols).then((response)=>{
              if(response.status == 200){
                  toast.push('特征相关具体分布生成过程完成');
@@ -122,8 +124,8 @@
         </div>
         <div class="py-6">
             <div role="group" aria-label="selectable tiles" >
-                {#each JSON.parse(localStorage.target) as p}
-                <SelectableTile>{p}</SelectableTile>
+                {#each JSON.parse(localStorage.target) as p,i}
+                <SelectableTile >{p}</SelectableTile>
 			    {/each}
               </div>
             <Button on:click={pairwiseFeatureCorr}  kind='primary'>生成特征相关具体分布</Button>
