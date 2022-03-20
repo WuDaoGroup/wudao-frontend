@@ -5,8 +5,8 @@ export const regressionTrainerApi = async ( username, testPercent, modelName ) =
 	try{
 		let form = new FormData()
 		form.append('username', username)
-		form.append('test_percent', testPercent)
-		form.append('model_name', modelName)
+		form.append('percent', testPercent)
+		form.append('method', modelName)
 		const response = await api.post(`/api/v1/models/regression/predict`, form)
 		console.log(response)
 		return response

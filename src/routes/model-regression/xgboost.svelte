@@ -66,9 +66,10 @@
         {'indicator': 'RMSE', 'value': 'training'},
         {'indicator': 'R-squared', 'value': 'training'}
       ]
-      regressionTrainerApi(username, testPercent, 'xgboost').then((response) => {
+      regressionTrainerApi(username, testPercent/100, 'xgboost').then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
+          modelResult = response.data
           toast.push('模型成功训练');
         } else {
           console.log('error!');
