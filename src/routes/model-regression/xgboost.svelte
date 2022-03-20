@@ -14,7 +14,7 @@
     } from 'carbon-components-svelte';
     import { toast } from '@zerodevx/svelte-toast';
     import { user } from '../../stores/userStore';
-    import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfoApi} from '../../api/dataApi.js';
+    import {regressionTrainerApi} from '../../api/modelApi.js';
     import { code } from '../../services/codeGen.js';
 
     let username;
@@ -28,6 +28,7 @@
     function handleSplitDataset(){
       if (testPercent >= 50 && testPercent <= 95){
         toast.push('数据集划分成功')
+        return true
       } else {
         toast.push('数据集划分失败，需在50%到95%之间', {
             theme: {
@@ -35,9 +36,51 @@
               '--toastBarBackground': '#C53030'
             }
         });
+        return false
       }
     }
 
+    // 处理模型的返回结果
+    let modelResult=[
+      {'indicator': '5%准确率', 'value': '/'},
+      {'indicator': '10%准确率', 'value': '/'},
+      {'indicator': '15%准确率', 'value': '/'},
+      {'indicator': '20%准确率', 'value': '/'},
+      {'indicator': 'MAE', 'value': '/'},
+      {'indicator': 'MSE', 'value': '/'},
+      {'indicator': 'RMSE', 'value': '/'},
+      {'indicator': 'R-squared', 'value': '/'}
+    ]
+
+    function train(){
+      if (handleSplitDataset()==false) {
+        return
+      }
+      modelResult=[
+        {'indicator': '5%准确率', 'value': 'training'},
+        {'indicator': '10%准确率', 'value': 'training'},
+        {'indicator': '15%准确率', 'value': 'training'},
+        {'indicator': '20%准确率', 'value': 'training'},
+        {'indicator': 'MAE', 'value': 'training'},
+        {'indicator': 'MSE', 'value': 'training'},
+        {'indicator': 'RMSE', 'value': 'training'},
+        {'indicator': 'R-squared', 'value': 'training'}
+      ]
+      regressionTrainerApi(username, testPercent, 'xgboost').then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          toast.push('模型成功训练');
+        } else {
+          console.log('error!');
+          toast.push('模型训练失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
+    }
 </script>
 
 
@@ -84,7 +127,7 @@
                     <div class="max-w-md">
                       <h2 class="mb-5 text-5xl font-bold">XGBoost</h2>
                       <p class="mb-5">炼丹师，开始你的训练！</p>
-                      <button class="btn btn-primary" >一键训练</button>
+                      <button class="btn btn-primary" on:click={train}>一键训练</button>
                     </div>
                   </div>
                 </div>
@@ -102,7 +145,22 @@
         <svelte:fragment slot="content">
           <TabContent>
 
+            <div class="px-4 mx-auto container align-middle">
+              <div class="grid grid-cols-4 gap-2">
 
+                {#each modelResult as result}
+                  <div class="shadow rounded-lg py-4 px-5 bg-white">
+                    <div class="flex flex-row justify-center items-center">
+                      <div>
+                        <h6 class="text-sm">{result.indicator}</h6>
+                        <h4 class="text-black text-xl font-bold text-left">{result.value}</h4>
+                      </div>
+                    </div>
+                  </div>
+                {/each}
+
+              </div>
+            </div>
 
           </TabContent>
  
