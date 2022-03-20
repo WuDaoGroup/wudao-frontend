@@ -234,7 +234,7 @@
 
 <div class="divider"></div>
 
-<div class="flex w-full">
+<div class="grid grid-cols-2 gap-4 w-full">
     <div class="grid flex-grow card rounded-box">
         <Tabs>
             <Tab label="Step 1: 数据标准化" />
