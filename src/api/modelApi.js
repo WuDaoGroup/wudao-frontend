@@ -1,6 +1,21 @@
 // AI模型相关的API接口
 import api from '../services/api.js';
 
+
+export const classificationTrainerApi = async ( username, testPercent, modelName ) => {
+	try{
+		let form = new FormData()
+		form.append('username', username)
+		form.append('percent', testPercent)
+		form.append('method', modelName)
+		const response = await api.post(`/api/v1/models/classification/predict`, form)
+		console.log(response)
+		return response
+	} catch (err){
+		console.error(err)
+	}
+}
+
 export const regressionTrainerApi = async ( username, testPercent, modelName ) => {
 	try{
 		let form = new FormData()
@@ -14,10 +29,6 @@ export const regressionTrainerApi = async ( username, testPercent, modelName ) =
 		console.error(err)
 	}
 }
-
-
-
-
 
 
 /////////////////////////////////////////////////
