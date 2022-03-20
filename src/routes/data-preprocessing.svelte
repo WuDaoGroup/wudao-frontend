@@ -235,7 +235,7 @@
 <div class="divider"></div>
 
 <div class="flex w-full">
-    <div class="grid flex-grow card rounded-box place-items-center">
+    <div class="grid flex-grow card rounded-box">
         <Tabs>
             <Tab label="Step 1: 数据标准化" />
             <Tab label="Step 2: 缺失填充" />
@@ -244,9 +244,9 @@
             <svelte:fragment slot="content">
               <TabContent>
 
-                <div class="hero" style="background-image: url(http://pic.616pic.com/bg_w1180/00/00/44/AWmPutVSXZ.jpg);">
-                    <div class="hero-overlay bg-opacity-60"></div>
-                    <div class="hero-content text-center text-neutral-content">
+                <div class="hero bg-base-200 h-96">
+                    <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
+                    <div class="hero-content text-left text-neutral-content">
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">数据标准化</h2>
                         <p class="mb-5">由于不同特征的数据的尺度、范围不同，为了消除特征的不齐性，我们需要将数据作标准化处理，使其scale到均值为0，方差为1的分布。</p>
@@ -257,9 +257,9 @@
 
               </TabContent>
               <TabContent>
-                <div class="hero" style="background-image: url(http://pic.616pic.com/bg_w1180/00/00/44/AWmPutVSXZ.jpg);">
-                    <div class="hero-overlay bg-opacity-60"></div>
-                    <div class="hero-content text-center text-neutral-content">
+                <div class="hero bg-base-200 h-96">
+                  <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
+                    <div class="hero-content text-left text-neutral-content">
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">缺失值填充</h2>
                         <p class="mb-5">对于机器学习模型而言，我们必须为每一个特征赋上值，因此需要作补全处理。常用的补全方式有：均值填充以及中位数填充。</p>
@@ -278,9 +278,9 @@
                   </div>
               </TabContent>
               <TabContent>
-                <div class="hero" style="background-image: url(http://pic.616pic.com/bg_w1180/00/00/44/AWmPutVSXZ.jpg);">
-                    <div class="hero-overlay bg-opacity-60"></div>
-                    <div class="hero-content text-center text-neutral-content">
+                <div class="hero bg-base-200 h-96">
+                  <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
+                    <div class="hero-content text-left text-neutral-content">
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">数据筛选</h2>
                         <p class="mb-5">很多时候，数据中会出现异常分布，极大或极小，这通常是因为错误输入等原因导致。我们可根据Z-Score值的大小作筛选。(为了筛选效果，至少为2)</p>
@@ -297,9 +297,9 @@
               </TabContent>
               <TabContent>
 
-                <div class="hero" style="background-image: url(http://pic.616pic.com/bg_w1180/00/00/44/AWmPutVSXZ.jpg);">
-                    <div class="hero-overlay bg-opacity-60"></div>
-                    <div class="hero-content text-center text-neutral-content">
+                <div class="hero bg-base-200 h-96">
+                  <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
+                    <div class="hero-content text-left text-neutral-content">
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">代码下载</h2>
                         <p class="mb-5">我们为您提供了当前位置所有数据处理部分的代码，以Python Jupyter Notebook的形式呈现，便于您的调试。</p>
