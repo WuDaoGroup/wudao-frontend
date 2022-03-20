@@ -1,0 +1,115 @@
+<script>
+    import { onMount } from 'svelte';
+  	import {
+      Button,
+      DataTable,
+      Pagination,
+      Select,
+      SelectItem,
+      InlineNotification,
+      ProgressIndicator,
+      ProgressStep,
+      TextInput,
+      Tabs, Tab, TabContent
+    } from 'carbon-components-svelte';
+    import { toast } from '@zerodevx/svelte-toast';
+    import { user } from '../../stores/userStore';
+    import {zscoreDataApi, fillDataApi, filterDataApi, getDataStatisticsInfoApi} from '../../api/dataApi.js';
+    import { code } from '../../services/codeGen.js';
+
+    let username;
+    user.subscribe((value) => {
+      username = value.username;
+      console.log('username:', username)
+    });
+
+    let testPercent;
+
+    function handleSplitDataset(){
+      if (testPercent >= 50 && testPercent <= 95){
+        toast.push('数据集划分成功')
+      } else {
+        toast.push('数据集划分失败，需在50%到95%之间', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+        });
+      }
+    }
+
+</script>
+
+
+
+<h1>Regression Model: XGBoost</h1>
+
+<div class="card w-full">
+  <div class="card-body">
+    <p>XGBoost是陈天奇等人开发的一个开源机器学习项目，高效地实现了GBDT算法并进行了算法和工程上的许多改进，被广泛应用在Kaggle竞赛及其他许多机器学习竞赛中并取得了不错的成绩。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="grid grid-cols-2 gap-4 w-full">
+    <div class="grid flex-grow card rounded-box">
+        <Tabs>
+            <Tab label="Step 1: 划分数据集" />
+            <Tab label="Step 2: 模型训练" />
+
+            <svelte:fragment slot="content">
+              <TabContent>
+
+                <div class="hero bg-base-200 h-96">
+                    <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
+                    <div class="hero-content text-left text-neutral-content">
+                      <div class="max-w-md">
+                        <h2 class="mb-5 text-5xl font-bold">数据集划分</h2>
+                        <p class="mb-5">在机器学习任务中，我们通常将已有的数据集划分为训练集和测试集两部分，其中训练集用来训练模型，而测试集则用来评估模型对于新样本的判别能力。</p>
+                        <div class="flex items-end justify-between px-4 pt-4 items-center">
+                          <input type="number" min="50" max="95" placeholder="输入训练集的比例(%)" class="input input-bordered input-primary text-zinc-900 w-[14rem]" bind:value={testPercent}>
+                          <button class="btn btn-primary" on:click={handleSplitDataset}>确定测试集划分比例</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+              </TabContent>
+              <TabContent>
+
+                <div class="hero bg-base-200 h-96">
+                  <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
+                  <div class="hero-content text-left text-neutral-content">
+                    <div class="max-w-md">
+                      <h2 class="mb-5 text-5xl font-bold">XGBoost</h2>
+                      <p class="mb-5">炼丹师，开始你的训练！</p>
+                      <button class="btn btn-primary" >一键训练</button>
+                    </div>
+                  </div>
+                </div>
+
+              </TabContent>
+
+            </svelte:fragment>
+        </Tabs>
+    </div>
+
+    <div class="grid flex-grow card rounded-box">
+
+      <Tabs>
+        <Tab label="模型评估结果" />
+        <svelte:fragment slot="content">
+          <TabContent>
+
+
+
+          </TabContent>
+ 
+
+        </svelte:fragment>
+    </Tabs>
+
+    </div>
+ 
+  </div>

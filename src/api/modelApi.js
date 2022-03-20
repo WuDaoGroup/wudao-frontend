@@ -1,6 +1,17 @@
 // AI模型相关的API接口
 import api from '../services/api.js';
 
+
+
+
+
+
+
+
+/////////////////////////////////////////////////
+// deprecated below
+///////////////////////////////////////////////
+
 export const xgboostRegressionData = async ( filename, percent ) => {
 	try{
 		let form = new FormData()
