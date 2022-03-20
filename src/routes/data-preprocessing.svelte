@@ -214,6 +214,10 @@
     });
 
     function handleDownload(){
+      codeFile.cells[6]['source'][2]=`df = fill_data(df, fill_type='${selectedFillOption}')\n`
+      codeFile.cells[6]['source'][3]=`df = filter_data(df, bar=${filterBar})\n`
+      code.set(codeFile)
+      console.log(codeFile.cells[6])
       const url = window.URL.createObjectURL(new Blob([JSON.stringify(codeFile)]));
       const link = document.createElement('a');
       link.href = url;
