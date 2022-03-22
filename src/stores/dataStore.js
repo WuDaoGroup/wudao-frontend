@@ -19,7 +19,7 @@ if (browser) {
 		localStorage.getItem('filename') == null ? defaultFilename : localStorage.getItem('filename')
 	);
 	target.set(
-		localStorage.getItem('target') == null ? defaultTarget : localStorage.getItem('target')
+		localStorage.getItem('target') == null ? defaultTarget : JSON.parse(localStorage.getItem('target'))
 	);
 	features.set(
 		localStorage.getItem('features') == null ? defaultFeatures : JSON.parse(localStorage.getItem('features'))
