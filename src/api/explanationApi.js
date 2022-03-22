@@ -1,8 +1,13 @@
 import api from '../services/api.js';
 
-export const dimensionReductionApi = async (data_filename,explanationFeatures)=> {
+export const dimensionReductionApi = async (username, method, dimension, target)=> {
     try{
-        const response = await api.post(`/api/v1/explanation/${data_filename}/dimension_reduction`, explanationFeatures);
+        let form = new FormData()
+        form.append('username', username)
+        form.append('method', method)
+        form.append('dimension', dimension)
+        form.append('target', target)
+        const response = await api.post(`/api/v1/explanation/reduction`, form);
         return response;
     }catch(err){
         console.error(err);

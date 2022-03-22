@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	// import { onMount } from 'svelte';
 	import {
 		Button,
 		DataTable,
@@ -16,8 +16,8 @@
 	} from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../../stores/userStore';
-	import { regressionTrainerApi } from '../../api/modelApi.js';
-	import { code } from '../../services/codeGen.js';
+	import {target, features, allFeatures} from '../../stores/dataStore';
+	import { dimensionReductionApi } from '../../api/explanationApi.js';
 
 	let username;
 	user.subscribe((value) => {
@@ -25,11 +25,33 @@
 		console.log('username:', username);
 	});
 
-	const reductionDimenstionOptions = [2, 3];
-    let selectedReductionDimenstionOption
+	let targetFeature
+    target.subscribe((value) => {
+		targetFeature = value;
+	});
 
-	function handleReduction(method) {
-		console.log('met', method)
+	const reductionDimenstionOptions = [2, 3];
+    let selectedReductionDimenstionOption = 2
+
+	let method = 'PCA'
+
+	function handleReduction() {
+		console.log('new new new')
+		console.log('hi init')
+		dimensionReductionApi(username, method, selectedReductionDimenstionOption, targetFeature).then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          toast.push(`成功 ${method} ${selectedReductionDimenstionOption} 降维`);
+        } else {
+          console.log('error!');
+          toast.push('降维失败', {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastBarBackground': '#C53030'
+            }
+          });
+        }
+      });
 	}
 
 
@@ -50,8 +72,8 @@
 <div class="grid grid-cols-2 gap-4 w-full">
 	<div class="grid flex-grow card rounded-box">
 		<Tabs>
-			<Tab label="TSNE" />
 			<Tab label="PCA" />
+			<Tab label="TSNE" />
 
 			<svelte:fragment slot="content">
 				<TabContent>
@@ -71,7 +93,7 @@
 										  </option>
 										{/each}
 									</select>
-									<button class="btn btn-primary w-[10rem]" on:click={handleReduction('PCA')}>
+									<button class="btn btn-primary w-[10rem]" on:click={()=>{method='PCA'; handleReduction()}}>
 										生成降维
 									</button>
 								</div>
@@ -96,7 +118,7 @@
 										  </option>
 										{/each}
 									</select>
-									<button class="btn btn-primary w-[10rem]" on:click={handleReduction('TSNE')}>
+									<button class="btn btn-primary w-[10rem]" on:click={()=>{method='TSNE'; handleReduction()}}>
 										生成降维
 									</button>
 								</div>
