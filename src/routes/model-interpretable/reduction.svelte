@@ -1,5 +1,5 @@
 <script>
-	// import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		Button,
 		DataTable,
@@ -14,6 +14,7 @@
 		Tab,
 		TabContent
 	} from 'carbon-components-svelte';
+	import {baseLink} from '../../services/api.js'
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../../stores/userStore';
 	import {target, features, allFeatures} from '../../stores/dataStore';
@@ -35,23 +36,49 @@
 
 	let method = 'PCA'
 
-	function handleReduction() {
-		console.log('new new new')
-		console.log('hi init')
-		dimensionReductionApi(username, method, selectedReductionDimenstionOption, targetFeature).then((response) => {
+
+	
+	let imageShow = {
+		'PCA+2': false,
+		'PCA+3': false,
+		'TSNE+2': false,
+		'TSNE+3': false,
+	}
+
+	$: images = [
+		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_PCA_2_${targetFeature}.png`, 'name':`reduction_PCA_2_${targetFeature}`, 'show': imageShow['PCA+2']},
+		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_PCA_3_${targetFeature}.png`, 'name':`reduction_PCA_3_${targetFeature}`, 'show':imageShow['PCA+3']},
+		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_TSNE_2_${targetFeature}.png`, 'name':`reduction_TSNE_2_${targetFeature}`, 'show':imageShow['TSNE+2']},
+		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_TSNE_3_${targetFeature}.png`, 'name':`reduction_TSNE_3_${targetFeature}`, 'show':imageShow['TSNE+3']},
+	]
+
+	function showImage(method, selectedReductionDimenstionOption){
+		let key = `${method}+${selectedReductionDimenstionOption}`
+		imageShow[key] = true
+		return new Promise(resolve => {
+			setTimeout(() => {
+			resolve();
+			}, 2000);
+		});
+	};
+
+	async function handleReduction() {
+		console.log(username, method, selectedReductionDimenstionOption, targetFeature)
+		await dimensionReductionApi(username, method, selectedReductionDimenstionOption, targetFeature).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           toast.push(`成功 ${method} ${selectedReductionDimenstionOption} 降维`);
         } else {
-          console.log('error!');
-          toast.push('降维失败', {
-            theme: {
-              '--toastBackground': '#F56565',
-              '--toastBarBackground': '#C53030'
-            }
-          });
-        }
-      });
+			console.log('error!');
+			toast.push('降维失败', {
+				theme: {
+				'--toastBackground': '#F56565',
+				'--toastBarBackground': '#C53030'
+				}
+			});
+			}
+		});
+		await showImage(method,selectedReductionDimenstionOption)
 	}
 
 
@@ -77,7 +104,7 @@
 
 			<svelte:fragment slot="content">
 				<TabContent>
-					<div class="hero bg-base-200 h-96">
+					<div class="hero bg-base-200 h-[32rem]">
 						<div class="hero-overlay bg-opacity-60 rounded-lg" />
 						<div class="hero-content text-left text-neutral-content">
 							<div class="max-w-md">
@@ -102,7 +129,7 @@
 					</div>
 				</TabContent>
 				<TabContent>
-					<div class="hero bg-base-200 h-96">
+					<div class="hero bg-base-200 h-[32rem]">
 						<div class="hero-overlay bg-opacity-60 rounded-lg" />
 						<div class="hero-content text-left text-neutral-content">
 							<div class="max-w-md">
@@ -137,26 +164,22 @@
 			<Tab label="TSNE 降维 2D" />
 			<Tab label="TSNE 降维 3D" />
 			<svelte:fragment slot="content">
+
+
+			{#each images as image}
 				<TabContent>
-					<div class="px-4 mx-auto container align-middle">
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							{#if image.show == true}
+								<img src={image.link} alt={image.name} onerror="if (this.src != '../../favicon.png') this.src = '../../favicon.png';" width="75%"/>
+							{:else}
+								<img src='../../favicon.png' alt='尚未加载'/>
+							{/if}
+						  </div>
 
 					</div>
 				</TabContent>
-				<TabContent>
-					<div class="px-4 mx-auto container align-middle">
-						
-					</div>
-				</TabContent>
-				<TabContent>
-					<div class="px-4 mx-auto container align-middle">
-
-					</div>
-				</TabContent>
-				<TabContent>
-					<div class="px-4 mx-auto container align-middle">
-						
-					</div>
-				</TabContent>
+			{/each}
 			</svelte:fragment>
 		</Tabs>
 	</div>
