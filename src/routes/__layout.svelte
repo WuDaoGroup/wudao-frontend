@@ -83,7 +83,7 @@
 			<SideNavMenuItem href="{base}/model-interpretable/reduction" text="数据降维" />
 			<SideNavMenuItem href="{base}/model-interpretable/correlation" text="特征关联" />
 		</SideNavMenu>
-		<SideNavLink text="可解释性" href="{base}/model-interpretable" />
+		<!-- <SideNavLink text="可解释性" href="{base}/model-interpretable" /> -->
 		<SideNavLink text="因果推断" href="{base}/causal" />
 	</SideNavItems>
 </SideNav>
