@@ -39,11 +39,11 @@ export const generateCorrelationTargetApi = async (username, kNumber, target)=> 
     }
 };
 
-export const generateCorrelationPairwiseApi = async (username, features)=> {
+export const generateCorrelationPairwiseApi = async (username)=> {
     try{
         let form = new FormData()
         form.append('username', username)
-        form.append('features', features)
+        // form.append('features', features)
         const response = await api.post(`/api/v1/explanation/correlation/pairwise`, form);
         return response;
     }catch(err){

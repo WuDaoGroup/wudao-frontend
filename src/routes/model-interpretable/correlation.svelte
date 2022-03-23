@@ -78,7 +78,7 @@
 	}
 
 	async function handleCorrelationPairwise() {
-		await generateCorrelationPairwiseApi(username, featuresList).then((response) => {
+		await generateCorrelationPairwiseApi(username).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
           toast.push(response.data.message);
@@ -170,7 +170,7 @@
 							<div class="max-w-md">
 								<h2 class="mb-5 text-5xl font-bold">Pairwise 相关矩阵</h2>
 								<p class="mb-5">
-									计算两两特征之间的相关矩阵。现已为您挑选目标特征及随机若干个特征进行分析。
+									计算两两特征之间的相关矩阵。现支持为您分析出所有特征两两之间的关系。
 								</p>
 								<div class="flex items-end justify-center px-4 pt-4 items-center">
 									<button class="btn btn-primary w-[10rem]" on:click={()=>{handleCorrelationPairwise()}}>
