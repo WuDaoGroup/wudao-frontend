@@ -46,6 +46,7 @@
           toast.push(response.data.message);
 		  let image = document.getElementById('correlation-feature-image');
 		  image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_feature_${selectedCorrelationMethodOption}.png`
+		  image.alt = `features' correlation matrix`
         } else {
 			console.log('error!');
 			toast.push('fail!', {
@@ -67,6 +68,7 @@
           toast.push(response.data.message);
 		  let image = document.getElementById('correlation-target-image');
 		  image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_target_${targetFeature}_${kNumber}.png`
+		  image.alt = `target feature's correlation matrix`
         } else {
 			console.log('error!');
 			toast.push('fail!', {
@@ -87,6 +89,7 @@
           toast.push(response.data.message);
 		  let image = document.getElementById('correlation-pairwise-image');
 		  image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_feature_pairwise.png`
+		  image.alt = `pairwise features' correlation matrix`
         } else {
 			console.log('error!');
 			toast.push('fail!', {
