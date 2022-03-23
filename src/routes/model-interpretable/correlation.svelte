@@ -39,6 +39,7 @@
     let selectedCorrelationMethodOption = 'pearson'
 	
 	async function handleCorrelationFeature() {
+		toast.push('正在生成feature correlation matrix，请耐心等待');
 		await generateCorrelationFeatureApi(username, selectedCorrelationMethodOption).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
@@ -59,6 +60,7 @@
 
 	let kNumber = 2
 	async function handleCorrelationTarget() {
+		toast.push('正在生成target correlation matrix，请耐心等待');
 		await generateCorrelationTargetApi(username, kNumber, targetFeature).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
@@ -78,6 +80,7 @@
 	}
 
 	async function handleCorrelationPairwise() {
+		toast.push('正在生成pairwise correlation matrix，请耐心等待');
 		await generateCorrelationPairwiseApi(username).then((response) => {
         if (response.status == 200) {
           console.log('response_data:', response.data);
