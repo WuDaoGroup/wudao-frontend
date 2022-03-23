@@ -36,31 +36,29 @@
 
 	let method = 'PCA'
 
+	// let imageShow = {
+	// 	'PCA+2': false,
+	// 	'PCA+3': false,
+	// 	'TSNE+2': false,
+	// 	'TSNE+3': false,
+	// }
 
-	
-	let imageShow = {
-		'PCA+2': false,
-		'PCA+3': false,
-		'TSNE+2': false,
-		'TSNE+3': false,
-	}
+	// $: images = [
+	// 	{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_PCA_2_${targetFeature}.png`, 'name':`reduction_PCA_2_${targetFeature}`, 'show': imageShow['PCA+2']},
+	// 	{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_PCA_3_${targetFeature}.png`, 'name':`reduction_PCA_3_${targetFeature}`, 'show':imageShow['PCA+3']},
+	// 	{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_TSNE_2_${targetFeature}.png`, 'name':`reduction_TSNE_2_${targetFeature}`, 'show':imageShow['TSNE+2']},
+	// 	{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_TSNE_3_${targetFeature}.png`, 'name':`reduction_TSNE_3_${targetFeature}`, 'show':imageShow['TSNE+3']},
+	// ]
 
-	$: images = [
-		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_PCA_2_${targetFeature}.png`, 'name':`reduction_PCA_2_${targetFeature}`, 'show': imageShow['PCA+2']},
-		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_PCA_3_${targetFeature}.png`, 'name':`reduction_PCA_3_${targetFeature}`, 'show':imageShow['PCA+3']},
-		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_TSNE_2_${targetFeature}.png`, 'name':`reduction_TSNE_2_${targetFeature}`, 'show':imageShow['TSNE+2']},
-		{'link':`${baseLink}/static/data/${username}/images/explanation/reduction_TSNE_3_${targetFeature}.png`, 'name':`reduction_TSNE_3_${targetFeature}`, 'show':imageShow['TSNE+3']},
-	]
-
-	function showImage(method, selectedReductionDimenstionOption){
-		let key = `${method}+${selectedReductionDimenstionOption}`
-		imageShow[key] = true
-		return new Promise(resolve => {
-			setTimeout(() => {
-			resolve();
-			}, 2000);
-		});
-	};
+	// function showImage(method, selectedReductionDimenstionOption){
+	// 	let key = `${method}+${selectedReductionDimenstionOption}`
+	// 	imageShow[key] = true
+	// 	return new Promise(resolve => {
+	// 		setTimeout(() => {
+	// 		resolve();
+	// 		}, 2000);
+	// 	});
+	// };
 
 	async function handleReduction() {
 		console.log(username, method, selectedReductionDimenstionOption, targetFeature)
@@ -68,6 +66,14 @@
         if (response.status == 200) {
           console.log('response_data:', response.data);
           toast.push(`成功 ${method} ${selectedReductionDimenstionOption} 降维`);
+
+		  let imageId = `${method}-${selectedReductionDimenstionOption}d` // alt as well
+		  let imageSrc = `${baseLink}/static/data/${username}/images/explanation/reduction_${method}_${selectedReductionDimenstionOption}_${targetFeature}.png`
+		  let image = document.getElementById(imageId)
+		  image.src = imageSrc
+		  image.alt = imageId
+
+
         } else {
 			console.log('error!');
 			toast.push('降维失败', {
@@ -78,7 +84,7 @@
 			});
 			}
 		});
-		await showImage(method,selectedReductionDimenstionOption)
+		// await showImage(method,selectedReductionDimenstionOption)
 	}
 
 
@@ -166,7 +172,7 @@
 			<svelte:fragment slot="content">
 
 
-			{#each images as image}
+			<!-- {#each images as image}
 				<TabContent>
 					<div class="px-4 mx-auto container align-middle h-[32rem]">
 						<div class="flex flex-row justify-center items-center">
@@ -179,7 +185,41 @@
 
 					</div>
 				</TabContent>
-			{/each}
+			{/each} -->
+
+			<TabContent>
+				<div class="px-4 mx-auto container align-middle h-[32rem]">
+					<div class="flex flex-row justify-center items-center">
+						<img src='../../favicon.png' alt='尚未加载' id="PCA-2d" width="75%"/>
+					  </div>
+				</div>
+			</TabContent>
+
+			<TabContent>
+				<div class="px-4 mx-auto container align-middle h-[32rem]">
+					<div class="flex flex-row justify-center items-center">
+						<img src='../../favicon.png' alt='尚未加载' id="PCA-3d" width="75%"/>
+					  </div>
+				</div>
+			</TabContent>
+
+
+			<TabContent>
+				<div class="px-4 mx-auto container align-middle h-[32rem]">
+					<div class="flex flex-row justify-center items-center">
+						<img src='../../favicon.png' alt='尚未加载' id="TSNE-2d" width="75%"/>
+					  </div>
+				</div>
+			</TabContent>
+
+			<TabContent>
+				<div class="px-4 mx-auto container align-middle h-[32rem]">
+					<div class="flex flex-row justify-center items-center">
+						<img src='../../favicon.png' alt='尚未加载' id="TSNE-3d" width="75%"/>
+					  </div>
+				</div>
+			</TabContent>
+
 			</svelte:fragment>
 		</Tabs>
 	</div>
