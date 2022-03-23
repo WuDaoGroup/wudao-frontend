@@ -77,6 +77,25 @@
 		});
 	}
 
+	async function handleCorrelationPairwise() {
+		await generateCorrelationPairwiseApi(username, featuresList).then((response) => {
+        if (response.status == 200) {
+          console.log('response_data:', response.data);
+          toast.push(response.data.message);
+		  let image = document.getElementById('correlation-pairwise-image');
+		  image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_feature_pairwise.png`
+        } else {
+			console.log('error!');
+			toast.push('fail!', {
+				theme: {
+				'--toastBackground': '#F56565',
+				'--toastBarBackground': '#C53030'
+				}
+			});
+			}
+		});
+	}
+
 
 </script>
 
@@ -137,6 +156,24 @@
 								<div class="flex items-end justify-between px-4 pt-4 items-center">
 									<input type="number" min="2" max="{featuresList.length}" placeholder="输入阈值" class="input input-bordered input-primary text-zinc-900 w-[10rem]" bind:value={kNumber}>
 									<button class="btn btn-primary w-[10rem]" on:click={()=>{handleCorrelationTarget()}}>
+										生成Correlation Matrix
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</TabContent>
+				<TabContent>
+					<div class="hero bg-base-200 h-[32rem]">
+						<div class="hero-overlay bg-opacity-60 rounded-lg" />
+						<div class="hero-content text-left text-neutral-content">
+							<div class="max-w-md">
+								<h2 class="mb-5 text-5xl font-bold">Pairwise 相关矩阵</h2>
+								<p class="mb-5">
+									计算两两特征之间的相关矩阵。现已为您挑选目标特征及随机若干个特征进行分析。
+								</p>
+								<div class="flex items-end justify-center px-4 pt-4 items-center">
+									<button class="btn btn-primary w-[10rem]" on:click={()=>{handleCorrelationPairwise()}}>
 										生成Correlation Matrix
 									</button>
 								</div>
