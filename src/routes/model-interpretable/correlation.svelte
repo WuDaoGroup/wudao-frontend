@@ -151,10 +151,10 @@
 							<div class="max-w-md">
 								<h2 class="mb-5 text-5xl font-bold">目标 ({targetFeature}) 相关矩阵</h2>
 								<p class="mb-5">
-									对预测目标及其 K 个相关特征计算相关矩阵，默认使用方法为 spearman。你一共有 {featuresList.length} 个特征，请输入你想要计算的相关特征数量 (2~{featuresList.length}个)。
+									对预测目标及其 K 个相关特征计算相关矩阵，默认使用方法为 spearman。你一共有 {featuresList.length+1} 个特征(含目标特征)，请输入你想要计算的相关特征数量 (2~{featuresList.length+1}个)。
 								</p>
 								<div class="flex items-end justify-between px-4 pt-4 items-center">
-									<input type="number" min="2" max="{featuresList.length}" placeholder="输入阈值" class="input input-bordered input-primary text-zinc-900 w-[10rem]" bind:value={kNumber}>
+									<input type="number" min="2" max="{featuresList.length+1}" placeholder="输入阈值" class="input input-bordered input-primary text-zinc-900 w-[10rem]" bind:value={kNumber}>
 									<button class="btn btn-primary w-[10rem]" on:click={()=>{handleCorrelationTarget()}}>
 										生成Correlation Matrix
 									</button>
