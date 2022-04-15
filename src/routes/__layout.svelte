@@ -84,6 +84,9 @@
 			<SideNavMenuItem href="{base}/model-interpretable/correlation" text="特征关联" />
 		</SideNavMenu>
 		<!-- <SideNavLink text="可解释性" href="{base}/model-interpretable" /> -->
+		<SideNavMenu text="因果推断">
+			<SideNavMenuItem href="{base}/model-causal/dowhy" text="DoWhy" />
+		</SideNavMenu>
 		<SideNavLink text="因果推断" href="{base}/causal" />
 	</SideNavItems>
 </SideNav>
