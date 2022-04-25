@@ -70,6 +70,7 @@
 			<SideNavMenuItem href="{base}/model-classification/decision-tree" text="决策树" />
 			<SideNavMenuItem href="{base}/model-classification/adaboost" text="AdaBoost" />
 			<SideNavMenuItem href="{base}/model-classification/naive-bayes" text="朴素贝叶斯" />
+			<SideNavMenuItem href="{base}/model-classification/auto-sklearn" text="Auto-SkLearn" />
 			<!--
 			<SideNavMenuItem href="{base}/model-classification/xgboostClassification" text="XGBoost" /> -->
 			<!-- <SideNavMenuItem href="/" text="Link 2" />
@@ -79,7 +80,7 @@
 			<SideNavMenuItem href="{base}/model-regression/xgboost" text="XGBoost" />
 			<SideNavMenuItem href="{base}/model-regression/svm" text="SVM" />
 			<SideNavMenuItem href="{base}/model-regression/voting" text="Voting Regression" />
-			<SideNavMenuItem href="{base}/model-regression/lightgbm" text="LightGBM" />
+			<!-- <SideNavMenuItem href="{base}/model-regression/lightgbm" text="LightGBM" /> -->
 			<SideNavMenuItem href="{base}/model-regression/catboost" text="CatBoost" />
 			<SideNavMenuItem href="{base}/model-regression/auto-sklearn" text="Auto-SkLearn" />
 			<!-- <SideNavMenuItem href="{base}/model-regression/ordinaryLeastSquares" text="Ordinary Least Squares" /> -->
