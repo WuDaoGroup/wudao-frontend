@@ -35,7 +35,7 @@
 
 	let selectedFeatures = []
     allFeatures.subscribe((value) => {
-		selectedFeatures = value;
+		selectedFeatures = value.filter((e) => e.type != 'useless');
         console.log(selectedFeatures)
 	});
 
