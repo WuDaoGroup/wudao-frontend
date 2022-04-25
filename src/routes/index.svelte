@@ -1,5 +1,17 @@
+
+
+<script>
+	import { goto } from '$app/navigation';
+</script>
+
 <main>
-	<h1>基于机器学习和因果推断的大数据分析可视化云平台</h1>
+
+	<div class="flex justify-between ...">
+		<h1>结构化数据预测分析平台</h1>
+		<button class="btn btn-outline btn-info" on:click={() => goto(`auto-pipeline/`)}
+			>一键预测入口</button
+		>
+	</div>
 
 	<div class="divider"></div>
 
