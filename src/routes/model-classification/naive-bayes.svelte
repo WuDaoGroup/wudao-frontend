@@ -74,7 +74,7 @@
 
 
 
-<h1>Regression Model: 朴素贝叶斯</h1>
+<h1>Classification Model: 朴素贝叶斯</h1>
 
 <div class="card w-full">
   <div class="card-body">

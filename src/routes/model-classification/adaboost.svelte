@@ -74,7 +74,7 @@
 
 
 
-<h1>Regression Model: AdaBoost</h1>
+<h1>Classification Model: AdaBoost</h1>
 
 <div class="card w-full">
   <div class="card-body">

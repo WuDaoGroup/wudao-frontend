@@ -74,7 +74,7 @@
 
 
 
-<h1>Regression Model: 决策树</h1>
+<h1>Classification Model: 决策树</h1>
 
 <div class="card w-full">
   <div class="card-body">

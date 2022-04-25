@@ -74,7 +74,7 @@
 
 
 
-<h1>Regression Model: Auto-Sklearn</h1>
+<h1>Classification Model: Auto-Sklearn</h1>
 
 <div class="card w-full">
   <div class="card-body">
