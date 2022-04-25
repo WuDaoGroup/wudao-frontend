@@ -90,7 +90,7 @@
 
 <div class="card w-full">
 <div class="card-body"> 
-  <p>CatBoost是一种基于对称决策树(oblivious trees)算法的参数少、支持类别型变量和高准确性的GBDT框架,能够高效合理地处理类别型特征,</p>
+  <p>CatBoost是一种基于对称决策树(oblivious trees)算法的参数少、支持类别型变量和高准确性的GBDT框架，能够高效合理地处理类别型特征。</p>
 </div>
 </div>
 
