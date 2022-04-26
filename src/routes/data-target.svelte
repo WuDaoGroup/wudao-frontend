@@ -33,7 +33,7 @@
 	});
     console.log('features:', features)
     $: console.log(rows)
-    const featureTypes = ['target', 'feature', 'useless'];
+    const featureTypes = ['target', 'feature', '暂不需要'];
 	// let targetExplanation = [];
 
 	$: featureTypeTargetCount = rows.filter((e) => e.type === 'target').length;
@@ -60,6 +60,16 @@
 		});
 	}
 
+    function convertLabel(label) {
+        if (label === 'target') {
+            return '预测目标';
+        } else if (label === 'feature') {
+            return '特征变量';
+        } else {
+            return label;
+        }
+    }
+
 </script>
 
 
@@ -79,7 +89,7 @@
         <div class="alert shadow-lg ml-8">
             <div>
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span class="flex items-center ml-1">提示：请选择预测目标和特征信息, 注意预测目标只能有1个</span>
+            <span class="flex items-center ml-1">提示：请选择预测目标和特征变量, 注意预测目标只能有1个</span>
             </div>
         </div>
     {/if}
@@ -119,7 +129,7 @@
                         bind:selected={row.type}
                     >
                         {#each featureTypes as p}
-                            <RadioButton labelText={p} value={p} />
+                            <RadioButton labelText={convertLabel(p)} value={p} />
                         {/each}
                     </RadioButtonGroup>
                 </div>
