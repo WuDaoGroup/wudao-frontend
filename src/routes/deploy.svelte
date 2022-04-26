@@ -91,7 +91,12 @@
 </script>
 
 
-<h1>应用已部署模型完成预测</h1>
+<div class="flex justify-between ...">
+  <h1>应用已部署模型完成预测</h1>
+  <button class="btn btn-outline btn-info" on:click={() => goto(`auto-pipeline/`)}
+      >返回</button
+  >
+</div>
 
 <div class="divider"></div>
 
