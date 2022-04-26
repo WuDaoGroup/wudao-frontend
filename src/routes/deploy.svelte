@@ -70,7 +70,7 @@
     }
 
     // 当前状态
-    let currentState = '等待训练...';
+    let currentState = '等待预测...';
 
     // 处理模型的返回结果
     let modelResult=[]
@@ -79,17 +79,17 @@
       if (handleSplitDataset()==false) {
         return
       }
-      currentState = '训练中...'
+      currentState = '预测中...'
       autogluonTrainerApi(username, testPercent/100, 'svm').then((response) => {
         
         if (response.status == 200) {
-          currentState = '完成训练'
+          currentState = '完成预测'
           console.log('response_data:', response.data);
           modelResult = response.data
-          toast.push('模型成功训练');
+          toast.push('模型成功预测');
         } else {
           console.log('error!');
-          toast.push('模型训练失败', {
+          toast.push('模型预测失败', {
             theme: {
               '--toastBackground': '#F56565',
               '--toastBarBackground': '#C53030'
@@ -102,18 +102,13 @@
 </script>
 
 
-<div class="flex justify-between ...">
-    <h1>自动机器学习预测分析</h1>
-    <button class="btn btn-outline btn-info" on:click={() => goto(`deploy/`)}
-        >部署测试</button
-    >
-</div>
+<h1>应用已部署模型完成预测</h1>
 
 <div class="divider"></div>
 
 <FilePond
 bind:this={pond}
-labelIdle='请先上传数据 Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
+labelIdle='请先上传待预测数据 Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
 {name}
 server={uploadApiLink}
 allowMultiple={true}
@@ -125,36 +120,20 @@ instantUpload={false}
 <div class="grid grid-cols-2 gap-4 w-full">
     <div class="grid flex-grow card rounded-box">
         <Tabs>
-            <Tab label="Step 1: 划分数据集" />
-            <Tab label="Step 2: 模型训练" />
+
+            <Tab label="应用预测" />
 
             <svelte:fragment slot="content">
-              <TabContent>
 
-                <div class="hero bg-base-200 h-96">
-                    <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
-                    <div class="hero-content text-left text-neutral-content">
-                      <div class="max-w-md">
-                        <h2 class="mb-5 text-5xl font-bold">数据集划分</h2>
-                        <p class="mb-5">在机器学习任务中，我们通常将已有的数据集划分为训练集和测试集两部分，其中训练集用来训练模型，而测试集则用来评估模型对于新样本的判别能力。</p>
-                        <div class="flex items-end justify-between px-4 pt-4 items-center">
-                          <input type="number" min="50" max="95" placeholder="输入训练集的比例(%)" class="input input-bordered input-primary text-zinc-900 w-[14rem]" bind:value={testPercent}>
-                          <button class="btn btn-primary" on:click={handleSplitDataset}>确定测试集划分比例</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-              </TabContent>
               <TabContent>
 
                 <div class="hero bg-base-200 h-96">
                   <div class="hero-overlay bg-opacity-60 rounded-lg"></div>
                   <div class="hero-content text-left text-neutral-content">
                     <div class="max-w-md">
-                      <h2 class="mb-5 text-5xl font-bold">智能判断预测任务</h2>
+                      <h2 class="mb-5 text-5xl font-bold">实现在线预测</h2>
                       <p class="mb-5">Powered by AutoGluon, 集成了CatBoost, LightGBM, 神经网络, XGBoost, KNN等各种训练方法, AutoML集成学习, 无需调参即有SOTA comparable的结果!</p>
-                      <button class="btn btn-primary" on:click={train}>一键训练</button>
+                      <button class="btn btn-primary" on:click={train}>一键预测</button>
                     </div>
                   </div>
                 </div>
@@ -172,7 +151,7 @@ instantUpload={false}
         <svelte:fragment slot="content">
           <TabContent>
 
-            {#if currentState != '完成训练'}
+            {#if currentState != '完成预测'}
               <div class="alert shadow-lg mt-4">
                 <div>
                 <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
