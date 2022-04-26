@@ -93,7 +93,6 @@
 <div class="divider"></div>
 
 <div class="flex flex-col items-center justify-center">
-    <div class="flex flex-col items-center justify-center">
         <!-- {#each selectedFeatures as f}
             <RadioButtonGroup
                 legendText={f.value}
@@ -112,20 +111,22 @@
             <tbody>
               {#each rows as row, index (row)}
                 <Row {index}>
-                <RadioButtonGroup
-                    legendText={row.value}
-                    orientation="horizontal"
-                    labelPosition="right"
-                    bind:selected={row.type}
-                >
-                    {#each featureTypes as p}
-                        <RadioButton labelText={p} value={p} />
-                    {/each}
-                </RadioButtonGroup>
+                <div class="flex flex-row items-center justify-center mt-4">
+                    <h2 class="w-64 italic underline decoration-sky-500/90">{row.value}</h2>
+                    <RadioButtonGroup
+                        orientation="horizontal"
+                        labelPosition="right"
+                        bind:selected={row.type}
+                    >
+                        {#each featureTypes as p}
+                            <RadioButton labelText={p} value={p} />
+                        {/each}
+                    </RadioButtonGroup>
+                </div>
+
                 </Row>
               {/each}
             </tbody>
         </Table>
-    </div>
     <!-- <Pagination totalItems={102} pageSizes={[10, 15, 20]} /> -->
 </div>
