@@ -69,6 +69,9 @@
       }
     }
 
+    // 当前状态
+    let currentState = '等待训练...';
+
     // 处理模型的返回结果
     let modelResult=[]
 
@@ -76,8 +79,11 @@
       if (handleSplitDataset()==false) {
         return
       }
+      currentState = '训练中...'
       autogluonTrainerApi(username, testPercent/100, 'svm').then((response) => {
+        
         if (response.status == 200) {
+          currentState = '完成训练'
           console.log('response_data:', response.data);
           modelResult = response.data
           toast.push('模型成功训练');
@@ -161,22 +167,32 @@ instantUpload={false}
         <svelte:fragment slot="content">
           <TabContent>
 
-            <div class="px-4 mx-auto container align-middle">
-              <div class="grid grid-cols-4 gap-2">
-
-                {#each modelResult as result}
-                  <div class="shadow rounded-lg py-4 px-5 bg-white">
-                    <div class="flex flex-row justify-center items-center">
-                      <div>
-                        <h6 class="text-sm">{result.indicator}</h6>
-                        <h4 class="text-black text-xl font-bold text-left">{result.value}</h4>
-                      </div>
-                    </div>
-                  </div>
-                {/each}
-
+            {#if currentState != '完成训练'}
+              <div class="alert shadow-lg mt-4">
+                <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="flex items-center ml-1">{currentState}</span>
+                </div>
               </div>
-            </div>
+            {:else}
+                <div class="px-4 mx-auto container align-middle">
+                <div class="grid grid-cols-4 gap-2">
+
+                    {#each modelResult as result}
+                    <div class="shadow rounded-lg py-4 px-5 bg-white">
+                        <div class="flex flex-row justify-center items-center">
+                        <div>
+                            <h6 class="text-sm">{result.indicator}</h6>
+                            <h4 class="text-black text-xl font-bold text-left">{result.value}</h4>
+                        </div>
+                        </div>
+                    </div>
+                    {/each}
+
+                </div>
+                </div>
+            {/if}
+
 
           </TabContent>
  
