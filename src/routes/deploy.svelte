@@ -10,14 +10,15 @@
 		InlineNotification,
 		ProgressIndicator,
 		ProgressStep,
-        Tabs, Tab, TabContent
+    Tabs, Tab, TabContent,
+    Loading
 	} from 'carbon-components-svelte';
 	import { browser } from '$app/env';
 	import { toast } from '@zerodevx/svelte-toast';
 	// import { dataHeader, rowData } from '../stores/dataStore';
 	import FilePond from 'svelte-filepond';
 	
-    import {autogluonTrainerApi} from '../api/modelApi.js';
+  import {autogluonPredictorApi} from '../api/modelApi.js';
 
 	import { filename, target, features, allFeatures } from '../stores/dataStore';
 	import { goto } from '$app/navigation';
@@ -52,23 +53,6 @@
 		}
 	}
 
-    let testPercent;
-
-    function handleSplitDataset(){
-      if (testPercent >= 50 && testPercent <= 95){
-        toast.push('数据集划分成功')
-        return true
-      } else {
-        toast.push('数据集划分失败，需在50%到95%之间', {
-            theme: {
-              '--toastBackground': '#F56565',
-              '--toastBarBackground': '#C53030'
-            }
-        });
-        return false
-      }
-    }
-
     // 当前状态
     let currentState = '等待预测...';
 
@@ -76,11 +60,8 @@
     let modelResult=[]
 
     function train(){
-      if (handleSplitDataset()==false) {
-        return
-      }
       currentState = '预测中...'
-      autogluonTrainerApi(username, testPercent/100, 'svm').then((response) => {
+      autogluonPredictorApi(username).then((response) => {
         
         if (response.status == 200) {
           currentState = '完成预测'
@@ -99,6 +80,14 @@
       });
     }
 
+    function handleDownload(){
+      const url = `${baseLink}/static/data/a/data_pred.csv`;
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'data_pred.csv'); //or any other extension
+      document.body.appendChild(link);
+      link.click();
+    }
 </script>
 
 
@@ -151,32 +140,23 @@ instantUpload={false}
         <svelte:fragment slot="content">
           <TabContent>
 
-            {#if currentState != '完成预测'}
-              <div class="alert shadow-lg mt-4">
-                <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span class="flex items-center ml-1">{currentState}</span>
-                </div>
+
+            <div class="alert shadow-lg mt-4">
+              <div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span class="flex items-center ml-1">{currentState}</span>
               </div>
-            {:else}
-                <div class="px-4 mx-auto container align-middle">
-                <div class="grid grid-cols-4 gap-2">
+            </div>
 
-                    {#each modelResult as result}
-                    <div class="shadow rounded-lg py-4 px-5 bg-white">
-                        <div class="flex flex-row justify-center items-center">
-                        <div>
-                            <h6 class="text-sm">{result.indicator}</h6>
-                            <h4 class="text-black text-xl font-bold text-left">{result.value}</h4>
-                        </div>
-                        </div>
-                    </div>
-                    {/each}
+            <div class="flex flex-col items-center justify-center mt-8">
 
-                </div>
-                </div>
-            {/if}
+              {#if currentState != '完成预测'}
+                <Loading withOverlay={false} />
+              {:else}
+                <button class="btn btn-primary" on:click={handleDownload}>下载预测结果数据文件</button>
+              {/if}
 
+            </div>
 
           </TabContent>
  

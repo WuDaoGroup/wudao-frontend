@@ -43,6 +43,18 @@ export const autogluonTrainerApi = async ( username, testPercent ) => {
 	}
 }
 
+export const autogluonPredictorApi = async ( username ) => {
+	try{
+		let form = new FormData()
+		form.append('username', username)
+		const response = await api.post(`/api/v1/models/autogluon/test`, form)
+		console.log(response)
+		return response
+	} catch (err){
+		console.error(err)
+	}
+}
+
 
 /////////////////////////////////////////////////
 // deprecated below
