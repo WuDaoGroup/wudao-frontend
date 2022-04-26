@@ -61,12 +61,19 @@
 
 <div class="flex flex-col items-center justify-center">
     {#if !(featureTypeTargetCount == 1)}
-        <InlineNotification
+        <!-- <InlineNotification
             hideCloseButton
             kind="warning"
             title="提示: "
             subtitle="请选择预测目标和特征信息, 注意预测目标只能有1个"
-        />
+        /> -->
+
+        <div class="alert shadow-lg mt-4 mb-4">
+            <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span class="flex items-center ml-1">提示：请选择预测目标和特征信息, 注意预测目标只能有1个</span>
+            </div>
+        </div>
     {/if}
     <div class="flex flex-col items-center justify-center">
         {#each selectedFeatures as f}
@@ -82,6 +89,7 @@
             </RadioButtonGroup>
         {/each}
     </div>
+    <Pagination totalItems={102} pageSizes={[10, 15, 20]} />
     {#if featureTypeTargetCount == 1}
         <div class="mt-4">
             <Button on:click={uploadFeatureInfo} kind="tertiary" class="mt-4">上传特征标注</Button>
