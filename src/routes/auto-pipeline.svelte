@@ -80,7 +80,7 @@
         return
       }
       currentState = '训练中...'
-      autogluonTrainerApi(username, testPercent/100, 'svm').then((response) => {
+      autogluonTrainerApi(username, testPercent/100).then((response) => {
         
         if (response.status == 200) {
           currentState = '完成训练'
