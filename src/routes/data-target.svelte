@@ -121,7 +121,7 @@
             <tbody>
               {#each rows as row, index (row)}
                 <Row {index}>
-                <div class="flex flex-row items-center justify-center mt-4">
+                <div class="flex flex-row items-center justify-center mt-4 ml-4">
                     <h2 class="w-64 italic underline decoration-sky-500/90">{row.value}</h2>
                     <RadioButtonGroup
                         orientation="horizontal"
