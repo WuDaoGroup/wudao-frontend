@@ -55,13 +55,13 @@
           currentState = '完成生成'
           console.log('response_data:', response.data);
           modelResult = response.data
-          toast.push('模型成功生成');
-          let image = document.getElementById('notears-image');
-          image.src = `${baseLink}/static/data/${username}/images/causal/notears.png`
-          image.alt = `AUROC Curve`
+          toast.push('因果图成功生成');
+          // let image = document.getElementById('notears-image');
+          // image.src = `${baseLink}/static/data/${username}/images/causal/notears.png`
+          // image.alt = `NOTEARS Figure`
         } else {
           console.log('error!');
-          toast.push('模型生成失败', {
+          toast.push('因果图生成失败', {
             theme: {
               '--toastBackground': '#F56565',
               '--toastBarBackground': '#C53030'
@@ -135,21 +135,21 @@
           <svelte:fragment slot="content">
             <TabContent>
 
-              {#if currentState != '完成生成'}
-                <div class="alert shadow-lg mt-4">
-                  <div>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  <span class="flex items-center ml-1">{currentState}</span>
-                  </div>
+              <div class="alert shadow-lg mt-4">
+                <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="flex items-center ml-1">{currentState}</span>
                 </div>
+              </div>
+              {#if currentState != '完成生成'}
                 <div class="flex flex-col items-center justify-center dmt-8">
                     <Loading withOverlay={false} />
                 </div>
               {:else}
                   <div class="px-4 mx-auto container align-middle">
-                    <div class="px-4 mx-auto container align-middle h-[32rem]">
+                    <div class="px-4 mx-auto container align-middle h-[32rem] mt-6">
                       <div class="flex flex-row justify-center items-center">
-                        <img src='../../favicon.png' alt='尚未加载' id='notears-image'/>
+                        <img src='{baseLink}/static/data/{username}/images/causal/notears.png' alt='NOTEARS Figure' id='notears-image'/>
                       </div>
                     </div>
                   </div>
