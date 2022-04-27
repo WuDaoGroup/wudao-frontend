@@ -130,10 +130,24 @@
 
 </ProgressIndicator>
 
-<h1 class="mt-4">数据是悟道之源</h1>
+<div class="flex justify-between mt-4">
+	<h1>数据是悟道之源</h1>
+	{#if showTable == false}
+
+	<div class="alert shadow-lg">
+		<div>
+		<svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+		<span class="flex items-center ml-1">注: 当前数据尚未导入，导入后显示数据表格; 数据文件导入时会自动作数值化处理</span>
+		</div>
+	</div>
+	
+	{/if}
+
+</div>
+
 <div class = "divider"></div>
 
-<div class="grid grid-rows-2 grid-cols-5 gap-4 mt-4">
+<div class="grid grid-rows-1 grid-cols-5 gap-4 mt-4">
 	<div class="row-span-2 col-span-4">
 		<FilePond
 			bind:this={pond}
@@ -173,9 +187,6 @@
 		<div class="mt-4"><Button on:click={()=>{goto('/data-target')}} kind="tertiary">进入下一步</Button></div>
 		
 	</div>
-{:else}
-
-	<p class="text-2xl text-center">当前数据尚未导入，导入后显示数据表格</p>
 	
 {/if}
 
