@@ -93,9 +93,10 @@
 		</SideNavMenu>
 		<!-- <SideNavLink text="可解释性" href="{base}/model-interpretable" /> -->
 		<SideNavMenu text="因果推断">
-			<SideNavMenuItem href="{base}/model-causal/dowhy" text="DoWhy" />
+			<SideNavMenuItem href="{base}/model-causal/causalnex" text="CausalNex" />
+			<!-- <SideNavMenuItem href="{base}/model-causal/dowhy" text="DoWhy" /> -->
 		</SideNavMenu>
-		<SideNavLink text="因果推断" href="{base}/causal" />
+		<!-- <SideNavLink text="因果推断" href="{base}/causal" /> -->
 	</SideNavItems>
 </SideNav>
 
