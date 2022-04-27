@@ -62,6 +62,9 @@
             let image = document.getElementById('feature-importance-image');
             image.src = `${baseLink}/static/data/${username}/images/xgboost/feature_importance.png`
             image.alt = `特征重要性图`
+            image = document.getElementById('xgboost-tree-image');
+            image.src = `${baseLink}/static/data/${username}/images/xgboost/xgboost_tree.png`
+            image.alt = `XGBoost Tree 图`
           } else {
             console.log('error!');
             toast.push('模型训练失败', {
@@ -135,6 +138,7 @@
       <Tabs>
         <Tab label="模型评估结果" />
         <Tab label="特征重要性图" />
+        <Tab label="XGBoost Tree 图" />
         <svelte:fragment slot="content">
           <TabContent>
 
@@ -171,6 +175,13 @@
             <div class="px-4 mx-auto container align-middle h-[32rem]">
               <div class="flex flex-row justify-center items-center">
                 <img src='../../favicon.png' alt='尚未加载' id='feature-importance-image'/>
+              </div>
+            </div>
+          </TabContent>
+          <TabContent>
+            <div class="px-4 mx-auto container align-middle h-[32rem]">
+              <div class="flex flex-row justify-center items-center">
+                <img src='../../favicon.png' alt='尚未加载' id='xgboost-tree-image'/>
               </div>
             </div>
           </TabContent>
