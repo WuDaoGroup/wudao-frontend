@@ -99,7 +99,7 @@
                     <div class="hero-content text-left text-neutral-content">
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">划定阈值</h2>
-                        <p class="mb-5">不一定所有的特征变量之间都具有强因果关系，我们可以设置边系数阈值（0~1之间），而边系数阈值小于0阈值的点与边则会出现在因果图中。</p>
+                        <p class="mb-5">不一定所有的特征变量之间都具有强因果关系，我们可以设置边系数阈值（0~1之间），而边系数大于该阈值的点与边则会出现在因果图中。</p>
                         <div class="flex items-end justify-between px-4 pt-4 items-center">
                           <input type="number" min="0" max="100" placeholder="输入阈值(%)" class="input input-bordered input-primary text-zinc-900 w-[14rem]" bind:value={bar}>
                           <button class="btn btn-primary" on:click={handleSplitBar}>确定阈值大小</button>
@@ -142,7 +142,7 @@
                   <span class="flex items-center ml-1">{currentState}</span>
                   </div>
                 </div>
-                <div class="flex flex-col items-center justify-center mt-8">
+                <div class="flex flex-col items-center justify-center dmt-8">
                     <Loading withOverlay={false} />
                 </div>
               {:else}
