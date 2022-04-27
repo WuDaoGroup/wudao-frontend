@@ -13,6 +13,7 @@
       Tabs, Tab, TabContent,
       Loading
     } from 'carbon-components-svelte';
+    import {baseLink} from '../../services/api.js'
     import { toast } from '@zerodevx/svelte-toast';
     import { user } from '../../stores/userStore';
     import {classificationTrainerApi} from '../../api/modelApi.js';
@@ -58,6 +59,9 @@
           console.log('response_data:', response.data);
           modelResult = response.data
           toast.push('模型成功训练');
+          let image = document.getElementById('auroc-image');
+          image.src = `${baseLink}/static/data/${username}/images/decision_tree/auroc.png`
+          image.alt = `AUROC Curve`
         } else {
           console.log('error!');
           toast.push('模型训练失败', {
@@ -129,42 +133,50 @@
     <div class="grid flex-grow card rounded-box">
 
       <Tabs>
-        <Tab label="模型评估结果" />
-        <svelte:fragment slot="content">
-          <TabContent>
+          <Tab label="模型评估结果" />
+          <Tab label="AUROC 曲线" />
+          <svelte:fragment slot="content">
+            <TabContent>
 
-            {#if currentState != '完成训练'}
-              <div class="alert shadow-lg mt-4">
-                <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span class="flex items-center ml-1">{currentState}</span>
+              {#if currentState != '完成训练'}
+                <div class="alert shadow-lg mt-4">
+                  <div>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span class="flex items-center ml-1">{currentState}</span>
+                  </div>
+                </div>
+                <div class="flex flex-col items-center justify-center mt-8">
+                    <Loading withOverlay={false} />
+                </div>
+              {:else}
+                  <div class="px-4 mx-auto container align-middle">
+                  <div class="grid grid-cols-4 gap-2">
+
+                      {#each modelResult as result}
+                      <div class="shadow rounded-lg py-4 px-5 bg-white">
+                          <div class="flex flex-row justify-center items-center">
+                          <div>
+                              <h6 class="text-sm">{result.indicator}</h6>
+                              <h4 class="text-black text-xl font-bold text-left">{result.value}</h4>
+                          </div>
+                          </div>
+                      </div>
+                      {/each}
+
+                  </div>
+                  </div>
+              {/if}
+            </TabContent>
+            <TabContent>
+              <div class="px-4 mx-auto container align-middle h-[32rem]">
+                <div class="flex flex-row justify-center items-center">
+                  <img src='../../favicon.png' alt='尚未加载' id='auroc-image'/>
                 </div>
               </div>
-              <div class="flex flex-col items-center justify-center mt-8">
-                  <Loading withOverlay={false} />
-              </div>
-            {:else}
-                <div class="px-4 mx-auto container align-middle">
-                <div class="grid grid-cols-4 gap-2">
-
-                    {#each modelResult as result}
-                    <div class="shadow rounded-lg py-4 px-5 bg-white">
-                        <div class="flex flex-row justify-center items-center">
-                        <div>
-                            <h6 class="text-sm">{result.indicator}</h6>
-                            <h4 class="text-black text-xl font-bold text-left">{result.value}</h4>
-                        </div>
-                        </div>
-                    </div>
-                    {/each}
-
-                </div>
-                </div>
-            {/if}
-          </TabContent>
-        </svelte:fragment>
-    </Tabs>
-
+            </TabContent>
+          </svelte:fragment>
+      </Tabs>
     </div>
+ 
  
   </div>

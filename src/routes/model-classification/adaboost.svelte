@@ -13,6 +13,7 @@
       Tabs, Tab, TabContent,
       Loading
     } from 'carbon-components-svelte';
+    import {baseLink} from '../../services/api.js'
     import { toast } from '@zerodevx/svelte-toast';
     import { user } from '../../stores/userStore';
     import {classificationTrainerApi} from '../../api/modelApi.js';
@@ -58,6 +59,9 @@
           console.log('response_data:', response.data);
           modelResult = response.data
           toast.push('模型成功训练');
+          let image = document.getElementById('auroc-image');
+          image.src = `${baseLink}/static/data/${username}/images/adaboost/auroc.png`
+          image.alt = `AUROC Curve`
         } else {
           console.log('error!');
           toast.push('模型训练失败', {
@@ -130,6 +134,7 @@
 
       <Tabs>
           <Tab label="模型评估结果" />
+          <Tab label="AUROC 曲线" />
           <svelte:fragment slot="content">
             <TabContent>
 
@@ -161,6 +166,13 @@
                   </div>
                   </div>
               {/if}
+            </TabContent>
+            <TabContent>
+              <div class="px-4 mx-auto container align-middle h-[32rem]">
+                <div class="flex flex-row justify-center items-center">
+                  <img src='../../favicon.png' alt='尚未加载' id='auroc-image'/>
+                </div>
+              </div>
             </TabContent>
           </svelte:fragment>
       </Tabs>
