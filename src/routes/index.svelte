@@ -7,7 +7,7 @@
 <main>
 
 	<div class="flex justify-between ...">
-		<h1>结构化数据预测分析平台</h1>
+		<h1 class="text-2xl font-bold text-zinc-600 text-6xl italic">结构化数据预测分析系统</h1>
 
 		<button class="border border-teal-500 bg-teal-500 text-white block rounded-sm font-bold py-4 px-6 ml-2 flex items-center" on:click={() => goto(`auto-pipeline/`)}>
 			智能快速预测分析入口
