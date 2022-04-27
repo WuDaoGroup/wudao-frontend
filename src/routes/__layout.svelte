@@ -88,13 +88,13 @@
 			<SideNavMenuItem href="/" text="Link 3" /> -->
 		</SideNavMenu>
 		<SideNavMenu text="特征分析">
-			<SideNavMenuItem href="{base}/model-interpretable/reduction" text="数据降维" />
-			<SideNavMenuItem href="{base}/model-interpretable/correlation" text="特征关联" />
+			<SideNavMenuItem href="{base}/feature-analysis/reduction" text="数据降维" />
+			<SideNavMenuItem href="{base}/feature-analysis/correlation" text="特征关联" />
 		</SideNavMenu>
 		<!-- <SideNavLink text="可解释性" href="{base}/model-interpretable" /> -->
 		<SideNavMenu text="因果分析">
-			<SideNavMenuItem href="{base}/model-causal/notears" text="因果发现" />
-			<!-- <SideNavMenuItem href="{base}/model-causal/dowhy" text="DoWhy" /> -->
+			<SideNavMenuItem href="{base}/causal-analysis/notears" text="因果发现" />
+			<!-- <SideNavMenuItem href="{base}/feature-analysis/dowhy" text="DoWhy" /> -->
 		</SideNavMenu>
 		<!-- <SideNavLink text="因果推断" href="{base}/causal" /> -->
 	</SideNavItems>
