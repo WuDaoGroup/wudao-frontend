@@ -97,10 +97,10 @@
                     <div class="hero-content text-left text-neutral-content">
                       <div class="max-w-md">
                         <h2 class="mb-5 text-5xl font-bold">数据集划分</h2>
-                        <p class="mb-5">在机器学习任务中，我们通常将已有的数据集划分为训练集和测试集两部分，其中训练集用来训练模型，而测试集则用来评估模型对于新样本的判别能力。</p>
+                        <p class="mb-5">在机器学习任务中，我们通常将已有的数据集划分为训练集和验证集两部分，其中训练集用来训练模型，而验证集则用来验证模型对于新样本的判别能力。</p>
                         <div class="flex items-end justify-between px-4 pt-4 items-center">
                           <input type="number" min="50" max="95" placeholder="输入训练集的比例(%)" class="input input-bordered input-primary text-zinc-900 w-[14rem]" bind:value={testPercent}>
-                          <button class="btn btn-primary" on:click={handleSplitDataset}>确定测试集划分比例</button>
+                          <button class="btn btn-primary" on:click={handleSplitDataset}>确定划分比例</button>
                         </div>
                       </div>
                     </div>
