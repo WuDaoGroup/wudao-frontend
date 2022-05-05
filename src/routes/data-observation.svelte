@@ -161,7 +161,7 @@
 	console.log(images)
 </script>
 
-<h1>数据观察</h1>
+<h1>数据统计与观察</h1>
 
 <div class="divider" />
 
