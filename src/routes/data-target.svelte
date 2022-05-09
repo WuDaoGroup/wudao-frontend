@@ -3,17 +3,12 @@
     import { goto } from '$app/navigation';
 	import {
         Button,
-		DataTable,
-		// Pagination,
 		RadioButtonGroup,
 		RadioButton,
-		InlineNotification,
-		ProgressIndicator,
-		ProgressStep
 	} from 'carbon-components-svelte';
     import {target, features, allFeatures} from '../stores/dataStore';
-    import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/dataApi';
-    import Table, { Pagination, Row, Search, Sort } from '../components/Table.svelte';
+    import { uploadFileFeatureInfoApi } from '../api/dataApi';
+    import Table, { Row } from '../components/Table.svelte';
     import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../stores/userStore';
 	let username;

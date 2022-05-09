@@ -1,23 +1,17 @@
 <script>
 	import {baseLink} from '../services/api.js'
-	import { analyzeUploadFileContentApi, uploadFileFeatureInfoApi } from '../api/dataApi';
+	import { analyzeUploadFileContentApi } from '../api/dataApi';
 	import {
 		Button,
 		DataTable,
 		Pagination,
-		RadioButtonGroup,
-		RadioButton,
-		InlineNotification,
 		ProgressIndicator,
 		ProgressStep
 	} from 'carbon-components-svelte';
 	import { browser } from '$app/env';
 	import { toast } from '@zerodevx/svelte-toast';
-	// import { dataHeader, rowData } from '../stores/dataStore';
 	import FilePond from 'svelte-filepond';
-	
-
-	import { filename, target, features, allFeatures } from '../stores/dataStore';
+	import { allFeatures } from '../stores/dataStore';
 	import { goto } from '$app/navigation';
 
 	import { user } from '../stores/userStore';

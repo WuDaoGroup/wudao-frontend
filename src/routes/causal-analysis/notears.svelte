@@ -1,15 +1,5 @@
 <script>
-    import { onMount } from 'svelte';
   	import {
-      Button,
-      DataTable,
-      Pagination,
-      Select,
-      SelectItem,
-      InlineNotification,
-      ProgressIndicator,
-      ProgressStep,
-      TextInput,
       Tabs, Tab, TabContent,
       Loading
     } from 'carbon-components-svelte';
@@ -17,7 +7,6 @@
     import { toast } from '@zerodevx/svelte-toast';
     import { user } from '../../stores/userStore';
     import { generateNotearsApi } from '../../api/causalApi.js';
-    import { code } from '../../services/codeGen.js';
 
     let username;
     user.subscribe((value) => {

@@ -1,15 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
 	import {
-		Button,
-		DataTable,
-		Pagination,
-		Select,
-		SelectItem,
-		InlineNotification,
-		ProgressIndicator,
-		ProgressStep,
-		TextInput,
 		Tabs,
 		Tab,
 		TabContent
@@ -17,7 +7,7 @@
 	import {baseLink} from '../../services/api.js'
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../../stores/userStore';
-	import {target, features, allFeatures} from '../../stores/dataStore';
+	import { target } from '../../stores/dataStore';
 	import { dimensionReductionApi } from '../../api/explanationApi.js';
 
 	let username;

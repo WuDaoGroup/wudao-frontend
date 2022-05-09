@@ -3,26 +3,16 @@
 	import {baseLink} from '../services/api.js'
 	import { onMount } from 'svelte';
 	import {
-		Button,
 		DataTable,
 		Pagination,
-		Select,
-		SelectItem,
-		InlineNotification,
-		ProgressIndicator,
-		ProgressStep,
-		TextInput,
 		Tabs,
 		Tab,
 		TabContent
 	} from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../stores/userStore';
-	import {target, features, allFeatures} from '../stores/dataStore';
+	import {allFeatures} from '../stores/dataStore';
 	import {
-		zscoreDataApi,
-		fillDataApi,
-		filterDataApi,
 		getDataStatisticsInfoApi,
 		generateHistogramApi
 	} from '../api/dataApi.js';

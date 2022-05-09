@@ -1,15 +1,8 @@
 <script>
     import { onMount } from 'svelte';
   	import {
-      Button,
       DataTable,
       Pagination,
-      Select,
-      SelectItem,
-      InlineNotification,
-      ProgressIndicator,
-      ProgressStep,
-      TextInput,
       Tabs, Tab, TabContent
     } from 'carbon-components-svelte';
     import { toast } from '@zerodevx/svelte-toast';
