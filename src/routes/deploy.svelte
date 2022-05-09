@@ -90,6 +90,10 @@
     }
 </script>
 
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>应用已部署模型完成预测</title>
+</svelte:head>
 
 <div class="flex justify-between ...">
   <h1>应用已部署模型完成预测</h1>

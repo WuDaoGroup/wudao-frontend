@@ -90,6 +90,11 @@
 
 </script>
 
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>数据降维</title>
+</svelte:head>
+
 <h1>数据降维</h1>
 
 <div class="card w-full">

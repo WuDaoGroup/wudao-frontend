@@ -75,7 +75,10 @@
     }
 </script>
 
-
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>分类: 朴素贝叶斯</title>
+</svelte:head>
 
 <h1>Classification Model: 朴素贝叶斯</h1>
 

@@ -161,6 +161,11 @@
 	console.log(images)
 </script>
 
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>数据统计与观察</title>
+</svelte:head>
+
 <h1>数据统计与观察</h1>
 
 <div class="divider" />

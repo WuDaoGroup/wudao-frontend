@@ -71,7 +71,11 @@
   }
 </script>
 
-<!--  -->
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>回归: CatBoost</title>
+</svelte:head>
+
 
 <h1>Regression Model: CatBoost</h1>
 

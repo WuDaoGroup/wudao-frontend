@@ -78,7 +78,10 @@
     }
 </script>
 
-
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>回归: XGBoost</title>
+</svelte:head>
 
 <h1>Regression Model: XGBoost</h1>
 

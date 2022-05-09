@@ -75,7 +75,10 @@
     }
 </script>
 
-
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>分类: AdaBoost</title>
+</svelte:head>
 
 <h1>Classification Model: AdaBoost</h1>
 

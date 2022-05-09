@@ -72,7 +72,10 @@
 
 </script>
 
-
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>选择预测目标和特征</title>
+</svelte:head>
 
 <div class="flex flex-row items-center justify-between">
 

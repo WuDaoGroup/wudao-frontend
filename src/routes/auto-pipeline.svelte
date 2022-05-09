@@ -102,6 +102,10 @@
 
 </script>
 
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>自动机器学习预测分析</title>
+</svelte:head>
 
 <div class="flex justify-between ...">
     <h1>自动机器学习预测分析</h1>

@@ -228,7 +228,10 @@
 
 </script>
 
-
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>数据预处理</title>
+</svelte:head>
 
 <h1>数据预处理</h1>
 

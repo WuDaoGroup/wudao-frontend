@@ -4,6 +4,16 @@
 	import { goto } from '$app/navigation';
 </script>
 
+<svelte:head>
+  <meta charset="UTF-8" />
+  <meta name="keywords" content="结构化数据预测分析系统" />
+  <meta
+    name="description"
+    content="带你快速分析和预测结构化数据，支持多种机器学习模型"
+  />
+  <title>结构化数据预测分析系统</title>
+</svelte:head>
+
 <main>
 
 	<div class="flex justify-between ...">

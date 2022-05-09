@@ -71,7 +71,10 @@
   }
 </script>
 
-<!--  -->
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>回归: SVM</title>
+</svelte:head>
 
 <h1>Regression Model: SVM</h1>
 

@@ -114,6 +114,11 @@
 
 </script>
 
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>数据导入</title>
+</svelte:head>
+
 <ProgressIndicator bind:currentIndex spaceEqually preventChangeOnClick>
 	<ProgressStep
 		bind:current={checkUploadFiles.current}

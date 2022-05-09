@@ -26,6 +26,11 @@
 	}
 </script>
 
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>注册</title>
+</svelte:head>
+
 <body class="flex flex-col items-center justify-center mt-8">
 	<!-- Component Start -->
 	<h1 class="font-bold text-2xl">Sign Up</h1>

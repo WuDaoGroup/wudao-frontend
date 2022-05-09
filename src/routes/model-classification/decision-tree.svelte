@@ -75,7 +75,10 @@
     }
 </script>
 
-
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>分类: 决策树</title>
+</svelte:head>
 
 <h1>Classification Model: 决策树</h1>
 

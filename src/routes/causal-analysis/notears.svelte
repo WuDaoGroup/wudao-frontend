@@ -73,7 +73,10 @@
     }
 </script>
 
-
+<svelte:head>
+  <meta charset="UTF-8" />
+  <title>因果发现</title>
+</svelte:head>
 
 <h1>因果发现</h1>
 
