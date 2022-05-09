@@ -13,7 +13,10 @@ export const analyzeUploadFileContentApi = async (username) => {
 
 export const uploadFileFeatureInfoApi = async (username, selectedFeatures) => {
 	try {
-		const response = await api.post(`/api/v1/data/features/info?username=${username}`, selectedFeatures);
+		const response = await api.post(
+			`/api/v1/data/features/info?username=${username}`,
+			selectedFeatures
+		);
 		return response;
 	} catch (err) {
 		console.error(err);
@@ -31,7 +34,9 @@ export const zscoreDataApi = async (username) => {
 
 export const fillDataApi = async (username, selectedFillOption) => {
 	try {
-		const response = await api.get(`/api/v1/data/fill?username=${username}&fill_type=${selectedFillOption}`);
+		const response = await api.get(
+			`/api/v1/data/fill?username=${username}&fill_type=${selectedFillOption}`
+		);
 		return response;
 	} catch (err) {
 		console.error(err);
@@ -49,9 +54,9 @@ export const filterDataApi = async (username, filterBar) => {
 
 export const getDataStatisticsInfoApi = async (username, step) => {
 	try {
-		let form = new FormData()
-		form.append('username', username)
-		form.append('step', step)
+		let form = new FormData();
+		form.append('username', username);
+		form.append('step', step);
 		const response = await api.post(`/api/v1/data/statistics/info`, form);
 		return response;
 	} catch (err) {
@@ -61,9 +66,9 @@ export const getDataStatisticsInfoApi = async (username, step) => {
 
 export const generateHistogramApi = async (username, step) => {
 	try {
-		let form = new FormData()
-		form.append('username', username)
-		form.append('step', step)
+		let form = new FormData();
+		form.append('username', username);
+		form.append('step', step);
 		const response = await api.post(`/api/v1/data/histogram`, form);
 		return response;
 	} catch (err) {

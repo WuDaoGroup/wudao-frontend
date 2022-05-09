@@ -1,24 +1,14 @@
 <script>
-	import { onMount } from 'svelte';
-	import {
-		Button,
-		DataTable,
-		Pagination,
-		Select,
-		SelectItem,
-		InlineNotification,
-		ProgressIndicator,
-		ProgressStep,
-		TextInput,
-		Tabs,
-		Tab,
-		TabContent
-	} from 'carbon-components-svelte';
-	import {baseLink} from '../../services/api.js'
+	import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
+	import { baseLink } from '../../services/api.js';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../../stores/userStore';
-	import {target, features, allFeatures} from '../../stores/dataStore';
-	import { generateCorrelationFeatureApi, generateCorrelationTargetApi, generateCorrelationPairwiseApi } from '../../api/explanationApi.js';
+	import { target, features } from '../../stores/dataStore';
+	import {
+		generateCorrelationFeatureApi,
+		generateCorrelationTargetApi,
+		generateCorrelationPairwiseApi
+	} from '../../api/explanationApi.js';
 
 	let username;
 	user.subscribe((value) => {
@@ -26,9 +16,9 @@
 		console.log('username:', username);
 	});
 
-	let targetFeature
-	let featuresList
-    target.subscribe((value) => {
+	let targetFeature;
+	let featuresList;
+	target.subscribe((value) => {
 		targetFeature = value;
 	});
 	features.subscribe((value) => {
@@ -36,47 +26,49 @@
 	});
 
 	const correlationMethodOptions = ['pearson', 'kendall', 'spearman'];
-    let selectedCorrelationMethodOption = 'pearson'
-	
+	let selectedCorrelationMethodOption = 'pearson';
+
 	async function handleCorrelationFeature() {
 		toast.push('正在生成feature correlation matrix，请耐心等待');
-		await generateCorrelationFeatureApi(username, selectedCorrelationMethodOption).then((response) => {
-        if (response.status == 200) {
-          console.log('response_data:', response.data);
-          toast.push(response.data.message);
-		  let image = document.getElementById('correlation-feature-image');
-		  image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_feature_${selectedCorrelationMethodOption}.png`
-		  image.alt = `features' correlation matrix`
-        } else {
-			console.log('error!');
-			toast.push('fail!', {
-				theme: {
-				'--toastBackground': '#F56565',
-				'--toastBarBackground': '#C53030'
+		await generateCorrelationFeatureApi(username, selectedCorrelationMethodOption).then(
+			(response) => {
+				if (response.status == 200) {
+					console.log('response_data:', response.data);
+					toast.push(response.data.message);
+					let image = document.getElementById('correlation-feature-image');
+					image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_feature_${selectedCorrelationMethodOption}.png`;
+					image.alt = `features' correlation matrix`;
+				} else {
+					console.log('error!');
+					toast.push('fail!', {
+						theme: {
+							'--toastBackground': '#F56565',
+							'--toastBarBackground': '#C53030'
+						}
+					});
 				}
-			});
 			}
-		});
+		);
 	}
 
-	let kNumber = 2
+	let kNumber = 2;
 	async function handleCorrelationTarget() {
 		toast.push('正在生成target correlation matrix，请耐心等待');
 		await generateCorrelationTargetApi(username, kNumber, targetFeature).then((response) => {
-        if (response.status == 200) {
-          console.log('response_data:', response.data);
-          toast.push(response.data.message);
-		  let image = document.getElementById('correlation-target-image');
-		  image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_target_${targetFeature}_${kNumber}.png`
-		  image.alt = `target feature's correlation matrix`
-        } else {
-			console.log('error!');
-			toast.push('fail!', {
-				theme: {
-				'--toastBackground': '#F56565',
-				'--toastBarBackground': '#C53030'
-				}
-			});
+			if (response.status == 200) {
+				console.log('response_data:', response.data);
+				toast.push(response.data.message);
+				let image = document.getElementById('correlation-target-image');
+				image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_target_${targetFeature}_${kNumber}.png`;
+				image.alt = `target feature's correlation matrix`;
+			} else {
+				console.log('error!');
+				toast.push('fail!', {
+					theme: {
+						'--toastBackground': '#F56565',
+						'--toastBarBackground': '#C53030'
+					}
+				});
 			}
 		});
 	}
@@ -84,30 +76,28 @@
 	async function handleCorrelationPairwise() {
 		toast.push('正在生成pairwise correlation matrix，请耐心等待');
 		await generateCorrelationPairwiseApi(username).then((response) => {
-        if (response.status == 200) {
-          console.log('response_data:', response.data);
-          toast.push(response.data.message);
-		  let image = document.getElementById('correlation-pairwise-image');
-		  image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_feature_pairwise.png`
-		  image.alt = `pairwise features' correlation matrix`
-        } else {
-			console.log('error!');
-			toast.push('fail!', {
-				theme: {
-				'--toastBackground': '#F56565',
-				'--toastBarBackground': '#C53030'
-				}
-			});
+			if (response.status == 200) {
+				console.log('response_data:', response.data);
+				toast.push(response.data.message);
+				let image = document.getElementById('correlation-pairwise-image');
+				image.src = `${baseLink}/static/data/${username}/images/explanation/correlation_feature_pairwise.png`;
+				image.alt = `pairwise features' correlation matrix`;
+			} else {
+				console.log('error!');
+				toast.push('fail!', {
+					theme: {
+						'--toastBackground': '#F56565',
+						'--toastBarBackground': '#C53030'
+					}
+				});
 			}
 		});
 	}
-
-
 </script>
 
 <svelte:head>
-  <meta charset="UTF-8" />
-  <title>特征关联分析</title>
+	<meta charset="UTF-8" />
+	<title>特征关联分析</title>
 </svelte:head>
 
 <h1>特征关联分析</h1>
@@ -140,14 +130,23 @@
 									对全特征计算特征相关矩阵，可选方法有 pearson、kendall 和 spearman
 								</p>
 								<div class="flex items-end justify-between px-4 pt-4 items-center">
-									<select class="select select-bordered w-30 text-zinc-900 w-[10rem]" bind:value={selectedCorrelationMethodOption}>
+									<select
+										class="select select-bordered w-30 text-zinc-900 w-[10rem]"
+										bind:value={selectedCorrelationMethodOption}
+									>
 										{#each correlationMethodOptions as opt}
-										<option value={opt} class="font-mono">
-										  方法: {opt}
-										  </option>
+											<option value={opt} class="font-mono">
+												方法:
+												{opt}
+											</option>
 										{/each}
 									</select>
-									<button class="btn btn-primary w-[10rem]" on:click={()=>{handleCorrelationFeature()}}>
+									<button
+										class="btn btn-primary w-[10rem]"
+										on:click={() => {
+											handleCorrelationFeature();
+										}}
+									>
 										生成Correlation Matrix
 									</button>
 								</div>
@@ -160,13 +159,29 @@
 						<div class="hero-overlay bg-opacity-60 rounded-lg" />
 						<div class="hero-content text-left text-neutral-content">
 							<div class="max-w-md">
-								<h2 class="mb-5 text-5xl font-bold">目标 ({targetFeature}) 相关矩阵</h2>
+								<h2 class="mb-5 text-5xl font-bold">
+									目标 ({targetFeature}) 相关矩阵
+								</h2>
 								<p class="mb-5">
-									对预测目标及其 K 个相关特征计算相关矩阵，默认使用方法为 spearman。你一共有 {featuresList.length+1} 个特征(含目标特征)，请输入你想要计算的相关特征数量 (2~{featuresList.length+1}个)。
+									对预测目标及其 K 个相关特征计算相关矩阵，默认使用方法为 spearman。你一共有 {featuresList.length +
+										1} 个特征(含目标特征)，请输入你想要计算的相关特征数量 (2~{featuresList.length +
+										1}个)。
 								</p>
 								<div class="flex items-end justify-between px-4 pt-4 items-center">
-									<input type="number" min="2" max="{featuresList.length+1}" placeholder="输入阈值" class="input input-bordered input-primary text-zinc-900 w-[10rem]" bind:value={kNumber}>
-									<button class="btn btn-primary w-[10rem]" on:click={()=>{handleCorrelationTarget()}}>
+									<input
+										type="number"
+										min="2"
+										max={featuresList.length + 1}
+										placeholder="输入阈值"
+										class="input input-bordered input-primary text-zinc-900 w-[10rem]"
+										bind:value={kNumber}
+									/>
+									<button
+										class="btn btn-primary w-[10rem]"
+										on:click={() => {
+											handleCorrelationTarget();
+										}}
+									>
 										生成Correlation Matrix
 									</button>
 								</div>
@@ -184,7 +199,12 @@
 									计算两两特征之间的相关矩阵。现支持为您分析出所有特征两两之间的关系。
 								</p>
 								<div class="flex items-end justify-center px-4 pt-4 items-center">
-									<button class="btn btn-primary w-[10rem]" on:click={()=>{handleCorrelationPairwise()}}>
+									<button
+										class="btn btn-primary w-[10rem]"
+										on:click={() => {
+											handleCorrelationPairwise();
+										}}
+									>
 										生成Correlation Matrix
 									</button>
 								</div>
@@ -202,27 +222,27 @@
 			<Tab label="Target Correlation Matrix" />
 			<Tab label="Pairwise Correlation Matrix" />
 			<svelte:fragment slot="content">
-			<TabContent>
-				<div class="px-4 mx-auto container align-middle h-[32rem]">
-					<div class="flex flex-row justify-center items-center">
-						<img src='../../favicon.png' alt='尚未加载' id='correlation-feature-image'/>
+				<TabContent>
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							<img src="../../favicon.png" alt="尚未加载" id="correlation-feature-image" />
+						</div>
 					</div>
-				</div>
-			</TabContent>
-			<TabContent>
-				<div class="px-4 mx-auto container align-middle h-[32rem]">
-					<div class="flex flex-row justify-center items-center">
-						<img src='../../favicon.png' alt='尚未加载' id='correlation-target-image'/>
+				</TabContent>
+				<TabContent>
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							<img src="../../favicon.png" alt="尚未加载" id="correlation-target-image" />
+						</div>
 					</div>
-				</div>
-			</TabContent>
-			<TabContent>
-				<div class="px-4 mx-auto container align-middle h-[32rem]">
-					<div class="flex flex-row justify-center items-center">
-						<img src='../../favicon.png' alt='尚未加载' id='correlation-pairwise-image'/>
+				</TabContent>
+				<TabContent>
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							<img src="../../favicon.png" alt="尚未加载" id="correlation-pairwise-image" />
+						</div>
 					</div>
-				</div>
-			</TabContent>
+				</TabContent>
 			</svelte:fragment>
 		</Tabs>
 	</div>

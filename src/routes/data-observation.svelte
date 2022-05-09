@@ -1,21 +1,12 @@
 <script>
 	// import ImagesChart from '../components/ImagesChart.svelte';
-	import {baseLink} from '../services/api.js'
+	import { baseLink } from '../services/api.js';
 	import { onMount } from 'svelte';
-	import {
-		DataTable,
-		Pagination,
-		Tabs,
-		Tab,
-		TabContent
-	} from 'carbon-components-svelte';
+	import { DataTable, Pagination, Tabs, Tab, TabContent } from 'carbon-components-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../stores/userStore';
-	import {allFeatures} from '../stores/dataStore';
-	import {
-		getDataStatisticsInfoApi,
-		generateHistogramApi
-	} from '../api/dataApi.js';
+	import { allFeatures } from '../stores/dataStore';
+	import { getDataStatisticsInfoApi, generateHistogramApi } from '../api/dataApi.js';
 
 	let username;
 	user.subscribe((value) => {
@@ -23,10 +14,10 @@
 		console.log('username:', username);
 	});
 
-	let selectedFeatures = []
-    allFeatures.subscribe((value) => {
+	let selectedFeatures = [];
+	allFeatures.subscribe((value) => {
 		selectedFeatures = value.filter((e) => e.type != 'useless');
-        console.log(selectedFeatures)
+		console.log(selectedFeatures);
 	});
 
 	// 显示统计信息表格
@@ -51,31 +42,31 @@
 	};
 
 	let images = {
-		'raw': [],
-		'processed': []
-	}
+		raw: [],
+		processed: []
+	};
 
-	function prepareImages(){
-		for(let i=0; i<selectedFeatures.length; i++){
-			let featureName = selectedFeatures[i].value
+	function prepareImages() {
+		for (let i = 0; i < selectedFeatures.length; i++) {
+			let featureName = selectedFeatures[i].value;
 			let rawImageInfo = {
 				name: featureName,
 				link: `${baseLink}/static/data/${username}/images/data_target_confirmed/histogram_${featureName}.png`
-			}
+			};
 			let processedImageInfo = {
 				name: featureName,
 				link: `${baseLink}/static/data/${username}/images/data_zscore_fill_filter/histogram_${featureName}.png`
-			}
+			};
 			images.raw.push(rawImageInfo);
 			images.processed.push(processedImageInfo);
 			images = images;
 		}
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			setTimeout(() => {
-			resolve();
+				resolve();
 			}, 2000);
 		});
-	};
+	}
 
 	// 在页面刚进入的时候，就展示所有的东西
 	onMount(async () => {
@@ -95,7 +86,7 @@
 				});
 			}
 		});
-		
+
 		await generateHistogramApi(username, 'data_target_confirmed').then((response) => {
 			if (response.status == 200) {
 				console.log('response_data:', response.data);
@@ -145,15 +136,14 @@
 		});
 
 		await prepareImages();
-
 	});
 
-	console.log(images)
+	console.log(images);
 </script>
 
 <svelte:head>
-  <meta charset="UTF-8" />
-  <title>数据统计与观察</title>
+	<meta charset="UTF-8" />
+	<title>数据统计与观察</title>
 </svelte:head>
 
 <h1>数据统计与观察</h1>
@@ -186,7 +176,7 @@
 				/>
 				<div class="grid grid-cols-3 gap-4">
 					{#each images.raw as image}
-						<img src={image.link} alt={image.name}/>
+						<img src={image.link} alt={image.name} />
 					{/each}
 				</div>
 			</TabContent>
@@ -211,7 +201,7 @@
 
 				<div class="grid grid-cols-3 gap-4">
 					{#each images.processed as image}
-						<img src={image.link} alt={image.name}/>
+						<img src={image.link} alt={image.name} />
 					{/each}
 				</div>
 			</TabContent>

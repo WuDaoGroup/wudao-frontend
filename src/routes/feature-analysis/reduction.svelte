@@ -1,10 +1,6 @@
 <script>
-	import {
-		Tabs,
-		Tab,
-		TabContent
-	} from 'carbon-components-svelte';
-	import {baseLink} from '../../services/api.js'
+	import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
+	import { baseLink } from '../../services/api.js';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../../stores/userStore';
 	import { target } from '../../stores/dataStore';
@@ -16,15 +12,15 @@
 		console.log('username:', username);
 	});
 
-	let targetFeature
-    target.subscribe((value) => {
+	let targetFeature;
+	target.subscribe((value) => {
 		targetFeature = value;
 	});
 
 	const reductionDimenstionOptions = [2, 3];
-    let selectedReductionDimenstionOption = 2
+	let selectedReductionDimenstionOption = 2;
 
-	let method = 'PCA'
+	let method = 'PCA';
 
 	// let imageShow = {
 	// 	'PCA+2': false,
@@ -51,38 +47,39 @@
 	// };
 
 	async function handleReduction() {
-		console.log(username, method, selectedReductionDimenstionOption, targetFeature)
-		await dimensionReductionApi(username, method, selectedReductionDimenstionOption, targetFeature).then((response) => {
-        if (response.status == 200) {
-          console.log('response_data:', response.data);
-          toast.push(`成功 ${method} ${selectedReductionDimenstionOption} 降维`);
+		console.log(username, method, selectedReductionDimenstionOption, targetFeature);
+		await dimensionReductionApi(
+			username,
+			method,
+			selectedReductionDimenstionOption,
+			targetFeature
+		).then((response) => {
+			if (response.status == 200) {
+				console.log('response_data:', response.data);
+				toast.push(`成功 ${method} ${selectedReductionDimenstionOption} 降维`);
 
-		  let imageId = `${method}-${selectedReductionDimenstionOption}d` // alt as well
-		  let imageSrc = `${baseLink}/static/data/${username}/images/explanation/reduction_${method}_${selectedReductionDimenstionOption}_${targetFeature}.png`
-		  let image = document.getElementById(imageId)
-		  image.src = imageSrc
-		  image.alt = imageId
-
-
-        } else {
-			console.log('error!');
-			toast.push('降维失败', {
-				theme: {
-				'--toastBackground': '#F56565',
-				'--toastBarBackground': '#C53030'
-				}
-			});
+				let imageId = `${method}-${selectedReductionDimenstionOption}d`; // alt as well
+				let imageSrc = `${baseLink}/static/data/${username}/images/explanation/reduction_${method}_${selectedReductionDimenstionOption}_${targetFeature}.png`;
+				let image = document.getElementById(imageId);
+				image.src = imageSrc;
+				image.alt = imageId;
+			} else {
+				console.log('error!');
+				toast.push('降维失败', {
+					theme: {
+						'--toastBackground': '#F56565',
+						'--toastBarBackground': '#C53030'
+					}
+				});
 			}
 		});
 		// await showImage(method,selectedReductionDimenstionOption)
 	}
-
-
 </script>
 
 <svelte:head>
-  <meta charset="UTF-8" />
-  <title>数据降维</title>
+	<meta charset="UTF-8" />
+	<title>数据降维</title>
 </svelte:head>
 
 <h1>数据降维</h1>
@@ -111,17 +108,28 @@
 							<div class="max-w-md">
 								<h2 class="mb-5 text-5xl font-bold">PCA</h2>
 								<p class="mb-5">
-									PCA（principal components analysis）即主成分分析技术，又称主分量分析，旨在利用降维的思想，把多指标转化为少数几个综合指标。
+									PCA（principal components
+									analysis）即主成分分析技术，又称主分量分析，旨在利用降维的思想，把多指标转化为少数几个综合指标。
 								</p>
 								<div class="flex items-end justify-between px-4 pt-4 items-center">
-									<select class="select select-bordered w-30 text-zinc-900 w-[10rem]" bind:value={selectedReductionDimenstionOption}>
+									<select
+										class="select select-bordered w-30 text-zinc-900 w-[10rem]"
+										bind:value={selectedReductionDimenstionOption}
+									>
 										{#each reductionDimenstionOptions as opt}
-										<option value={opt} class="font-mono">
-										  降维维度: {opt}
-										  </option>
+											<option value={opt} class="font-mono">
+												降维维度:
+												{opt}
+											</option>
 										{/each}
 									</select>
-									<button class="btn btn-primary w-[10rem]" on:click={()=>{method='PCA'; handleReduction()}}>
+									<button
+										class="btn btn-primary w-[10rem]"
+										on:click={() => {
+											method = 'PCA';
+											handleReduction();
+										}}
+									>
 										生成降维
 									</button>
 								</div>
@@ -136,17 +144,30 @@
 							<div class="max-w-md">
 								<h2 class="mb-5 text-5xl font-bold">TSNE</h2>
 								<p class="mb-5">
-									t-Distributed Stochastic Neighbor Embedding (t-SNE) is a technique for dimensionality reduction that is particularly well suited for the visualization of high-dimensional datasets. The technique can be implemented via Barnes-Hut approximations, allowing it to be applied on large real-world datasets
+									t-Distributed Stochastic Neighbor Embedding (t-SNE) is a technique for
+									dimensionality reduction that is particularly well suited for the visualization of
+									high-dimensional datasets. The technique can be implemented via Barnes-Hut
+									approximations, allowing it to be applied on large real-world datasets
 								</p>
 								<div class="flex items-end justify-between px-4 pt-4 items-center">
-									<select class="select select-bordered w-30 text-zinc-900 w-[10rem]" bind:value={selectedReductionDimenstionOption}>
+									<select
+										class="select select-bordered w-30 text-zinc-900 w-[10rem]"
+										bind:value={selectedReductionDimenstionOption}
+									>
 										{#each reductionDimenstionOptions as opt}
-										<option value={opt} class="font-mono">
-										  降维维度: {opt}
-										  </option>
+											<option value={opt} class="font-mono">
+												降维维度:
+												{opt}
+											</option>
 										{/each}
 									</select>
-									<button class="btn btn-primary w-[10rem]" on:click={()=>{method='TSNE'; handleReduction()}}>
+									<button
+										class="btn btn-primary w-[10rem]"
+										on:click={() => {
+											method = 'TSNE';
+											handleReduction();
+										}}
+									>
 										生成降维
 									</button>
 								</div>
@@ -165,9 +186,7 @@
 			<Tab label="TSNE 降维 2D" />
 			<Tab label="TSNE 降维 3D" />
 			<svelte:fragment slot="content">
-
-
-			<!-- {#each images as image}
+				<!-- {#each images as image}
 				<TabContent>
 					<div class="px-4 mx-auto container align-middle h-[32rem]">
 						<div class="flex flex-row justify-center items-center">
@@ -182,39 +201,37 @@
 				</TabContent>
 			{/each} -->
 
-			<TabContent>
-				<div class="px-4 mx-auto container align-middle h-[32rem]">
-					<div class="flex flex-row justify-center items-center">
-						<img src='../../favicon.png' alt='尚未加载' id="PCA-2d" width="75%"/>
-					  </div>
-				</div>
-			</TabContent>
+				<TabContent>
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							<img src="../../favicon.png" alt="尚未加载" id="PCA-2d" width="75%" />
+						</div>
+					</div>
+				</TabContent>
 
-			<TabContent>
-				<div class="px-4 mx-auto container align-middle h-[32rem]">
-					<div class="flex flex-row justify-center items-center">
-						<img src='../../favicon.png' alt='尚未加载' id="PCA-3d" width="75%"/>
-					  </div>
-				</div>
-			</TabContent>
+				<TabContent>
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							<img src="../../favicon.png" alt="尚未加载" id="PCA-3d" width="75%" />
+						</div>
+					</div>
+				</TabContent>
 
+				<TabContent>
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							<img src="../../favicon.png" alt="尚未加载" id="TSNE-2d" width="75%" />
+						</div>
+					</div>
+				</TabContent>
 
-			<TabContent>
-				<div class="px-4 mx-auto container align-middle h-[32rem]">
-					<div class="flex flex-row justify-center items-center">
-						<img src='../../favicon.png' alt='尚未加载' id="TSNE-2d" width="75%"/>
-					  </div>
-				</div>
-			</TabContent>
-
-			<TabContent>
-				<div class="px-4 mx-auto container align-middle h-[32rem]">
-					<div class="flex flex-row justify-center items-center">
-						<img src='../../favicon.png' alt='尚未加载' id="TSNE-3d" width="75%"/>
-					  </div>
-				</div>
-			</TabContent>
-
+				<TabContent>
+					<div class="px-4 mx-auto container align-middle h-[32rem]">
+						<div class="flex flex-row justify-center items-center">
+							<img src="../../favicon.png" alt="尚未加载" id="TSNE-3d" width="75%" />
+						</div>
+					</div>
+				</TabContent>
 			</svelte:fragment>
 		</Tabs>
 	</div>

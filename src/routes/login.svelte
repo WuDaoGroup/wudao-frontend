@@ -6,7 +6,6 @@
 	import { user } from '../stores/userStore';
 	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
-	// import { onMount } from 'svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 
 	let username = '';
@@ -39,8 +38,8 @@
 </script>
 
 <svelte:head>
-  <meta charset="UTF-8" />
-  <title>登录</title>
+	<meta charset="UTF-8" />
+	<title>登录</title>
 </svelte:head>
 
 <body class="flex flex-col items-center justify-center mt-8">

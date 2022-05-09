@@ -1,5 +1,5 @@
 <script>
-	import {baseLink} from '../services/api.js'
+	import { baseLink } from '../services/api.js';
 	import { analyzeUploadFileContentApi } from '../api/dataApi';
 	import {
 		Button,
@@ -26,13 +26,12 @@
 		content: []
 	};
 	let selectedFeatures = [];
-    const featureTypes = ['target', 'feature', 'useless'];
+	const featureTypes = ['target', 'feature', 'useless'];
 	const defaultChoice = featureTypes[1];
 
 	let currentIndex = 0;
 	let checkUploadFiles = { current: true, complete: false, invalid: false };
 	let analyzeDataFiles = { current: false, complete: false, disabled: true };
-
 
 	let pond;
 	// the name to use for the internal file input
@@ -41,18 +40,18 @@
 	function handleInit() {
 		console.log('FilePond has initialised');
 	}
-	
+
 	function handleAddFile(err, fileItem) {
 		console.log('A file has been added', fileItem);
 		if (!['xlsx', 'xls', 'csv'].includes(fileItem.fileExtension.toLowerCase())) {
-			(checkUploadFiles.invalid = true);
+			checkUploadFiles.invalid = true;
 			toast.push('文件类型错误', {
 				theme: {
 					'--toastBackground': '#F56565',
 					'--toastBarBackground': '#C53030'
 				}
 			});
-			
+
 			fileItem.abortLoad();
 			fileItem.abortProcessing();
 		} else {
@@ -65,7 +64,9 @@
 			// localStorage.filename= localStorage.filename.replace("\"", "").replace("\"","")
 			// console.log(dataFilename, localStorage.filename)
 			currentIndex = 1;
-			(checkUploadFiles.current = false), (checkUploadFiles.complete = true), (checkUploadFiles.invalid = false);
+			(checkUploadFiles.current = false),
+				(checkUploadFiles.complete = true),
+				(checkUploadFiles.invalid = false);
 			(analyzeDataFiles.disabled = false), (analyzeDataFiles.current = true);
 		}
 	}
@@ -92,25 +93,23 @@
 					};
 					selectedFeatures.push(e);
 				}
-				allFeatures.set(selectedFeatures)
+				allFeatures.set(selectedFeatures);
 				if (browser) {
 					localStorage.setItem('all_features', JSON.stringify(selectedFeatures));
 				}
 				(analyzeDataFiles.current = false), (analyzeDataFiles.complete = true);
 				currentIndex = 2;
-				showTable = true
+				showTable = true;
 			} else {
 				console.log('error!');
 			}
 		});
 	}
-
-
 </script>
 
 <svelte:head>
-  <meta charset="UTF-8" />
-  <title>数据导入</title>
+	<meta charset="UTF-8" />
+	<title>数据导入</title>
 </svelte:head>
 
 <ProgressIndicator bind:currentIndex spaceEqually preventChangeOnClick>
@@ -126,31 +125,40 @@
 		bind:complete={analyzeDataFiles.complete}
 		label="Show Table"
 	/>
-
 </ProgressIndicator>
 
 <div class="flex justify-between mt-4">
 	<h1>数据是悟道之源</h1>
 	{#if showTable == false}
-
-	<div class="alert shadow-lg">
-		<div>
-		<svg xmlns="http://www.w3.org/2000/svg" class="stroke-info flex-shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-		<span class="flex items-center ml-1">注: 当前数据尚未导入，导入后显示数据表格; 数据文件导入时会自动作数值化处理</span>
+		<div class="alert shadow-lg">
+			<div>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="stroke-info flex-shrink-0 w-6 h-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+				<span class="flex items-center ml-1"
+					>注: 当前数据尚未导入，导入后显示数据表格; 数据文件导入时会自动作数值化处理</span
+				>
+			</div>
 		</div>
-	</div>
-	
 	{/if}
-
 </div>
 
-<div class = "divider"></div>
+<div class="divider" />
 
 <div class="grid grid-rows-1 grid-cols-5 gap-4 mt-4">
 	<div class="row-span-2 col-span-4">
 		<FilePond
 			bind:this={pond}
-			labelIdle='Drag & Drop your data (csv/xls/xlsx file) or <span class="filepond--label-action"> Browse </span>'
+			labelIdle="Drag & Drop your data (csv/xls/xlsx file) or <span class='filepond--label-action'> Browse </span>"
 			{name}
 			server={uploadApiLink}
 			allowMultiple={true}
@@ -183,10 +191,15 @@
 			pageSizeInputDisabled
 		/>
 
-		<div class="mt-4"><Button on:click={()=>{goto('/data-target')}} kind="tertiary">进入下一步</Button></div>
-		
+		<div class="mt-4">
+			<Button
+				on:click={() => {
+					goto('/data-target');
+				}}
+				kind="tertiary">进入下一步</Button
+			>
+		</div>
 	</div>
-	
 {/if}
 
 <style>

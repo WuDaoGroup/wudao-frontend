@@ -27,8 +27,8 @@
 </script>
 
 <svelte:head>
-  <meta charset="UTF-8" />
-  <title>注册</title>
+	<meta charset="UTF-8" />
+	<title>注册</title>
 </svelte:head>
 
 <body class="flex flex-col items-center justify-center mt-8">
