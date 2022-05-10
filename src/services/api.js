@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 //export const baseLink = 'http://localhost:8123'
-export const baseLink = 'https://wudao-backend.herokuapp.com'
+export const baseLink = 'https://wudao-api.dwen.cc'
 
 // Create a instance of axios to use the same base url.
 const axiosAPI = axios.create({
