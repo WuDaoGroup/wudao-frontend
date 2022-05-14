@@ -64,7 +64,7 @@
 	}
 
 	function handleDownload() {
-		const url = `${baseLink}/static/data/a/data_pred.csv`;
+		const url = `${baseLink}/static/data/${username}/data_pred.csv`;
 		const link = document.createElement('a');
 		link.href = url;
 		link.setAttribute('download', 'data_pred.csv'); //or any other extension
